@@ -1,0 +1,400 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================
+   设计 Token —— FateCipher Design System
+   白色底板 + 冷调流光 · 紫罗兰为唯一点缀色
+   语义映射：历史 gold-* 类全部指向紫罗兰/流光冷调，
+   cinnabar → 冷蓝，rouge → 紫洋红，保证禁用红黄橙
+   ============================================ */
+
+:root {
+  --radius: 0.75rem;
+
+  /* 纯白 · 浅色 */
+  --background: #fbfbfd;
+  --foreground: #17171e;
+  --card: #ffffff;
+  --card-foreground: #17171e;
+  --popover: #ffffff;
+  --popover-foreground: #17171e;
+  --primary: #17171e;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(23, 23, 30, 0.045);
+  --secondary-foreground: #17171e;
+  --muted: rgba(23, 23, 30, 0.04);
+  --muted-foreground: rgba(23, 23, 30, 0.6);
+  --accent: rgba(23, 23, 30, 0.05);
+  --accent-foreground: #17171e;
+  --destructive: #d24a5a;
+  --border: rgba(23, 23, 30, 0.08);
+  --input: rgba(23, 23, 30, 0.12);
+  --ring: #6d5ae0;
+
+  /* 流光冷调（浅色下压深，保证对比度）
+     gold-* → 紫罗兰系；cinnabar → 冷蓝；rouge → 紫洋红 */
+  --gold-300: #c9c2f2;
+  --gold-400: #9a8cf0;
+  --gold-500: #6d5ae0;
+  --gold-600: #4f41b8;
+  --violet-400: #8b7ce8;
+  --violet-500: #6d5ae0;
+  --jade: #2f9e8a;
+  --cinnabar: #5e8bd8;
+  --porcelain: #3e7ea8;
+  --rouge: #a866d9;
+
+  /* 流光三色：紫 → 蓝 → 青，用于 iridescent 渐变 */
+  --iri-a: #6d5ae0;
+  --iri-b: #4f7de8;
+  --iri-c: #3e9ac8;
+}
+
+.dark {
+  /* 玄夜 · 深色 */
+  --background: #0a0a10;
+  --foreground: #f0f0f5;
+  --card: #14141c;
+  --card-foreground: #f0f0f5;
+  --popover: #14141c;
+  --popover-foreground: #f0f0f5;
+  --primary: #f0f0f5;
+  --primary-foreground: #0a0a10;
+  --secondary: rgba(255, 255, 255, 0.055);
+  --secondary-foreground: #f0f0f5;
+  --muted: rgba(255, 255, 255, 0.045);
+  --muted-foreground: rgba(240, 240, 245, 0.6);
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: #f0f0f5;
+  --destructive: #f26d7d;
+  --border: rgba(255, 255, 255, 0.09);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #8b7ce8;
+
+  --gold-300: #cfc7f7;
+  --gold-400: #a89af5;
+  --gold-500: #8b7ce8;
+  --gold-600: #6d5ae0;
+  --violet-400: #a18bf5;
+  --violet-500: #8b7ce8;
+  --jade: #5fc4a8;
+  --cinnabar: #7aa5e8;
+  --porcelain: #7fb5d6;
+  --rouge: #c08ae8;
+
+  --iri-a: #8b7ce8;
+  --iri-b: #6d8ff0;
+  --iri-c: #55aed8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-violet-400: var(--violet-400);
+  --color-violet-500: var(--violet-500);
+  --color-jade: var(--jade);
+  --color-cinnabar: var(--cinnabar);
+  --color-porcelain: var(--porcelain);
+  --color-rouge: var(--rouge);
+
+  --font-sans: var(--font-inter), -apple-system, "SF Pro Text", "PingFang SC",
+    "HarmonyOS Sans SC", "Microsoft YaHei", sans-serif;
+  --font-serif: var(--font-noto-serif), "Songti SC", "Noto Serif SC",
+    "Source Han Serif SC", "SimSun", serif;
+  --font-mono: "SF Mono", ui-monospace, "Cascadia Mono", "Menlo", monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  .dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--gold-500) 26%, transparent);
+    color: var(--foreground);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@layer components {
+  /* 玻璃拟态：白底上的清透玻璃 + 顶部内侧高光 */
+  .glass {
+    background: color-mix(in oklab, var(--card) 55%, transparent);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(40px) saturate(160%);
+    -webkit-backdrop-filter: blur(40px) saturate(160%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 1px 2px rgba(23, 23, 30, 0.03);
+  }
+
+  .dark .glass {
+    background: var(--secondary);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  }
+
+  /* 流光渐变文字：紫 → 蓝 → 青（类名沿用，语义已换） */
+  .text-gradient-gold {
+    background: linear-gradient(
+      115deg,
+      var(--iri-a),
+      var(--iri-b) 55%,
+      var(--iri-c)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* 氛围光：白底上极收敛，只做呼吸 */
+  .aura {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(90px);
+    will-change: transform;
+  }
+
+  .aura-violet {
+    top: -30vh;
+    left: 50%;
+    width: min(1100px, 130vw);
+    height: 60vh;
+    transform: translateX(-50%);
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--iri-a) 13%, transparent),
+      transparent 70%
+    );
+    animation: aura-drift 18s ease-in-out infinite;
+  }
+
+  .aura-gold {
+    top: 8vh;
+    right: -20vw;
+    width: 46vw;
+    height: 46vw;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--iri-c) 10%, transparent),
+      transparent 70%
+    );
+    animation: aura-drift 22s ease-in-out -8s infinite reverse;
+  }
+
+  .aura-rouge {
+    bottom: -18vh;
+    left: -12vw;
+    width: 44vw;
+    height: 40vw;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--rouge) 7%, transparent),
+      transparent 70%
+    );
+    animation: aura-drift 26s ease-in-out -14s infinite;
+  }
+
+  /* 流光彩带：一层极淡的彩虹光泽，随滚动呼吸 */
+  .iridescent-wash {
+    position: absolute;
+    inset: -20%;
+    background: conic-gradient(
+      from 180deg at 50% 40%,
+      transparent 0deg,
+      color-mix(in oklab, var(--iri-a) 5%, transparent) 60deg,
+      transparent 120deg,
+      color-mix(in oklab, var(--iri-c) 4%, transparent) 200deg,
+      transparent 260deg,
+      color-mix(in oklab, var(--rouge) 3%, transparent) 300deg,
+      transparent 360deg
+    );
+    animation: wash-spin 60s linear infinite;
+    will-change: transform;
+  }
+
+  /* 细颗粒噪点，压住渐变 banding */
+  .noise {
+    position: absolute;
+    inset: 0;
+    opacity: 0.032;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes aura-drift {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes wash-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 跑马灯：配合 w-max 双份内容做无限横向滚动 */
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-x 36s linear infinite;
+}
+
+.marquee-paused:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* 垂直跑马灯：配合双份内容做无限纵向滚动 */
+@keyframes marquee-y {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-marquee-y {
+  animation: marquee-y 8s linear infinite;
+}
+
+.marquee-y-paused:hover .animate-marquee-y {
+  animation-play-state: paused;
+}
+
+/* ───── 鼠标跟随烟雾：WebGL 流体模拟，见 components/splash-cursor.tsx ───── */
+
+@media (prefers-reduced-motion: reduce) {
+  .aura,
+  .iridescent-wash {
+    animation: none;
+  }
+
+  .animate-marquee {
+    animation: none;
+  }
+
+  .animate-marquee-y {
+    animation: none;
+  }
+}
+
+/* ============================================
+   视觉升级工具类
+   ============================================ */
+
+/* 卡片鼠标光晕：通过 CSS 变量 --mx/--my 定位 radial gradient */
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in oklab, var(--iri-a) 7%, transparent),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+.spotlight-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* 渐变细线：配合 itemDrawLine 变体做"绘制入场" */
+.hairline-gradient {
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--border) 20%,
+    var(--border) 80%,
+    transparent
+  );
+}
+
+/* 背景光晕平滑过渡 */
+.aura-respond {
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* 文本平衡换行 */
+.text-balance {
+  text-wrap: balance;
+}

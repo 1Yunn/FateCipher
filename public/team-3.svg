@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0ede5"/>
+      <stop offset="100%" stop-color="#e8e4d8"/>
+    </linearGradient>
+    <linearGradient id="skin3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e8d5c0"/>
+      <stop offset="100%" stop-color="#d4c0a8"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="500" fill="url(#bg3)"/>
+  <!-- 肩膀 -->
+  <path d="M80 500 L80 420 Q80 360 200 340 Q320 360 320 420 L320 500 Z" fill="#fafafa"/>
+  <!-- 脖子 -->
+  <rect x="180" y="310" width="40" height="50" rx="8" fill="url(#skin3)"/>
+  <!-- 头 -->
+  <ellipse cx="200" cy="250" rx="62" ry="75" fill="url(#skin3)"/>
+  <!-- 长发 -->
+  <path d="M138 240 Q135 170 200 160 Q265 170 262 240 Q268 290 260 340 L245 335 Q250 290 248 250 Q245 195 200 190 Q155 195 152 250 Q150 290 155 335 L140 340 Q132 290 138 240 Z" fill="#2a1a1a"/>
+  <!-- 眼睛 -->
+  <ellipse cx="175" cy="243" rx="5" ry="3" fill="#333"/>
+  <ellipse cx="225" cy="243" rx="5" ry="3" fill="#333"/>
+  <!-- 鼻子 -->
+  <path d="M200 253 L195 272 L205 272 Z" fill="none" stroke="#c4a88a" stroke-width="1.5"/>
+  <!-- 嘴 -->
+  <path d="M186 288 Q200 296 214 288" fill="none" stroke="#b88a7a" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

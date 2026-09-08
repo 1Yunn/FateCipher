@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>粒子汇集交互背景 · Particle Convergence</title>
+<style>
+  /* ========== 页面基础样式 ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    /* 深邃背景：深蓝黑 #0a0a14 底 + 极淡星云色斑，衬托微小发光粒子 */
+    background:
+      radial-gradient(ellipse 120% 90% at 70% 10%, rgba(50, 42, 110, 0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 100% 80% at 20% 90%, rgba(22, 40, 100, 0.16) 0%, transparent 60%),
+      linear-gradient(135deg, #08080f 0%, #0a0a14 45%, #0c0a18 100%);
+    background-color: #0a0a14;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Microsoft YaHei", sans-serif;
+  }
+
+  /* 粒子画布：固定铺满全屏（交互监听在 window 上，不拦截事件） */
+  #scene {
+    position: fixed;
+    inset: 0;
+    display: block;
+  }
+
+  /* 顶部提示文案（纯展示用，不阻挡交互） */
+  .tip {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgba(226, 232, 255, 0.82);
+    pointer-events: none;
+    user-select: none;
+    text-shadow: 0 0 24px rgba(129, 140, 248, 0.45);
+  }
+  .tip h1 {
+    font-size: clamp(22px, 4vw, 40px);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+  .tip p {
+    margin-top: 14px;
+    font-size: 13px;
+    letter-spacing: 0.28em;
+    color: rgba(167, 180, 255, 0.55);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="tip">
+  <h1>粒子汇集</h1>
+  <p>移动鼠标 · 粒子随你流动</p>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ==========================================================
+   * 一、基础设置：画布 / 尺寸 / DPR 适配
+   * ========================================================== */
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d');
+
+  let W = 0, H = 0;   // 逻辑尺寸（CSS 像素）
+  let DPR = 1;        // 设备像素比（上限 2，兼顾清晰度与性能）
+
+  /* ==========================================================
+   * 二、静态星空：离屏画布只渲染一次，之后每帧 drawImage，开销极小
+   * ========================================================== */
+  let starLayer = null;
+
+  function buildStars() {
+    starLayer = document.createElement('canvas');
+    starLayer.width = W;
+    starLayer.height = H;
+    const s = starLayer.getContext('2d');
+
+    // 星星密度与屏幕面积挂钩；这里是远景衬托，亮度压得很低
+    const count = Math.round((W * H) / 11000);
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const r = Math.random() * 1.0 + 0.2;
+      const a = Math.random() * 0.35 + 0.05;
+      s.fillStyle = `rgba(205, 216, 255, ${a})`;
+      s.beginPath();
+      s.arc(x, y, r, 0, Math.PI * 2);
+      s.fill();
+    }
+  }
+
+  /* ==========================================================
+   * 三、粒子发光精灵：预渲染径向渐变贴图（避免每帧 shadowBlur，
+   *     shadowBlur 是 Canvas 2D 头号性能杀手，精灵方案快一个量级）
+   * ========================================================== */
+  const PALETTE = [
+    '167, 139, 250',  // 紫罗兰
+    '129, 140, 248',  // 靛蓝
+    '103, 232, 249',  // 青蓝
+    '196, 181, 253',  // 浅紫
+    '147, 197, 253',  // 天蓝
+  ];
+
+  function makeGlowSprite(color) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const g = c.getContext('2d');
+    const grad = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    grad.addColorStop(0.00, `rgba(255, 255, 255, 0.95)`);   // 白炽核心
+    grad.addColorStop(0.18, `rgba(${color}, 0.85)`);        // 主色
+    grad.addColorStop(0.45, `rgba(${color}, 0.28)`);        // 光晕
+    grad.addColorStop(1.00, `rgba(${color}, 0)`);           // 消散
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 32, 32);
+    return c;
+  }
+  const sprites = PALETTE.map(makeGlowSprite);
+
+  /* ==========================================================
+   * 四、粒子场：固定总数（性能上限），每个粒子常驻一个对象，零 GC
+   * ========================================================== */
+  const MAX_PARTICLES = 1100;           // 粒子总数上限
+  let particles = [];                   // resize 时按面积重建
+
+  /** 平滑阶梯函数：e0~e1 之间从 0 平滑过渡到 1 */
+  function smoothstep(e0, e1, x) {
+    const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
+    return t * t * (3 - 2 * t);
+  }
+
+  function buildParticles() {
+    // 粒子更小更精致后适当提高数量密度，并钳制在上限内
+    const count = Math.min(MAX_PARTICLES, Math.round((W * H) / 1200));
+    particles = [];
+
+    /* ===== 分布算法：中央"空洞" + 边缘密集（拒绝采样） =====
+     * 1. 定义一个中央椭圆抑制区：rx = 24% 屏宽（即中央约 48% 宽度）、
+     *    ry = 55% 屏高，归一化椭圆距离 dn = hypot(dx/rx, dy/ry)；
+     * 2. 权重函数 w：深洞内仅 0.05（几乎无粒子），
+     *    dn 0.5→1.1 之间用 smoothstep 平滑爬升，边缘达到 1（全密度）；
+     * 3. 拒绝采样：均匀撒点，以概率 w 接受 → 中心空洞、四周密集，
+     *    且过渡带柔和，不会出现生硬的密度断层。 */
+    const cx = W / 2;
+    const cy = H / 2;
+    const VOID_RX = W * 0.24;
+    const VOID_RY = H * 0.55;
+
+    const voidWeight = (x, y) => {
+      const dn = Math.hypot((x - cx) / VOID_RX, (y - cy) / VOID_RY);
+      return 0.05 + 0.95 * smoothstep(0.5, 1.1, dn);
+    };
+
+    for (let i = 0; i < count; i++) {
+      let hx, hy;
+      do {
+        hx = Math.random() * W;
+        hy = Math.random() * H;
+      } while (Math.random() > voidWeight(hx, hy));
+
+      // 每颗粒子一个专属"环绕偏移"：被吸引时不会挤成一个点，
+      // 而是绕鼠标缓慢旋转，形成流动的粒子团
+      const offR = Math.sqrt(Math.random()) * 48;        // 偏移半径（圆盘均匀分布）
+      const offA = Math.random() * Math.PI * 2;          // 初始偏移角
+      particles.push({
+        hx, hy,                                          // home：原始位置
+        x: hx, y: hy,                                    // 当前位置
+        vx: 0, vy: 0,                                    // 速度（惯性）
+        // 尺寸：0.5~2px，幂函数偏置让大多数粒子更细微（微尘/星光感）
+        size: 0.5 + Math.pow(Math.random(), 1.35) * 1.5,
+        baseA: Math.random() * 0.4 + 0.32,               // 基础透明度
+        sprite: sprites[(Math.random() * PALETTE.length) | 0],
+        offR, offA,
+        rot: (Math.random() - 0.5) * 1.7,                // 偏移旋转角速度
+        follow: 1.4 + Math.random() * 1.4,               // 跟随刚性（个体差异）
+        driftA: Math.random() * Math.PI * 2,             // 静止漂浮相位
+        driftS: 0.25 + Math.random() * 0.5,              // 漂浮速度
+        driftR: 6 + Math.random() * 9,                   // 漂浮幅度
+      });
+    }
+  }
+
+  /* ==========================================================
+   * 五、交互状态：鼠标位置（平滑跟随）/ 移动能量（决定吸引强度）
+   * ========================================================== */
+  const mouse = {
+    x: -9999, y: -9999,    // 原始坐标
+    sx: -9999, sy: -9999,  // 平滑后的坐标（吸引子本身带一点延迟，更有流动感）
+    px: 0, py: 0,          // 上一帧坐标（算速度用）
+    has: false,            // 鼠标是否进入过页面
+    energy: 0,             // 移动能量 0~1：动起来 → 吸引；停手 → 散开
+  };
+
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    if (!mouse.has) {
+      mouse.sx = mouse.x; mouse.sy = mouse.y;
+      mouse.px = mouse.x; mouse.py = mouse.y;
+      mouse.has = true;
+    }
+  }, { passive: true });
+
+  // 移动端：触摸同样驱动交互
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    mouse.x = t.clientX;
+    mouse.y = t.clientY;
+    if (!mouse.has) {
+      mouse.sx = mouse.x; mouse.sy = mouse.y;
+      mouse.px = mouse.x; mouse.py = mouse.y;
+      mouse.has = true;
+    }
+  }, { passive: true });
+
+  // 鼠标离开页面 → 视为停止移动，粒子自然散开
+  window.addEventListener('mouseout', (e) => {
+    if (!e.relatedTarget) mouse.has = false;
+  });
+
+  /* ==========================================================
+   * 六、逐帧更新：能量衰减 / 吸引子平滑 / 粒子运动
+   * ========================================================== */
+  function update(dt, now) {
+    /* 6.1 移动能量：动得越快能量越高；停手后约 0.9s 衰减一半 */
+    const mvx = (mouse.x - mouse.px) / Math.max(dt, 0.001);
+    const mvy = (mouse.y - mouse.py) / Math.max(dt, 0.001);
+    mouse.px = mouse.x;
+    mouse.py = mouse.y;
+    if (mouse.has) {
+      const speed = Math.hypot(mvx, mvy);
+      mouse.energy = Math.min(1, mouse.energy + speed * dt * 0.012);
+    }
+    // 半衰期 1.3s：停手后粒子缓慢散开，而不是立刻弹回
+    mouse.energy *= Math.pow(0.5, dt / 1.3);
+
+    /* 6.2 吸引子平滑跟随：真实鼠标位置 → 弹性吸引子（带延迟的"幽灵光标"） */
+    if (mouse.has) {
+      const ease = 1 - Math.pow(0.0008, dt);             // 帧率无关的平滑
+      mouse.sx += (mouse.x - mouse.sx) * ease;
+      mouse.sy += (mouse.y - mouse.sy) * ease;
+    }
+
+    /* 6.3 吸引强度 act：能量平滑映射（小幅移动也能快速响应） */
+    const act = mouse.has
+      ? Math.min(1, mouse.energy * 2.6)
+      : 0;
+
+    /* 6.4 粒子运动：速度匹配模型（无条件稳定，天然带惯性）
+     *     - 受吸引：目标点 = 鼠标 + 旋转偏移，远处跟得松（慢），近处跟得紧（快）
+     *     - 未吸引：目标点 = home 周围的漂浮点，缓慢回归 */
+    const R = 210;                                       // 吸引半径
+    const t = now * 0.001;
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      // home 周围的漂浮目标点（sin/cos 双频合成，自然游弋）
+      const da = p.driftA + t * p.driftS;
+      const dx0 = p.hx + Math.cos(da * 1.3) * p.driftR;
+      const dy0 = p.hy + Math.sin(da) * p.driftR;
+
+      // 与吸引子的距离 → 决定是否被吸引、以及吸引的松紧
+      let tx = dx0, ty = dy0, follow = 1.5, pull = 0;
+
+      if (act > 0.02) {
+        const ddx = mouse.sx - p.x;
+        const ddy = mouse.sy - p.y;
+        const d = Math.hypot(ddx, ddy);
+
+        if (d < R) {
+          pull = (1 - d / R);                           // 0(边缘) → 1(中心)
+          pull *= pull;                                 // 平滑：越靠越急
+          // 环绕偏移随时间旋转 → 粒子团不断流动；
+          // pull 越大偏移收得越紧（0.62）→ 靠近光标处聚成明显的密度高峰
+          const oa = p.offA + t * p.rot;
+          tx = mouse.sx + Math.cos(oa) * p.offR * (1 - pull * 0.62);
+          ty = mouse.sy + Math.sin(oa) * p.offR * (1 - pull * 0.62);
+          /* ===== 拖拽物理：速度匹配 + 低自适应速率 =====
+           * - 跟随刚性随 pull 增到最高 ~10.9/s：越近跟得越紧、速度越快
+           * - 速度自适应 blend 压低（每帧仅 ~3%）→ 速度变化有明显的
+           *   延迟与惯性：粒子群像被气流牵引，弹性追随、略微过冲再回摆 */
+          follow = 1.0 + pull * 9.5 * p.follow;
+          follow *= act;                                // 停手后 act→0，自然切回回家模式
+        }
+      }
+
+      /* 速度匹配：期望速度 = (目标 - 位置) × 跟随刚性
+         实际速度向期望速度做帧率无关的平滑过渡 → 惯性/流动/拖拽感 */
+      const dvx = (tx - p.x) * follow;
+      const dvy = (ty - p.y) * follow;
+      const blend = 1 - Math.pow(0.12, dt);              // 低自适应 = 强拖拽
+      p.vx += (dvx - p.vx) * blend;
+      p.vy += (dvy - p.vy) * blend;
+
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+
+      // 记录当前 pull 供绘制阶段调亮/放大
+      p.pull = pull;
+    }
+  }
+
+  /* ==========================================================
+   * 七、绘制：静态星空 → 粒子（发光精灵 + 高速拖影 + 靠近增亮）
+   * ========================================================== */
+  function render(now) {
+    // 画布透明清屏，深空渐变由 body 的 CSS 承担
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(starLayer, 0, 0);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      // 被吸引的粒子：微微放大、增亮，形成"聚拢成团"的视觉焦点
+      const pull = p.pull || 0;
+      const size = p.size * (1 + pull * 0.9);
+      const alpha = Math.min(1, p.baseA + pull * 0.55);
+      const s = size * 8;                                // 精灵绘制尺寸（含光晕）
+      const sp = p.sprite;
+
+      // 高速运动的粒子画一道拖影（上一位置的残影），增强"流线型"汇聚
+      const speed2 = p.vx * p.vx + p.vy * p.vy;
+      if (speed2 > 3600) {                               // > 60px/s
+        const k = 0.028;
+        ctx.globalAlpha = alpha * 0.35;
+        ctx.drawImage(sp, p.x - p.vx * k - s / 2, p.y - p.vy * k - s / 2, s, s);
+      }
+
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(sp, p.x - s / 2, p.y - s / 2, s, s);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* ==========================================================
+   * 八、主循环：requestAnimationFrame + dt 钳制（切后台回来不跳帧）
+   * ========================================================== */
+  let last = performance.now();
+
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.033);     // 钳到 ~33ms，防大步长
+    last = now;
+    update(dt, now);
+    render(now);
+    requestAnimationFrame(frame);
+  }
+
+  /* ==========================================================
+   * 九、初始化：尺寸监听 + 首帧启动
+   * ========================================================== */
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);              // 之后一律使用逻辑像素绘制
+    buildStars();
+    buildParticles();                                    // 粒子场随尺寸重建
+  }
+
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);               // 防抖，避免拖拽窗口时频繁重建
+  });
+
+  resize();
+
+  // 尊重系统"减少动态效果"偏好：仅渲染一帧静态画面
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    render(performance.now());
+  } else {
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>

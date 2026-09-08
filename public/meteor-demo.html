@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>交互式流星背景动效 · Interactive Meteor Background</title>
+<style>
+  /* ========== 页面基础样式 ========== */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    /* 深空渐变背景：深蓝 → 紫黑（对角线方向过渡更自然） */
+    background:
+      radial-gradient(ellipse 120% 90% at 70% 10%, rgba(76, 63, 158, 0.28) 0%, transparent 55%),
+      radial-gradient(ellipse 100% 80% at 20% 90%, rgba(30, 58, 138, 0.30) 0%, transparent 60%),
+      linear-gradient(135deg, #060a1c 0%, #0a0d26 45%, #120b24 100%);
+    background-color: #07091a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Microsoft YaHei", sans-serif;
+  }
+
+  /* 流星画布：固定铺满全屏，不拦截鼠标事件（交互监听在 window 上） */
+  #scene {
+    position: fixed;
+    inset: 0;
+    display: block;
+  }
+
+  /* 顶部提示文案（纯展示用，不阻挡交互） */
+  .tip {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgba(226, 232, 255, 0.82);
+    pointer-events: none;
+    user-select: none;
+    text-shadow: 0 0 24px rgba(129, 140, 248, 0.45);
+  }
+  .tip h1 {
+    font-size: clamp(22px, 4vw, 40px);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+  }
+  .tip p {
+    margin-top: 14px;
+    font-size: 13px;
+    letter-spacing: 0.28em;
+    color: rgba(167, 180, 255, 0.55);
+  }
+</style>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="tip">
+  <h1>交互式流星背景</h1>
+  <p>移动鼠标 · 流星随你而生</p>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  /* ==========================================================
+   * 一、基础设置：画布 / 尺寸 / DPR 适配
+   * ========================================================== */
+  const canvas = document.getElementById('scene');
+  const ctx = canvas.getContext('2d');
+
+  let W = 0, H = 0;   // 逻辑尺寸（CSS 像素）
+  let DPR = 1;        // 设备像素比（上限 2，兼顾清晰度与性能）
+
+  /* ==========================================================
+   * 二、静态星空：离屏画布只渲染一次，之后每帧 drawImage，开销极小
+   * ========================================================== */
+  let starLayer = null;      // 静态星星离屏画布
+  let twinkles = [];         // 少量"闪烁星"，每帧单独绘制制造呼吸感
+
+  function buildStars() {
+    starLayer = document.createElement('canvas');
+    starLayer.width = W;
+    starLayer.height = H;
+    const s = starLayer.getContext('2d');
+
+    // 星星密度与屏幕面积挂钩，避免大屏星星过稀
+    const count = Math.round((W * H) / 8500);
+    for (let i = 0; i < count; i++) {
+      const x = Math.random() * W;
+      const y = Math.random() * H;
+      const r = Math.random() * 1.1 + 0.2;
+      const a = Math.random() * 0.45 + 0.06;          // 微弱亮度
+      s.fillStyle = `rgba(205, 216, 255, ${a})`;
+      s.beginPath();
+      s.arc(x, y, r, 0, Math.PI * 2);
+      s.fill();
+    }
+
+    // 挑一小批星星做 sin 闪烁
+    twinkles = Array.from({ length: 34 }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.2 + 0.5,
+      base: Math.random() * 0.35 + 0.25,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.6 + Math.random() * 1.6,
+    }));
+  }
+
+  /* ==========================================================
+   * 三、流星头部光晕精灵：预渲染一张径向渐变贴图，避免每帧建渐变
+   * ========================================================== */
+  const glowSprite = document.createElement('canvas');
+  glowSprite.width = glowSprite.height = 64;
+  (() => {
+    const g = glowSprite.getContext('2d');
+    const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0.00, 'rgba(255, 255, 255, 0.95)');
+    grad.addColorStop(0.22, 'rgba(200, 208, 255, 0.50)');
+    grad.addColorStop(0.55, 'rgba(150, 160, 255, 0.16)');
+    grad.addColorStop(1.00, 'rgba(140, 150, 255, 0)');
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 64, 64);
+  })();
+
+  /* ==========================================================
+   * 四、流星调色板：冷白 / 蓝紫 为主
+   * ========================================================== */
+  const PALETTE = [
+    '205, 216, 255',  // 冷白
+    '205, 216, 255',
+    '167, 160, 255',  // 浅紫
+    '129, 140, 248',  // 靛蓝紫
+    '147, 197, 253',  // 天蓝
+  ];
+
+  /* ==========================================================
+   * 五、流星对象池：预分配、复用，避免频繁 GC 抖动帧率
+   * ========================================================== */
+  const POOL_SIZE = 64;                 // 池上限 = 同屏最大流星数
+  const pool = [];
+  for (let i = 0; i < POOL_SIZE; i++) {
+    pool.push({
+      active: false,
+      x: 0, y: 0,        // 头部位置
+      angle: 0,          // 当前飞行角（弧度，0 = 向右，π = 向左）
+      speed: 0,          // 速度（px/s）
+      curve: 0,          // 曲率（角速度，形成略带弧度的轨迹）
+      len: 0,            // 拖尾长度
+      width: 0,          // 线宽
+      color: PALETTE[0],
+      life: 0,           // 已存活时间
+      ttl: 0,            // 总寿命
+    });
+  }
+
+  const acquire = () => {
+    for (let i = 0; i < POOL_SIZE; i++) {
+      if (!pool[i].active) return pool[i];
+    }
+    return null; // 池满则本次不生成
+  };
+
+  /* ==========================================================
+   * 六、交互状态：鼠标位置 / 移动能量 / 风（流动偏移感）
+   * ========================================================== */
+  const mouse = {
+    nx: 0,             // 归一化横坐标 -1(左) ~ 1(右)
+    ny: 0,             // 归一化纵坐标 -1(上) ~ 1(下)
+    px: 0, py: 0,      // 上一帧像素坐标（用于计算速度）
+    has: false,        // 是否已产生过鼠标事件
+    energy: 0,         // 移动活跃度 0~1：决定流星数量
+  };
+
+  const wind = { x: 0, y: 0 };   // 风：由鼠标速度驱动，让轨迹产生流动偏移
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mouse.has) { mouse.px = e.clientX; mouse.py = e.clientY; mouse.has = true; }
+    mouse.nx = (e.clientX / W) * 2 - 1;
+    mouse.ny = (e.clientY / H) * 2 - 1;
+    mouse.px = e.clientX;
+    mouse.py = e.clientY;
+  }, { passive: true });
+
+  // 移动端：触摸同样驱动交互
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    if (!mouse.has) { mouse.px = t.clientX; mouse.py = t.clientY; mouse.has = true; }
+    mouse.nx = (t.clientX / W) * 2 - 1;
+    mouse.ny = (t.clientY / H) * 2 - 1;
+    mouse.px = t.clientX;
+    mouse.py = t.clientY;
+  }, { passive: true });
+
+  /* ==========================================================
+   * 七、流星生成：方向、来向跟随鼠标；数量跟随鼠标活跃度
+   * ========================================================== */
+  let spawnTimer = 0;
+
+  function spawnMeteor() {
+    const m = acquire();
+    if (!m) return;
+
+    /* 7.1 决定来向：鼠标在左 → 流星更倾向从右侧出现（反之亦然） */
+    let side;
+    if (mouse.nx < -0.18) {
+      side = Math.random() < 0.78 ? 'right' : 'top';
+    } else if (mouse.nx > 0.18) {
+      side = Math.random() < 0.78 ? 'left' : 'top';
+    } else {
+      // 鼠标居中时两侧随机，保持画面此起彼伏
+      side = Math.random() < 0.5 ? 'left' : 'right';
+    }
+
+    const M = 80; // 屏幕外边距
+
+    /* 7.2 初始化头部位置（屏幕外） */
+    if (side === 'right') {
+      m.x = W + M;
+      m.y = Math.random() * (H + M * 2) - M;
+    } else if (side === 'left') {
+      m.x = -M;
+      m.y = Math.random() * (H + M * 2) - M;
+    } else {
+      m.x = Math.random() * (W + M * 2) - M;
+      m.y = -M;
+    }
+
+    /* 7.3 飞行角度：
+     * 从右侧生成 → 基准向左飞（π）；从左侧 → 向右（0）；从顶部 → 向下（π/2）
+     * 叠加随机散射 + 鼠标纵坐标带来的轻微俯仰，保证"非单一方向" */
+    let base;
+    if (side === 'right')      base = Math.PI;
+    else if (side === 'left')  base = 0;
+    else                       base = Math.PI / 2;
+    const pitch = mouse.ny * 0.28;                       // 鼠标在上 → 轨迹略向上仰
+    m.angle = base + (Math.random() - 0.5) * 0.85 + pitch * (side === 'top' ? 0.5 : 1);
+
+    /* 7.4 其余属性：速度/弧度/拖尾/颜色 各自随机，形成层次 */
+    m.speed = 260 + Math.random() * 620;                 // 快慢不一
+    m.curve = (Math.random() - 0.5) * 0.55;              // ±0.28 rad/s 的缓弧
+    m.len   = 150 + Math.random() * 280;                 // 长短拖尾
+    m.width = Math.random() * 1.4 + 0.8;
+    m.color = PALETTE[(Math.random() * PALETTE.length) | 0];
+    m.life  = 0;
+    m.ttl   = 3.2 + Math.random() * 2.6;                 // 寿命兜底，防止永生对象占用池
+    m.active = true;
+  }
+
+  /* ==========================================================
+   * 八、逐帧更新：风场 / 生成节奏 / 流星运动
+   * ========================================================== */
+  function update(dt, now) {
+    /* 8.1 风 = 鼠标瞬时速度的低通滤波（限幅），驱动"流动的偏移感" */
+    const kv = mouse.has ? 0.16 : 0;                     // 风的强度系数
+    const mvx = (mouse.px - (update.lx ?? mouse.px)) / Math.max(dt, 0.001);
+    const mvy = (mouse.py - (update.ly ?? mouse.py)) / Math.max(dt, 0.001);
+    update.lx = mouse.px;
+    update.ly = mouse.py;
+    const tX = Math.max(-260, Math.min(260, mvx * kv));
+    const tY = Math.max(-260, Math.min(260, mvy * kv));
+    const ease = 1 - Math.pow(0.0025, dt);               // 帧率无关的平滑系数
+    wind.x += (tX - wind.x) * ease;
+    wind.y += (tY - wind.y) * ease;
+
+    /* 8.2 活跃度：鼠标动得越快 energy 越高，停手后约 1.6s 衰减一半 */
+    const moveDist = Math.hypot(mvx, mvy) * dt;
+    mouse.energy = Math.min(1, mouse.energy + moveDist * 0.0022);
+    mouse.energy *= Math.pow(0.5, dt / 1.6);
+
+    /* 8.3 生成节奏：目标数量 = 基础 7 + 活跃度加成（最多 ~21 颗同屏） */
+    const target = 7 + Math.round(mouse.energy * 14);
+    spawnTimer -= dt;
+    if (spawnTimer <= 0) {
+      let active = 0;
+      for (let i = 0; i < POOL_SIZE; i++) if (pool[i].active) active++;
+      if (active < target) spawnMeteor();
+      // 活跃时偶发双发，制造"此起彼伏"
+      if (mouse.energy > 0.45 && Math.random() < 0.35) spawnMeteor();
+      spawnTimer = 0.10 + Math.random() * 0.28;
+    }
+
+    /* 8.4 流星运动：曲线飞行 + 风场漂移，出屏或超时后归还对象池 */
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const m = pool[i];
+      if (!m.active) continue;
+
+      m.life += dt;
+      m.angle += m.curve * dt;                           // 缓慢转向 → 弧线轨迹
+
+      m.x += (Math.cos(m.angle) * m.speed + wind.x) * dt;
+      m.y += (Math.sin(m.angle) * m.speed + wind.y) * dt;
+
+      const M = 140;                                     // 出屏判定边距（含拖尾长度）
+      if (m.life > m.ttl ||
+          m.x < -M || m.x > W + M ||
+          m.y < -M || m.y > H + M) {
+        m.active = false;
+      }
+    }
+  }
+
+  /* ==========================================================
+   * 九、绘制：静态星空 → 闪烁星 → 流星（渐变拖尾 + 头部光晕）
+   * ========================================================== */
+  function render(now) {
+    // 画布透明清屏，深空渐变由 body 的 CSS 承担
+    ctx.clearRect(0, 0, W, H);
+
+    /* 9.1 静态星空（离屏一次成型） */
+    ctx.drawImage(starLayer, 0, 0);
+
+    /* 9.2 闪烁星：sin 波动透明度 */
+    for (let i = 0; i < twinkles.length; i++) {
+      const t = twinkles[i];
+      const a = t.base + Math.sin(now * 0.001 * t.speed + t.phase) * 0.22;
+      if (a <= 0.03) continue;
+      ctx.fillStyle = `rgba(215, 224, 255, ${a})`;
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, t.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    /* 9.3 流星 */
+    ctx.lineCap = 'round';
+    for (let i = 0; i < POOL_SIZE; i++) {
+      const m = pool[i];
+      if (!m.active) continue;
+
+      // 生命周期透明度：0.3s 淡入，结束前 0.5s 淡出
+      const fadeIn  = Math.min(1, m.life / 0.3);
+      const fadeOut = Math.min(1, (m.ttl - m.life) / 0.5);
+      const alpha = fadeIn * fadeOut;
+      if (alpha <= 0.01) continue;
+
+      const dx = Math.cos(m.angle), dy = Math.sin(m.angle);
+      const nx = -dy, ny = dx;                           // 速度法线（用于弧形拖尾）
+
+      /* 弧形拖尾：把尾端沿法线偏移一小段（曲率 × 长度的近似），
+         再让尾端额外受一点反向风，产生"拖尾被气流拉开"的感觉 */
+      const bend  = m.curve * m.len * 0.9;
+      const tailX = m.x - dx * m.len + nx * bend - wind.x * 0.10;
+      const tailY = m.y - dy * m.len + ny * bend - wind.y * 0.10;
+
+      /* 渐变描边：头部亮 → 尾部透明 */
+      const grad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+      grad.addColorStop(0.00, `rgba(${m.color}, ${0.95 * alpha})`);
+      grad.addColorStop(0.25, `rgba(${m.color}, ${0.42 * alpha})`);
+      grad.addColorStop(0.65, `rgba(${m.color}, ${0.12 * alpha})`);
+      grad.addColorStop(1.00, `rgba(${m.color}, 0)`);
+
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = m.width;
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      // 二次贝塞尔让拖尾呈现柔和的弧度
+      ctx.quadraticCurveTo(
+        m.x - dx * m.len * 0.5 + nx * bend * 0.6,
+        m.y - dy * m.len * 0.5 + ny * bend * 0.6,
+        tailX, tailY
+      );
+      ctx.stroke();
+
+      /* 头部光晕：预渲染精灵 + 轻微呼吸缩放 */
+      const gs = m.width * 9;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(glowSprite, m.x - gs / 2, m.y - gs / 2, gs, gs);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  /* ==========================================================
+   * 十、主循环：requestAnimationFrame + dt 钳制（切后台回来不跳帧）
+   * ========================================================== */
+  let last = performance.now();
+
+  function frame(now) {
+    const dt = Math.min((now - last) / 1000, 0.033);     // 钳到 ~33ms，防大步长
+    last = now;
+    update(dt, now);
+    render(now);
+    requestAnimationFrame(frame);
+  }
+
+  /* ==========================================================
+   * 十一、初始化：尺寸监听 + 首帧启动
+   * ========================================================== */
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);              // 之后一律使用逻辑像素绘制
+    buildStars();                                        // 星空随尺寸重建
+  }
+
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150);               // 防抖，避免拖拽窗口时频繁重建
+  });
+
+  resize();
+
+  // 尊重系统"减少动态效果"偏好：仅渲染一帧静态星空
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    render(performance.now());
+  } else {
+    requestAnimationFrame(frame);
+  }
+})();
+</script>
+</body>
+</html>
