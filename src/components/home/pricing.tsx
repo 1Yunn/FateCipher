@@ -235,7 +235,7 @@ export function EntryHub() {
         </motion.p>
         <motion.h2
           variants={item}
-          className="mt-5 whitespace-nowrap font-serif text-[clamp(1.5rem,5vw,3.25rem)] leading-[1.15] font-semibold tracking-tight sm:text-5xl lg:text-6xl"
+          className="mt-5 font-normal whitespace-nowrap font-serif text-[clamp(1.5rem,5vw,3.25rem)] leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl"
         >
           从一份命盘开始
         </motion.h2>

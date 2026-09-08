@@ -38,7 +38,7 @@ const FEATURES: Feature[] = [
     icon: Coins,
     title: "八字测算",
     desc: "输入出生时辰，AI 老师傅为你拆解性格、事业与姻缘的底层盘面。",
-    detail: "28 岁用户排盘后发现事业宫藏「偏财」，结合流年判断转 AI 赛道，时机正好。",
+    detail: "28 岁用户排盘后发现事业宫藏偏财，结合流年判断转 AI 赛道时机正好。",
     duration: "约 3 分钟",
     cta: "开始排盘",
     live: true,
@@ -49,7 +49,7 @@ const FEATURES: Feature[] = [
     icon: Layers,
     title: "塔罗占卜",
     desc: "洗牌、切牌、翻牌，把此刻的困惑交给 78 张牌面的隐喻。",
-    detail: "想一个问题，抽三张牌，AI 为你解读牌面隐喻。",
+    detail: "想一个问题抽三张牌，AI 结合牌阵脉络给出当下困惑的方向指引。",
     duration: "约 2 分钟",
     cta: "开始抽牌",
     live: true,
@@ -60,7 +60,7 @@ const FEATURES: Feature[] = [
     icon: Orbit,
     title: "紫微斗数",
     desc: "十二宫安星，命、财、官、夫逐宫推演，看懂人生大格局。",
-    detail: "安星排斗、十四主星落宫、四化飞星，看命宫主星与十二宫格局。",
+    detail: "安星排斗、十四主星落宫、四化飞星，看命宫主星与格局层次。",
     duration: "约 3 分钟",
     cta: "开始排盘",
     live: true,
@@ -71,7 +71,7 @@ const FEATURES: Feature[] = [
     icon: MessagesSquare,
     title: "AI 问答",
     desc: "带着测算结果继续追问，让 AI 把天机翻译成人话。",
-    detail: "用户测算后追问「明年适合跳槽吗」，AI 结合盘面给出时间窗口建议。",
+    detail: "用户测算后追问明年跳槽时机，AI 结合盘面给出窗口建议。",
     duration: "随时开问",
     cta: "去提问",
     live: true,
@@ -140,7 +140,7 @@ function AccordionCard({
       {/* 活动态展开态：横向内容（图标 + 描述 + 案例 + CTA） */}
       <div
         className={cn(
-          "absolute inset-0 flex h-full flex-col justify-center px-6 transition-opacity duration-300",
+          "absolute inset-0 flex h-full flex-col justify-between px-6 pt-6 pb-5 transition-opacity duration-300",
           isActive ? "opacity-100" : "opacity-0",
         )}
       >

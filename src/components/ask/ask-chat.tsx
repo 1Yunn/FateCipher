@@ -1,11 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { CornerDownLeft, Crown, SendHorizonal, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, CornerDownLeft, Crown, SendHorizonal, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { buildReply, loadAskContext, type AskContext } from "@/lib/ask-engine";
+import { buildReply, generateThinkingText, loadAskContext, type AskContext } from "@/lib/ask-engine";
 import { cn } from "@/lib/utils";
 
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -30,6 +30,9 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   streaming?: boolean;
+  thinking?: string;        // 思考过程文字
+  thinkingStreamed?: boolean; // 思考是否已完整展示（折叠触发）
+  thinkingMs?: number;      // 思考耗时（毫秒）
 }
 
 interface Quota {
@@ -94,11 +97,19 @@ export function AskChat() {
     }
   };
 
-  const streamReply = (full: string) => {
+  const streamReply = (full: string, thinkMs?: number, thinkText?: string) => {
     const id = `${Date.now()}-a`;
     setMessages((current) => [
       ...current,
-      { id, role: "assistant", content: "", streaming: true },
+      {
+        id,
+        role: "assistant",
+        content: "",
+        streaming: true,
+        thinking: thinkText,
+        thinkingMs,
+        thinkingStreamed: thinkText ? false : undefined,
+      },
     ]);
     setPhase("streaming");
     let cursor = 0;
@@ -107,7 +118,14 @@ export function AskChat() {
       if (cursor >= full.length) {
         setMessages((current) =>
           current.map((msg) =>
-            msg.id === id ? { ...msg, content: full, streaming: false } : msg
+            msg.id === id
+              ? {
+                  ...msg,
+                  content: full,
+                  streaming: false,
+                  thinkingStreamed: true,
+                }
+              : msg
           )
         );
         if (streamTimer.current) {
@@ -118,15 +136,50 @@ export function AskChat() {
       } else {
         const next = full.slice(0, cursor);
         setMessages((current) =>
-          current.map((msg) => (msg.id === id ? { ...msg, content: next } : msg))
+          current.map((msg) =>
+            msg.id === id
+              ? { ...msg, content: next, thinkingStreamed: true }
+              : msg
+          )
         );
       }
     }, 22);
   };
 
+  /** 本地思考流式（逐字打出思考文字） */
+  const streamThinking = (
+    id: string,
+    thinkingText: string,
+    onDone: () => void,
+  ) => {
+    let cursor = 0;
+    const start = performance.now();
+    const tick = () => {
+      cursor += 2;
+      if (cursor >= thinkingText.length) {
+        const elapsed = Math.round(performance.now() - start);
+        setMessages((current) =>
+          current.map((msg) =>
+            msg.id === id
+              ? { ...msg, thinkingMs: elapsed, thinkingStreamed: true }
+              : msg
+          ),
+        );
+        onDone();
+      } else {
+        setMessages((current) =>
+          current.map((msg) =>
+            msg.id === id ? { ...msg, thinking: thinkingText.slice(0, cursor) } : msg
+          ),
+        );
+        thinkTimer.current = window.setTimeout(tick, 28);
+      }
+    };
+    tick();
+  };
+
   /** 调用 /api/ask 流式获取 DeepSeek 回复，失败时降级到本地规则 */
-  const fetchAndStream = async (text: string) => {
-    const id = `${Date.now()}-a`;
+  const fetchAndStream = async (text: string, assistantId: string, thinkMs?: number) => {
     try {
       const resp = await fetch("/api/ask", {
         method: "POST",
@@ -139,10 +192,6 @@ export function AskChat() {
       }
 
       setPhase("streaming");
-      setMessages((current) => [
-        ...current,
-        { id, role: "assistant", content: "", streaming: true },
-      ]);
 
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
@@ -171,7 +220,9 @@ export function AskChat() {
                 acc += delta;
                 setMessages((current) =>
                   current.map((msg) =>
-                    msg.id === id ? { ...msg, content: acc } : msg,
+                    msg.id === assistantId
+                      ? { ...msg, content: acc, thinkingStreamed: true }
+                      : msg,
                   ),
                 );
               }
@@ -182,20 +233,61 @@ export function AskChat() {
         }
       }
 
+      // 把完整 acc 拆成 thinking（前 6 段）和 content（行动建议 + 温馨提示）
+      const allSections = parseStructured(acc);
+      const thinkingMd = allSections.slice(0, 6)
+        .map((s) => `## ${s.title}\n${s.body}`)
+        .join("\n\n");
+      const contentParts = allSections.slice(6) // 行动建议 + 温馨提示
+        .map((s) => s.body)
+        .filter(Boolean)
+        .join("\n\n");
+
       setMessages((current) =>
         current.map((msg) =>
-          msg.id === id ? { ...msg, streaming: false } : msg,
+          msg.id === assistantId
+            ? { ...msg, thinking: thinkingMd, content: contentParts, streaming: false, thinkingStreamed: true, thinkingMs: 0 }
+            : msg,
         ),
       );
       setPhase("idle");
     } catch {
-      // 降级到本地规则引擎
+      // 降级到本地规则引擎（思考已完成，跳过思考阶段直接输出）
       const reply = buildReply(text, ctx);
-      setMessages((current) => [
-        ...current,
-        { id: `${Date.now()}-a-fallback`, role: "assistant", content: "" },
-      ]);
-      streamReply(reply);
+      // 用同一个 id 更新已有消息 —— thinking 已完成，content 开始流式
+      setMessages((current) =>
+        current.map((msg) =>
+          msg.id === assistantId
+            ? { ...msg, thinking: reply.thinking, thinkingStreamed: true, thinkingMs: 1200 }
+            : msg
+        ),
+      );
+      setPhase("streaming");
+      let cursor = 0;
+      streamTimer.current = window.setInterval(() => {
+        cursor += 2;
+        if (cursor >= reply.content.length) {
+          setMessages((current) =>
+            current.map((msg) =>
+              msg.id === assistantId
+                ? { ...msg, content: reply.content, streaming: false }
+                : msg
+            )
+          );
+          if (streamTimer.current) {
+            window.clearInterval(streamTimer.current);
+            streamTimer.current = null;
+          }
+          setPhase("idle");
+        } else {
+          const next = reply.content.slice(0, cursor);
+          setMessages((current) =>
+            current.map((msg) =>
+              msg.id === assistantId ? { ...msg, content: next } : msg
+            )
+          );
+        }
+      }, 22);
     }
   };
 
@@ -214,15 +306,28 @@ export function AskChat() {
     ]);
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
-    setPhase("thinking");
 
-    // 短暂思考态后开始流式输出
-    thinkTimer.current = window.setTimeout(
-      () => {
-        void fetchAndStream(text);
+    const assistantId = `${Date.now()}-a`;
+    const thinkingText = generateThinkingText(text, ctx);
+
+    // 先创建消息占位（思考进行中）
+    setPhase("thinking");
+    setMessages((current) => [
+      ...current,
+      {
+        id: assistantId,
+        role: "assistant",
+        content: "",
+        thinking: "",
+        thinkingStreamed: false,
       },
-      600 + Math.random() * 400,
-    );
+    ]);
+
+    // 流式展示思考过程
+    streamThinking(assistantId, thinkingText, () => {
+      // 思考完毕后开始流式答案
+      void fetchAndStream(text, assistantId);
+    });
   };
 
   const autoResize = (el: HTMLTextAreaElement) => {
@@ -267,54 +372,9 @@ export function AskChat() {
               </p>
             </motion.div>
           ) : (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, ease: EASE_OUT }}
-              className="flex gap-3"
-            >
-              <AssistantAvatar />
-              <div className="glass max-w-[85%] rounded-2xl rounded-bl-sm px-4 py-3">
-                <div className="space-y-2.5 text-[15px] leading-relaxed">
-                  {msg.content.split("\n\n").map((para, index) => (
-                    <p key={index}>{para}</p>
-                  ))}
-                  {msg.streaming ? (
-                    <span
-                      aria-hidden
-                      className="ml-0.5 inline-block h-4 w-[2px] animate-pulse rounded-full bg-gold-400 align-middle"
-                    />
-                  ) : null}
-                </div>
-              </div>
-            </motion.div>
+            <AssistantMessage key={msg.id} msg={msg} />
           )
         )}
-
-        {phase === "thinking" ? (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: EASE_OUT }}
-            className="flex gap-3"
-          >
-            <AssistantAvatar />
-            <div className="glass flex items-center gap-2.5 rounded-2xl rounded-bl-sm px-4 py-3 text-[13px] text-muted-foreground">
-              <Sparkles className="size-3.5 animate-pulse text-violet-400" aria-hidden />
-              老师傅推演中
-              <span className="flex gap-0.5" aria-hidden>
-                {[0, 1, 2].map((i) => (
-                  <span
-                    key={i}
-                    className="size-1 animate-bounce rounded-full bg-violet-400/70"
-                    style={{ animationDelay: `${i * 120}ms` }}
-                  />
-                ))}
-              </span>
-            </div>
-          </motion.div>
-        ) : null}
       </div>
 
       {/* 快捷提问（仅开场展示） */}
@@ -332,7 +392,7 @@ export function AskChat() {
                 key={suggestion}
                 type="button"
                 onClick={() => send(suggestion)}
-                className="rounded-full border border-border px-3.5 py-1.5 text-[13px] text-muted-foreground transition-all outline-none hover:border-gold-500/40 hover:text-gold-400 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                className="rounded-full border border-border px-3.5 py-1.5 text-[15px] text-muted-foreground transition-all outline-none hover:border-gold-500/40 hover:text-gold-400 focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 {suggestion}
               </button>
@@ -357,7 +417,7 @@ export function AskChat() {
       ) : null}
 
       {/* 输入区 */}
-      <div className="mt-5 flex items-end gap-2.5">
+      <div className="mt-5 flex items-center gap-2.5">
         <div className="relative flex-1">
           <textarea
             ref={textareaRef}
@@ -396,6 +456,204 @@ export function AskChat() {
         Enter 发送 · Shift + Enter 换行 · AI 生成内容仅供娱乐参考
       </p>
     </div>
+  );
+}
+
+/** 解析带 ## 标题标记的 markdown 文本为结构化 section */
+function parseStructured(content: string): Array<{ title: string; body: string }> {
+  const sections: Array<{ title: string; body: string }> = [];
+  // 按 "## " 分割，跳过空段
+  const parts = content.split(/\n##\s+/);
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (!part.trim()) continue;
+    // 第一段可能以 "## " 开头也可能不是
+    const lines = part.split("\n");
+    // 跳过首段的 "## " 标记（split 后第一段如果以 ## 开头，说明原文以 ## 开头）
+    if (i === 0 && part.startsWith("## ")) {
+      lines[0] = lines[0].slice(3);
+    }
+    const title = lines[0].trim();
+    const body = lines.slice(1).join("\n").trim();
+    if (title || body) {
+      sections.push({ title, body });
+    }
+  }
+  return sections;
+}
+
+/** 渲染正文：支持有序列表（1. xxx）、无序列表（• xxx 或 - xxx）、普通段落 */
+function renderBody(body: string) {
+  const lines = body.split("\n");
+  const items: React.ReactNode[] = [];
+  let listBuf: string[] = [];
+  let listType: "ordered" | "unordered" | null = null;
+  const flushList = () => {
+    if (listBuf.length === 0) return;
+    if (listType === "ordered") {
+      items.push(
+        <ol key={`ol-${items.length}`} className="ml-4 list-decimal space-y-0.5 text-[12px] leading-relaxed text-muted-foreground/80">
+          {listBuf.map((li, i) => <li key={i}>{li.replace(/^\d+\.\s*/, "")}</li>)}
+        </ol>,
+      );
+    } else {
+      items.push(
+        <ul key={`ul-${items.length}`} className="ml-4 list-disc space-y-0.5 text-[12px] leading-relaxed text-muted-foreground/80">
+          {listBuf.map((li, i) => <li key={i}>{li.replace(/^[•\-]\s*/, "")}</li>)}
+        </ul>,
+      );
+    }
+    listBuf = [];
+    listType = null;
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      flushList();
+      continue;
+    }
+    const orderedMatch = line.match(/^\d+\.\s+(.+)/);
+    const unorderedMatch = line.match(/^[•\-]\s+(.+)/);
+    if (orderedMatch) {
+      if (listType !== "ordered") flushList();
+      listType = "ordered";
+      listBuf.push(orderedMatch[1]);
+    } else if (unorderedMatch) {
+      if (listType !== "unordered") flushList();
+      listType = "unordered";
+      listBuf.push(unorderedMatch[1]);
+    } else {
+      flushList();
+      items.push(
+        <p key={`p-${items.length}`} className="text-[12.5px] leading-relaxed text-muted-foreground/80">
+          {line}
+        </p>,
+      );
+    }
+  }
+  flushList();
+  return items;
+}
+
+function AssistantMessage({ msg }: { msg: Message }) {
+  const [manualOpen, setManualOpen] = useState(false);
+  const forceOpen = msg.thinking && !msg.thinkingStreamed;
+  const expanded = forceOpen || manualOpen;
+  const collapsible = msg.thinking && msg.thinkingStreamed;
+  const thinkingLoading = msg.thinking !== undefined && !msg.thinkingStreamed;
+  const hasThinkingContent = msg.thinking && msg.thinking.length > 0;
+
+  // 思考块内容：如果有 ## 标记则结构化渲染
+  const thinkingSections = msg.thinking?.includes("## ")
+    ? parseStructured(msg.thinking)
+    : null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: EASE_OUT }}
+      className="flex gap-3"
+    >
+      <AssistantAvatar />
+      <div className="flex max-w-[88%] flex-col gap-2">
+        {/* 思考块 —— 结构化 6 段 */}
+        {hasThinkingContent ? (
+          <div className="overflow-hidden rounded-xl border border-violet-400/15 bg-violet-500/[0.06]">
+            <button
+              type="button"
+              onClick={() => collapsible && setManualOpen((v) => !v)}
+              disabled={!collapsible}
+              className={cn(
+                "flex w-full items-center gap-2 px-3 py-2 text-left text-[12px]",
+                collapsible ? "cursor-pointer hover:bg-violet-400/5" : "cursor-default"
+              )}
+            >
+              <Sparkles
+                className={cn(
+                  "size-3.5 shrink-0",
+                  thinkingLoading ? "animate-pulse text-violet-400" : "text-violet-400/70"
+                )}
+                aria-hidden
+              />
+              <span className="text-muted-foreground">
+                {thinkingLoading
+                  ? "老师傅推演中"
+                  : `已深度思考${msg.thinkingMs ? `（用时 ${(msg.thinkingMs / 1000).toFixed(1)}s）` : ""}`}
+              </span>
+              {collapsible ? (
+                expanded ? (
+                  <ChevronUp className="ml-auto size-3.5 text-muted-foreground/50" />
+                ) : (
+                  <ChevronDown className="ml-auto size-3.5 text-muted-foreground/50" />
+                )
+              ) : null}
+            </button>
+            {expanded ? (
+              <div className="border-t border-violet-400/10 px-3 py-2.5">
+                {thinkingSections ? (
+                  <div className="space-y-2.5">
+                    {thinkingSections.map((s, idx) => {
+                      const isInsight = s.title.includes("洞察");
+                      const isOverview = s.title.includes("总览");
+                      return (
+                        <div key={idx}>
+                          <div
+                            className={cn(
+                              "mb-1 text-[11px] font-medium tracking-wide",
+                              isInsight
+                                ? "text-violet-500/80"
+                                : isOverview
+                                  ? "text-foreground/70"
+                                  : "text-muted-foreground/70"
+                            )}
+                          >
+                            {s.title}
+                          </div>
+                          {renderBody(s.body)}
+                        </div>
+                      );
+                    })}
+                    {thinkingLoading ? (
+                      <span
+                        aria-hidden
+                        className="ml-0.5 inline-block h-3 w-[2px] animate-pulse rounded-full bg-violet-400/60 align-middle"
+                      />
+                    ) : null}
+                  </div>
+                ) : (
+                  <p className="text-[12px] leading-relaxed text-muted-foreground/70">
+                    {msg.thinking}
+                    {thinkingLoading ? (
+                      <span
+                        aria-hidden
+                        className="ml-0.5 inline-block h-3 w-[2px] animate-pulse rounded-full bg-violet-400/60 align-middle"
+                      />
+                    ) : null}
+                  </p>
+                )}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        {/* 正文 —— 只有行动建议（大号） */}
+        {(msg.content || msg.streaming) ? (
+          <div className="glass rounded-2xl rounded-bl-sm px-4 py-3">
+            <p className="text-[15px] leading-relaxed text-foreground/85 whitespace-pre-wrap">
+              {msg.content}
+              {msg.streaming ? (
+                <span
+                  aria-hidden
+                  className="ml-0.5 inline-block h-4 w-[2px] animate-pulse rounded-full bg-gold-400 align-middle"
+                />
+              ) : null}
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </motion.div>
   );
 }
 

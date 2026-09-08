@@ -179,7 +179,7 @@ export function HeroInsight() {
 
   /* 标题字符拆分：前半段 + 后半段（独立分组控制 stagger） */
   const titleChars = "认清自己，".split("");
-  const titleAccent = "看清下一步。".split("");
+  const titleAccent = "看清下一步".split("");
 
   /* 平滑滚动到 #ai-demo（Sprint 2 创建） */
   function scrollToDemo(e: React.MouseEvent<HTMLAnchorElement>) {
@@ -232,7 +232,7 @@ export function HeroInsight() {
           variants={charParent}
           initial={reduceMotion ? "show" : "hidden"}
           animate="show"
-          className="mt-10 whitespace-nowrap font-serif text-[clamp(1.75rem,6vw,4.5rem)] leading-[1.15] font-semibold tracking-tight sm:text-6xl lg:text-7xl"
+          className="mt-10 font-normal whitespace-nowrap font-serif text-[clamp(1.75rem,6vw,4.5rem)] leading-[1.15] tracking-tight sm:text-6xl lg:text-7xl"
         >
           {titleChars.map((ch, i) => (
             <motion.span key={`a-${i}`} variants={charChild} className="inline-block">
@@ -254,9 +254,9 @@ export function HeroInsight() {
           variants={blurIn}
           initial={reduceMotion ? "show" : "hidden"}
           animate="show"
-          className="mx-auto mt-7 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-base text-balance"
+          className="mx-auto mt-7 max-w-md font-sans text-sm leading-relaxed text-muted-foreground sm:text-lg"
         >
-          不是算命，也不是闲聊。FateCipher 把命理、性格与人生阶段翻译成你可以执行的下一步。
+          看懂命理，做更清醒的决定。
         </motion.p>
 
         {/* CTA 簇 */}

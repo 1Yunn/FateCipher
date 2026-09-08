@@ -1,21 +1,26 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, User, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/auth/auth-context";
 import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
-  { href: "/fortune", label: "命理体系" },
+  { href: "/fortune/bazi", label: "八字" },
+  { href: "/fortune/tarot", label: "塔罗" },
+  { href: "/fortune/ziwei", label: "紫微" },
   { href: "/ask", label: "AI 问答" },
-  { href: "#disclaimer", label: "免责声明" },
 ] as const;
 
 export function SiteHeader() {
+  const { user, loading, signOut } = useAuth();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -25,6 +30,12 @@ export function SiteHeader() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [open]);
+
+  const handleSignOut = () => {
+    signOut();
+    setUserMenuOpen(false);
+    router.push("/");
+  };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl backdrop-saturate-150">
@@ -56,9 +67,105 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button asChild size="sm" className="hidden md:inline-flex">
-            <Link href="/fortune">开始洞察</Link>
-          </Button>
+          {/* 未登录：用户图标 + 登录/注册下拉 */}
+          {!loading && !user && (
+            <div className="relative hidden md:block">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                aria-label="账户"
+                className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+              >
+                <User className="size-4" />
+              </button>
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <>
+                    <button
+                      type="button"
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      onClick={() => setUserMenuOpen(false)}
+                      className="fixed inset-0 z-10 cursor-default"
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute right-0 top-full z-20 mt-2 w-36 overflow-hidden rounded-xl border border-border/60 bg-card/95 p-1 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.15)] backdrop-blur-xl"
+                    >
+                      <Link
+                        href="/login"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      >
+                        登录
+                      </Link>
+                      <Link
+                        href="/signup"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block rounded-lg px-3 py-2 text-[13px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      >
+                        注册
+                      </Link>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* 已登录：用户头像下拉 */}
+          {!loading && user && (
+            <div className="relative hidden md:block">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
+              >
+                <span className="flex size-7 items-center justify-center rounded-full bg-violet-400/15 text-violet-400 ring-1 ring-violet-400/25">
+                  <User className="size-3.5" />
+                </span>
+                <span className="max-w-[120px] truncate">{user.name}</span>
+              </button>
+              <AnimatePresence>
+                {userMenuOpen && (
+                  <>
+                    <button
+                      type="button"
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      onClick={() => setUserMenuOpen(false)}
+                      className="fixed inset-0 z-10 cursor-default"
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                      className="absolute right-0 top-full z-20 mt-2 w-44 overflow-hidden rounded-xl border border-border/60 bg-card/95 p-1 shadow-[0_8px_32px_-12px_rgba(0,0,0,0.15)] backdrop-blur-xl"
+                    >
+                      <div className="px-3 py-2">
+                        <p className="truncate text-[13px] font-medium">{user.name}</p>
+                        <p className="truncate text-[11px] text-muted-foreground">{user.email}</p>
+                      </div>
+                      <div className="my-1 h-px bg-border/60" />
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="block w-full rounded-lg px-3 py-2 text-left text-[13px] text-muted-foreground transition-colors hover:bg-accent hover:text-cinnabar"
+                      >
+                        退出登录
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+
+          {/* 移动端汉堡菜单 */}
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
@@ -102,11 +209,42 @@ export function SiteHeader() {
                     {link.label}
                   </Link>
                 ))}
-                <Button asChild className="mt-2">
-                  <Link href="/fortune" onClick={() => setOpen(false)}>
-                    开始洞察
-                  </Link>
-                </Button>
+                <div className="my-2 h-px bg-border/60" />
+                {!loading && user ? (
+                  <>
+                    <div className="rounded-xl px-3 py-2">
+                      <p className="text-[13px] font-medium">{user.name}</p>
+                      <p className="text-[11px] text-muted-foreground">{user.email}</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        handleSignOut();
+                      }}
+                      className="rounded-xl px-3 py-2.5 text-left text-[15px] text-muted-foreground transition-colors hover:bg-accent hover:text-cinnabar"
+                    >
+                      退出登录
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl px-3 py-2.5 text-[15px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      登录
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl px-3 py-2.5 text-[15px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    >
+                      注册
+                    </Link>
+                  </>
+                )}
               </div>
             </motion.nav>
           </>

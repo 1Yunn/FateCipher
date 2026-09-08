@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Long_Cang, Noto_Serif_SC } from "next/font/google";
+import { AuthProvider } from "@/components/auth/auth-context";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -10,9 +11,10 @@ const inter = Inter({
 });
 
 const notoSerifSc = Noto_Serif_SC({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-noto-serif",
   display: "swap",
-  preload: false,
 });
 
 const longCang = Long_Cang({
@@ -62,7 +64,7 @@ export default function RootLayout({
           "min-h-dvh bg-background font-sans text-foreground antialiased"
         )}
       >
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

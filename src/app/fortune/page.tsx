@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AuthGuard } from "@/components/auth/auth-guard";
 import { AuraBackground } from "@/components/aura-background";
 import { FortuneDirectory } from "@/components/fortune/fortune-directory";
 import { WeeklyTrending } from "@/components/fortune/weekly-trending";
@@ -14,14 +15,16 @@ export const metadata: Metadata = {
 
 export default function FortunePage() {
   return (
-    <div className="relative flex min-h-dvh flex-col">
-      <AuraBackground />
-      <SiteHeader />
-      <main className="flex-1">
-        <FortuneDirectory />
-        <WeeklyTrending />
-      </main>
-      <SiteFooter />
-    </div>
+    <AuthGuard>
+      <div className="relative flex min-h-dvh flex-col">
+        <AuraBackground />
+        <SiteHeader />
+        <main className="flex-1">
+          <FortuneDirectory />
+          <WeeklyTrending />
+        </main>
+        <SiteFooter />
+      </div>
+    </AuthGuard>
   );
 }
