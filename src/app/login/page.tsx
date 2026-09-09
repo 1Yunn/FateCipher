@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { SiteHeader } from "@/components/site-header";
 import { AuraBackground } from "@/components/aura-background";
@@ -17,6 +17,26 @@ const inputCls =
   "w-full rounded-xl border border-border/60 bg-card/50 px-4 py-3 text-[15px] outline-none transition-all placeholder:text-muted-foreground/40 focus:border-violet-400/50 focus:ring-[3px] focus:ring-violet-400/15";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginSkeleton />}>
+      <LoginInner />
+    </Suspense>
+  );
+}
+
+function LoginSkeleton() {
+  return (
+    <div className="relative flex min-h-dvh flex-col">
+      <AuraBackground />
+      <SiteHeader />
+      <main className="flex flex-1 items-center justify-center px-4 pt-28 pb-20">
+        <div className="h-[480px] w-full max-w-md animate-pulse rounded-3xl border border-border/60 bg-card/60" />
+      </main>
+    </div>
+  );
+}
+
+function LoginInner() {
   const { signIn } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();

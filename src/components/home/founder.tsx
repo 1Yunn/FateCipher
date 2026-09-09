@@ -22,6 +22,7 @@ export function Founder() {
   const fogOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
   const fogBlur = useTransform(scrollYProgress, [0, 0.6], [12, 0]);
   const fogY = useTransform(scrollYProgress, [0, 0.6], [0, -40]);
+  const fogFilter = useTransform(fogBlur, (b) => `blur(${b}px)`);
 
   const rotateX = useMotionValue(0);
   const rotateY = useMotionValue(0);
@@ -160,7 +161,7 @@ export function Founder() {
                       className="pointer-events-none absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-md"
                       style={{
                         opacity: fogOpacity,
-                        filter: useTransform(fogBlur, (b) => `blur(${b}px)`),
+                        filter: fogFilter,
                         y: fogY,
                       }}
                     >
