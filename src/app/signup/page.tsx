@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { SiteHeader } from "@/components/site-header";
 import { AuraBackground } from "@/components/aura-background";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/auth-context";
@@ -55,6 +56,7 @@ export default function SignUpPage() {
   return (
     <div className="relative flex min-h-dvh flex-col">
       <AuraBackground />
+      <SiteHeader />
       <main className="flex flex-1 items-center justify-center px-4 pt-28 pb-20">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

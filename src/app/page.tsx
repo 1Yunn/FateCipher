@@ -16,6 +16,7 @@ import { Value } from "@/components/home/value";
 import { WhoFor } from "@/components/home/who-for";
 import { WordmarkBand } from "@/components/home/wordmark-band";
 import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { SplashCursor } from "@/components/splash-cursor";
 
 export default function HomePage() {
@@ -23,6 +24,7 @@ export default function HomePage() {
     <div className="relative flex min-h-dvh flex-col">
       <AuraBackground />
       <FateThread />
+      <SiteHeader />
       <main className="flex-1">
         {/* Hero → 关键词跑马灯 → 痛点 → 价值 → 定位带 → 场景 → 人群 → 流程 → 报告 → 功能 → 团队 → 信任 → 定价 → 收口 */}
         <HeroInsight />

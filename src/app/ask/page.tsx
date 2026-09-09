@@ -4,7 +4,7 @@ import { AskChat } from "@/components/ask/ask-chat";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { AuraBackground } from "@/components/aura-background";
 import { SiteFooter } from "@/components/site-footer";
-
+import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
   title: "AI 问答",
@@ -17,6 +17,7 @@ export default function AskPage() {
     <AuthGuard>
       <div className="relative flex min-h-dvh flex-col">
         <AuraBackground />
+        <SiteHeader />
         <main className="flex-1">
           <section className="px-4 pt-32 pb-28 sm:px-6 sm:pt-36">
             <div className="mx-auto max-w-2xl">

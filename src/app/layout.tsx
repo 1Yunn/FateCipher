@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Long_Cang, Noto_Serif_SC } from "next/font/google";
 import { AuthProvider } from "@/components/auth/auth-context";
-import { SiteNav } from "@/components/site-nav";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -65,11 +64,7 @@ export default function RootLayout({
           "min-h-dvh bg-background font-sans text-foreground antialiased"
         )}
       >
-        <AuthProvider>
-          <SiteNav />
-          {/* 桌面端给左侧 sidebar 让位，移动端有顶部 bar 用 pt-16 */}
-          <div className="pl-0 pt-16 md:pl-16 md:pt-0">{children}</div>
-        </AuthProvider>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
