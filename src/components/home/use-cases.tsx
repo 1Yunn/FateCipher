@@ -154,21 +154,32 @@ function StackCrossroads() {
         const base = SPREAD[i];
         const stack = STACK[i];
 
-        const posAnim = !isSpread
-          ? { x: stack.x, y: stack.y, rotate: stack.rotate, scale: 1, opacity: 1, zIndex: stack.z }
+        // zIndex 提到外层 wrapper，这样 4 张卡在同一 stacking context 内比较
+        const zIndex = !isSpread
+          ? stack.z
           : activeId === card.id
-            ? { x: base.x, y: base.y - 20, rotate: base.rotate, scale: 1.06, opacity: 1, zIndex: 10 }
+            ? 100
             : activeId !== null
-              ? { x: base.x, y: base.y, rotate: base.rotate, scale: 0.92, opacity: 0.45, zIndex: base.z }
-              : { x: base.x, y: base.y, rotate: base.rotate, scale: 1, opacity: 1, zIndex: base.z };
+              ? base.z
+              : base.z;
+
+        // 内层动画只管 x/y/rotate/scale/opacity，不管 zIndex
+        const posAnim = !isSpread
+          ? { x: stack.x, y: stack.y, rotate: stack.rotate, scale: 1, opacity: 1 }
+          : activeId === card.id
+            ? { x: base.x, y: base.y - 20, rotate: base.rotate, scale: 1.06, opacity: 1 }
+            : activeId !== null
+              ? { x: base.x, y: base.y, rotate: base.rotate, scale: 0.92, opacity: 0.45 }
+              : { x: base.x, y: base.y, rotate: base.rotate, scale: 1, opacity: 1 };
 
         return (
+          // 外层：①居中 ②zIndex（决定热区归属）
           <div
             key={card.id}
             className="absolute left-1/2 top-1/2"
-            style={{ transform: "translate(-50%, -50%)" }}
+            style={{ transform: "translate(-50%, -50%)", zIndex }}
           >
-            {/* 扩大的触发热区：卡片外圈 padding 区域也响应 hover */}
+            {/* 内层：只管 x/y/rotate/scale/opacity 动画 + hover 事件 */}
             <motion.div
               className="cursor-default rounded-[1.75rem] border border-border/50 bg-card/80 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] shadow-[0_1px_3px_-1px_rgba(0,0,0,0.04)] backdrop-blur-2xl transition-shadow duration-300 hover:shadow-[0_8px_32px_-12px_rgba(109,90,224,0.12)]"
               style={{ transformOrigin: "center", width: CARD_W, height: CARD_H, padding: 16 }}
