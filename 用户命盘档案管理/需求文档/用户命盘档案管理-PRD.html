@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>用户命盘档案管理 · PRD</title>
+<title>用户命盘档案管理 · PRD | FateCipher</title>
 <style>
   :root {
     --bg: #fbfbfd;
@@ -11,6 +11,7 @@
     --ink-2: #5a5a68;
     --ink-3: #9a9aa7;
     --line: #eaeaf0;
+    --line-2: #f0f0f5;
     --accent: #6b46c1;
     --accent-soft: #ede9fe;
     --card: #ffffff;
@@ -18,52 +19,87 @@
     --ok-soft: #dcfce7;
     --warn: #b45309;
     --warn-soft: #fef3c7;
+    --danger: #dc2626;
+    --danger-soft: #fee2e2;
+    --sky: #0284c7;
+    --sky-soft: #e0f2fe;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: "Noto Serif SC", "思源宋体", Georgia, serif; line-height: 1.75; }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 56px 28px 140px; }
-  header { border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 44px; }
-  header .tag { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
-  header h1 { font-size: clamp(26px, 3vw, 40px); font-weight: 500; margin: 0 0 10px; letter-spacing: -.01em; }
-  header .sub { font-family: system-ui,-apple-system,sans-serif; font-size: 15px; color: var(--ink-2); margin: 0 0 14px; }
-  header .meta { font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); display: flex; gap: 18px; flex-wrap: wrap; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 48px 28px 140px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 40px; }
+  header .tag { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 4px; margin-bottom: 14px; }
+  header h1 { font-size: clamp(24px, 2.8vw, 36px); font-weight: 500; margin: 0 0 8px; letter-spacing: -.01em; }
+  header .sub { font-family: system-ui,-apple-system,sans-serif; font-size: 14.5px; color: var(--ink-2); margin: 0 0 12px; }
+  header .meta { font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); display: flex; gap: 16px; flex-wrap: wrap; }
   header .meta span { display: inline-flex; align-items: center; gap: 6px; }
   header .meta .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
-  section { margin-bottom: 52px; }
-  section h2 { font-size: 20px; font-weight: 500; margin: 0 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); letter-spacing: -.005em; counter-increment: h2; }
+  section { margin-bottom: 48px; }
+  section h2 { font-size: 19px; font-weight: 500; margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); letter-spacing: -.005em; counter-increment: h2; }
   section h2::before { content: counter(h2, decimal-leading-zero) ". "; color: var(--accent); margin-right: 8px; }
-  section h3 { font-family: system-ui,-apple-system,sans-serif; font-size: 14px; font-weight: 500; margin: 24px 0 10px; color: var(--ink-2); }
-  table { width: 100%; border-collapse: collapse; font-family: system-ui,-apple-system,sans-serif; font-size: 13.5px; margin-top: 12px; }
-  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { font-weight: 500; color: var(--ink-2); background: #fafafb; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+  section h3 { font-family: system-ui,-apple-system,sans-serif; font-size: 13.5px; font-weight: 600; margin: 20px 0 8px; color: var(--ink-2); }
+  table { width: 100%; border-collapse: collapse; font-family: system-ui,-apple-system,sans-serif; font-size: 13px; margin-top: 10px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line-2); vertical-align: top; }
+  th { font-weight: 500; color: var(--ink-2); background: #fafafb; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; padding-top: 10px; padding-bottom: 10px; }
   td { color: var(--ink-2); }
-  td.code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--ink-3); background: #fafafb; }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px 28px; margin-top: 16px; }
+  td code, td .code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-3); background: #fafafb; padding: 1px 6px; border-radius: 3px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-3); background: #fafafb; padding: 1px 6px; border-radius: 3px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px 24px; margin-top: 14px; }
+  .card.tight { padding: 14px 18px; }
   ul.clean { margin: 0; padding: 0; list-style: none; }
-  ul.clean li { padding: 4px 0; padding-left: 16px; position: relative; font-family: system-ui,-apple-system,sans-serif; font-size: 14px; color: var(--ink-2); }
-  ul.clean li::before { content: ""; position: absolute; left: 0; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-soft); }
-  .kv { display: flex; gap: 14px; font-family: system-ui,-apple-system,sans-serif; font-size: 13px; margin-bottom: 8px; }
-  .kv .k { width: 96px; flex-shrink: 0; color: var(--ink-3); }
-  .kv .v { color: var(--ink-2); flex: 1; }
-  .pill { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  ul.clean li { padding: 3px 0; padding-left: 14px; position: relative; font-family: system-ui,-apple-system,sans-serif; font-size: 13.5px; color: var(--ink-2); }
+  ul.clean li::before { content: ""; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-soft); }
+  .pill { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 10.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
   .pill.a { background: var(--accent-soft); color: var(--accent); }
   .pill.w { background: var(--warn-soft); color: var(--warn); }
   .pill.ok { background: var(--ok-soft); color: var(--ok); }
-  .num { font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); }
-  .desc-block { margin-top: 10px; padding: 10px 14px; border-left: 2px solid var(--line); font-family: system-ui,-apple-system,sans-serif; font-size: 13px; color: var(--ink-2); line-height: 1.8; }
-  .desc-block b { color: var(--accent); font-weight: 500; }
-  .mermaid { background: #fafafb; border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; color: var(--ink-2); white-space: pre; overflow-x: auto; }
-  .foot { margin-top: 80px; padding-top: 20px; border-top: 1px solid var(--line); font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); display: flex; justify-content: space-between; }
-  .toc { background: #fafafb; border: 1px solid var(--line); border-radius: 12px; padding: 18px 24px; margin-bottom: 40px; }
-  .toc ol { margin: 0; padding-left: 20px; }
-  .toc li { font-family: system-ui,-apple-system,sans-serif; font-size: 13px; color: var(--ink-2); padding: 3px 0; }
+  .pill.sk { background: #f3f4f6; color: var(--ink-3); }
+  .pill.danger { background: var(--danger-soft); color: var(--danger); }
+  .pill.sky { background: var(--sky-soft); color: var(--sky); }
+  .desc-block { margin-top: 10px; padding: 8px 12px; border-left: 2px solid var(--line); font-family: system-ui,-apple-system,sans-serif; font-size: 12.5px; color: var(--ink-2); line-height: 1.75; }
+  .desc-block b { color: var(--accent); font-weight: 600; }
+  .diagram { background: #fafafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-2); white-space: pre; overflow-x: auto; line-height: 1.55; }
+  .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); display: flex; justify-content: space-between; }
+  .toc { background: #fafafb; border: 1px solid var(--line); border-radius: 10px; padding: 14px 22px; margin-bottom: 36px; }
+  .toc ol { margin: 0; padding-left: 18px; }
+  .toc li { font-family: system-ui,-apple-system,sans-serif; font-size: 12.5px; color: var(--ink-2); padding: 2px 0; }
   .toc li a { color: var(--accent); text-decoration: none; }
-  .person-row { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 12px; }
-  .person-card { background: #fafafb; border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; min-width: 220px; flex: 1; }
-  .person-card .name { font-family: system-ui,-apple-system,sans-serif; font-size: 15px; font-weight: 500; color: var(--ink); }
-  .person-card .roles { font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--accent); margin-top: 4px; }
-  .person-card .desc { font-family: system-ui,-apple-system,sans-serif; font-size: 12.5px; color: var(--ink-2); margin-top: 8px; line-height: 1.7; }
-  .commit-link { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--ink-3); background: #fafafb; padding: 2px 8px; border-radius: 4px; border: 1px solid var(--line); }
+  .toc li a:hover { text-decoration: underline; }
+  .commit-link { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--ink-3); background: #fafafb; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--line); text-decoration: none; }
+  .commit-link:hover { background: var(--accent-soft); color: var(--accent); }
+
+  /* User Story */
+  .story { border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px; margin-top: 10px; background: #fff; }
+  .story .who { font-family: system-ui,-apple-system,sans-serif; font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+  .story .body { font-family: system-ui,-apple-system,sans-serif; font-size: 13.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.65; }
+  .story .body em { color: var(--accent); font-style: normal; font-weight: 500; }
+  .story .accept { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+  .story .accept li { font-family: system-ui,-apple-system,sans-serif; font-size: 12.5px; color: var(--ink-2); padding: 1px 0; padding-left: 16px; position: relative; list-style: none; }
+  .story .accept li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 600; }
+
+  /* Wireframe */
+  .wf { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; overflow-x: auto; line-height: 1.55; margin-top: 10px; }
+  .wf .box { border: 1px dashed var(--accent); color: var(--accent); }
+  .wf .box-solid { border: 1px solid var(--ink-3); color: var(--ink-3); }
+  .wf .btn { background: var(--ink); color: #fff; padding: 2px 8px; border-radius: 3px; }
+  .wf .btn-outline { border: 1px solid var(--ink-3); color: var(--ink-2); padding: 2px 8px; border-radius: 3px; }
+
+  /* Checklist */
+  .checklist { font-family: system-ui,-apple-system,sans-serif; }
+  .checklist li { padding: 4px 0; padding-left: 22px; position: relative; font-size: 13px; color: var(--ink-2); }
+  .checklist li::before { content: "☑"; position: absolute; left: 0; color: var(--ok); }
+  .checklist li.done::before { content: "✔"; }
+  .checklist li.done { color: var(--ink-2); }
+
+  /* Tech stack chip */
+  .tech-chip { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; padding: 3px 10px; border-radius: 4px; background: #fafafb; border: 1px solid var(--line); margin: 2px 4px 2px 0; color: var(--ink-2); }
+
+  /* State machine */
+  .state-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 12px; }
+  .state-box { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; background: #fff; }
+  .state-box .name { font-family: system-ui,-apple-system,sans-serif; font-size: 13px; font-weight: 600; color: var(--ink); }
+  .state-box .desc { font-family: system-ui,-apple-system,sans-serif; font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
+  .state-box.active { border-color: var(--accent); background: var(--accent-soft); }
 </style>
 </head>
 <body>
@@ -76,8 +112,9 @@
   <div class="meta">
     <span><span class="dot"></span>项目：FateCipher · AI 命理洞察平台</span>
     <span><span class="dot"></span>负责人：章青云</span>
+    <span><span class="dot"></span>GitHub：<a class="commit-link" href="https://github.com/1Yunn/FateCipher" target="_blank">1Yunn/FateCipher</a></span>
     <span><span class="dot"></span>产出日期：2026-09-09</span>
-    <span><span class="dot"></span>状态：已上线 <span class="commit-link">commit 35074fc</span></span>
+    <span><span class="dot"></span>状态：已上线 <a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/35074fc" target="_blank">35074fc</a></span>
   </div>
 </header>
 
@@ -85,15 +122,18 @@
 <div class="toc">
   <ol>
     <li><a href="#members">项目相关人员</a></li>
+    <li><a href="#story">用户故事 & 核心场景</a></li>
     <li><a href="#bg">版本记录</a></li>
     <li><a href="#bg2">需求背景</a></li>
-    <li><a href="#goal">需求目标</a></li>
+    <li><a href="#goal">需求目标 & 范围</a></li>
     <li><a href="#flow">业务流程图</a></li>
     <li><a href="#detail">详细方案</a></li>
+    <li><a href="#ui">UI 线框图 & 状态机</a></li>
+    <li><a href="#accept">验收 Checklist</a></li>
     <li><a href="#edge">异常与边界</a></li>
     <li><a href="#track">数据埋点</a></li>
     <li><a href="#seq">时序图</a></li>
-    <li><a href="#plan">上线计划</a></li>
+    <li><a href="#plan">上线计划 & Git 记录</a></li>
     <li><a href="#appendix">附录</a></li>
   </ol>
 </div>
@@ -103,125 +143,189 @@
   <h2>项目相关人员</h2>
   <div class="card">
     <table>
-      <thead><tr><th>角色</th><th>姓名</th><th>职责范围</th></tr></thead>
+      <thead><tr><th style="width:110px;">角色</th><th style="width:110px;">姓名</th><th>职责范围</th></tr></thead>
       <tbody>
         <tr>
-          <td>AI 产品经理</td>
+          <td><span class="pill a">AI 产品经理</span></td>
           <td><b>章青云</b></td>
           <td>产品定位、需求定义、流程设计、验收口径、PRD 撰写与维护</td>
         </tr>
         <tr>
-          <td>全栈工程师</td>
+          <td><span class="pill sky">全栈工程师</span></td>
           <td><b>章青云</b></td>
           <td>Next.js 前端（React 19 + Tailwind v4）、后端路由（DeepSeek SSE 流式）、数据层（localStorage + ProfileStore）、测试（Vitest + RTL）、DevOps（GitHub）</td>
         </tr>
         <tr>
-          <td>UI / UX 设计师</td>
+          <td><span class="pill warn">UI / UX 设计师</span></td>
           <td><b>章青云</b></td>
-          <td>视觉风格（浅色底 + 紫色点缀、思源宋体标题）、交互流程、信息架构、组件规范（shadcn/ui）、无障碍检查</td>
+          <td>视觉风格（浅色底 #fbfbfd + 紫色点缀 #6b46c1、思源宋体标题）、交互流程、信息架构、组件规范（shadcn/ui）、无障碍检查</td>
         </tr>
       </tbody>
     </table>
-    <p style="font-family:system-ui,sans-serif;font-size:12px;color:var(--ink-3);margin-top:12px;">
-      FateCipher 是 0→1 独立项目，当前阶段单人全栈推进。产品→设计→开发→测试→上线 全链路由章青云一人完成，AI 辅助工具（DeepSeek、Claude、Vitest）加速产出。
+    <p style="font-family:system-ui,sans-serif;font-size:11.5px;color:var(--ink-3);margin-top:10px;">
+      FateCipher 是 0→1 独立项目，单人全栈推进。产品→设计→开发→测试→上线 全链路由章青云一人完成。
+      技术协作栈：VS Code + GitHub + Vitest + DeepSeek / Claude（代码辅助）。
     </p>
   </div>
 </section>
 
-<!-- 2. 版本记录 -->
+<!-- 2. 用户故事 -->
+<section id="story">
+  <h2>用户故事 & 核心场景</h2>
+
+  <h3>US-01 多账号建档隔离（P0）</h3>
+  <div class="story">
+    <div class="who">USER STORY</div>
+    <div class="body">作为 <em>共用同一浏览器的 A 用户</em>，我希望 <em>我的命盘档案和 B 用户的互不干扰</em>，这样 <em>我 signOut 再 signIn 回来时，看到的还是我的盘</em>。</div>
+    <div class="accept">
+      <ul>
+        <li>A 建档 → signOut → B 不建档 → B signIn → B 进入 AI 问答时走通用开场（hasProfile: false）</li>
+        <li>B 建档 → signOut → A signIn → A 进入 AI 问答时承接 A 的档案</li>
+        <li>切换账号不丢失各自的 AI 问答额度</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>US-02 独立档案管理（P0）</h3>
+  <div class="story">
+    <div class="who">USER STORY</div>
+    <div class="body">作为 <em>已建档的老用户</em>，我希望 <em>在任何页面都能快速找到档案管理入口</em>，这样 <em>我想改时辰时不用重跑八字测算</em>。</div>
+    <div class="accept">
+      <ul>
+        <li>SiteHeader 已登录状态下有「我的档案」入口 → 直达 /profile</li>
+        <li>/profile 页面可查看档案详情、编辑任意字段、删除档案</li>
+        <li>保存后 lastUpdated 自动刷新</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>US-03 未建档引导（P1）</h3>
+  <div class="story">
+    <div class="who">USER STORY</div>
+    <div class="body">作为 <em>刚注册的新用户</em>，我希望 <em>AI 问答主动提醒我先建档</em>，这样 <em>我问的问题能被更精准地回答</em>。</div>
+    <div class="accept">
+      <ul>
+        <li>未建档用户进入 AI 问答 → 开场下方显示「还没填命盘档案」引导条</li>
+        <li>引导条有「去八字测算」和「手动建档」两个按钮</li>
+        <li>建档成功后引导条自动消失</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>US-04 数据自动迁移（P0）</h3>
+  <div class="story">
+    <div class="who">USER STORY</div>
+    <div class="body">作为 <em>v0.1 已建档的老用户</em>，我希望 <em>升级后我的档案自动出现在新版本</em>，这样 <em>我不用重新填一遍出生信息</em>。</div>
+    <div class="accept">
+      <ul>
+        <li>v0.2 第一次 signIn / signUp → 自动把旧 key <code>fatecipher.profile.bazi</code> 搬到 <code>fatecipher.profile.{email}</code></li>
+        <li>迁移幂等：signIn 多次不会重复搬迁</li>
+        <li>迁移完成后删除旧 key，避免污染后续登录</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 版本记录 -->
 <section id="bg">
   <h2>版本记录</h2>
   <table>
-    <thead><tr><th>版本</th><th>修订时间</th><th>修订人</th><th>修订内容</th></tr></thead>
+    <thead><tr><th style="width:90px;">版本</th><th style="width:100px;">时间</th><th style="width:80px;">修订人</th><th>修订内容</th><th style="width:90px;">Commit</th></tr></thead>
     <tbody>
-      <tr><td><b>v0.2</b> <span class="pill ok">已上线</span></td><td>2026-09-09</td><td>章青云</td><td>完成用户命盘档案管理：ProfileStore（带 email 维度 key + 迁移）、/profile 档案页、额度分账、SiteHeader 下拉改造、ask-chat 未建档 CTA、8/8 vitest 通过</td></tr>
-      <tr><td>v0.2-draft</td><td>2026-09-09</td><td>章青云</td><td>需求洞察 + PRD 初稿 + Mermaid 流程图 + 时序图 + 埋点设计</td></tr>
-      <tr><td>v0.1</td><td>2026-09-09</td><td>章青云</td><td>完成登录保护、AI 问答深度思考重构、导航栏 UI 优化（4 入口直接露出）、品牌名全局替换（xuanji → fatecipher）</td></tr>
-      <tr><td>v0.0</td><td>2026-09-08</td><td>章青云</td><td>项目初始化：Next.js 15 + React 19 + Tailwind v4 脚手架、shadcn/ui 组件库、首页 Hero、八字/塔罗/紫微/AI 问答四大玩法</td></tr>
+      <tr><td><b>v0.2</b> <span class="pill ok">已上线</span></td><td>2026-09-09</td><td>章青云</td><td>完成用户命盘档案管理完整方案：ProfileStore（CRUD + 迁移 + 额度）、/profile 档案页、额度分账、SiteHeader 下拉加「我的档案」、ask-chat 未建档 CTA、bazi/ziwei/ask-engine 全部消费方接入。tsc 零错误，vitest 8/8 通过。<span class="pill a">PRD v0.2-release</span></td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/35074fc" target="_blank">35074fc</a></td></tr>
+      <tr><td>—</td><td>2026-09-09</td><td>章青云</td><td>尝试：导航栏改左侧 Sidebar + 全局 SiteNav 引入（19 files），<span class="pill danger">已 revert</span>（回退到顶部导航 4 入口）</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/b0d46a8" target="_blank">b0d46a8</a><br/><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/98a8131" target="_blank">98a8131</a></td></tr>
+      <tr><td>v0.2-draft</td><td>2026-09-09</td><td>章青云</td><td>PRD 初稿 + 需求洞察 + Mermaid 流程图 + 时序图 + 埋点设计</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/597772e" target="_blank">597772e</a></td></tr>
+      <tr><td>v0.1</td><td>2026-09-09</td><td>章青云</td><td>登录保护、AI 问答深度思考重构、导航栏 UI 优化（4 产品入口直接露出）、品牌名全局替换（xuanji → fatecipher）</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/a246656" target="_blank">a246656</a></td></tr>
+      <tr><td>v0.0</td><td>2026-09-08</td><td>章青云</td><td>项目初始化：Next.js 15 + React 19 + Tailwind v4 脚手架、shadcn/ui 组件库、首页 Hero、八字/塔罗/紫微/AI 问答四大玩法</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/b06b7b5" target="_blank">b06b7b5</a></td></tr>
     </tbody>
   </table>
 </section>
 
-<!-- 3. 需求背景 -->
+<!-- 4. 需求背景 -->
 <section id="bg2">
   <h2>需求背景</h2>
   <div class="card">
-    <p style="font-family:system-ui,sans-serif;font-size:14px;color:var(--ink-2);margin:0 0 14px;">
+    <p style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-2);margin:0 0 10px;">
       FateCipher v0.1 已有八字、塔罗、紫微、AI 问答四种命理玩法。四种玩法都需要基于用户出生信息（出生日期、性别、出生地、时辰）做个性化解读——这个数据就是「命盘档案」。
     </p>
-    <p style="font-family:system-ui,sans-serif;font-size:14px;color:var(--ink-2);margin:0 0 14px;">
-      v0.1 里档案通过八字 / 紫微测算的引导流程写入 localStorage，key 为 <code class="code">fatecipher.profile.bazi</code>，全局唯一，不带用户维度前缀。<code class="code">auth-context.tsx</code> 独立维护着用户认证系统（<code class="code">fatecipher.users</code> / <code class="code">fatecipher.currentUser</code>），但档案与用户完全隔离——像是挂在浏览器上的一份公共便签。
+    <p style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-2);margin:0 0 12px;">
+      v0.1 里档案通过八字 / 紫微测算的引导流程写入 localStorage，key 为 <code>fatecipher.profile.bazi</code>，全局唯一，不带用户维度前缀。<code>auth-context.tsx</code> 独立维护着用户认证系统（<code>fatecipher.users</code> / <code>fatecipher.currentUser</code>），但档案与用户完全隔离——像是挂在浏览器上的一份公共便签。
     </p>
-    <p style="font-family:system-ui,sans-serif;font-size:14px;color:var(--ink-2);margin:0 0 14px;">
-      这导致三个实际问题：
-    </p>
+
     <table style="margin-top:6px;">
-      <thead><tr><th style="width:80px;">优先级</th><th>问题</th><th>举例</th></tr></thead>
+      <thead><tr><th style="width:80px;">优先级</th><th>问题</th><th>实际影响</th></tr></thead>
       <tbody>
-        <tr><td><span class="pill a">P0</span></td><td>多账号同一浏览器时档案串数据</td><td>A 用户立了盘 → signOut → B 用户 signIn → 八字测算直接显示 A 的盘</td></tr>
-        <tr><td><span class="pill a">P0</span></td><td>没有独立的档案管理界面</td><td>用户想把出生时辰从"子时"改成"丑时"，必须重跑一遍八字测算的 3 步引导流程</td></tr>
-        <tr><td><span class="pill w">P1</span></td><td>额度 key 全局共享</td><td>A 用了 5 次 AI 问答 → signOut → B signIn → B 一看额度也用完了</td></tr>
+        <tr><td><span class="pill a">P0</span></td><td>多账号同一浏览器时档案串数据</td><td>A 用户立了盘 → signOut → B signIn → 八字测算直接显示 A 的盘；AI 问答承接语也跟着错</td></tr>
+        <tr><td><span class="pill a">P0</span></td><td>没有独立的档案管理界面</td><td>用户想把出生时辰从"子时"改成"丑时"，必须重跑一遍八字测算 3 步引导流程</td></tr>
+        <tr><td><span class="pill w">P1</span></td><td>AI 问答额度全局共享</td><td>A 用了 5 次免费问答 → signOut → B signIn → B 一看额度也用完了</td></tr>
       </tbody>
     </table>
   </div>
 </section>
 
-<!-- 4. 需求目标 -->
+<!-- 5. 需求目标 & 范围 -->
 <section id="goal">
-  <h2>需求目标</h2>
+  <h2>需求目标 & 范围</h2>
 
-  <h3>本期目标（v0.2）</h3>
+  <h3>本期目标（v0.2）— 全部已完成</h3>
   <table>
-    <thead><tr><th>#</th><th>目标</th><th>验收标准</th><th>状态</th></tr></thead>
+    <thead><tr><th style="width:30px;">#</th><th>目标</th><th>验收标准</th><th style="width:80px;">状态</th></tr></thead>
     <tbody>
       <tr><td>G1</td><td>档案与用户身份绑定，同一浏览器多账号不串数据</td><td>手动切换 3 个账号，每个账号 AI 问答承接语对应各自档案</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>G2</td><td>提供独立的档案管理入口</td><td>SiteHeader 下拉有「我的档案」→ /profile 页面可查看/编辑/删除</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>G3</td><td>旧 key 数据自动迁移，不丢失</td><td>迁移函数幂等：旧 key 搬到 <code class="code">fatecipher.profile.{email}</code>，迁移后删旧 key</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>G4</td><td>AI 问答页 + AuthGuard 后引导建档</td><td>未建档用户进入 AI 问答开场有 CTA 指向建档</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>G2</td><td>提供独立的档案管理入口（SiteHeader 下拉 + /profile 页）</td><td>桌面端 + 移动端 SiteHeader 均有「我的档案」，/profile 可查看/编辑/删除</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>G3</td><td>旧 key 自动迁移，不丢失用户数据</td><td>迁移函数幂等：旧 key 搬到 <code>fatecipher.profile.{email}</code>，迁移后删旧 key</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>G4</td><td>AI 问答开场引导建档</td><td>未建档用户进入 AI 问答开场有紫色 CTA 条</td><td><span class="pill ok">已完成</span></td></tr>
       <tr><td>G5</td><td>档案字段加时间戳</td><td>profile 对象包含 createdAt / lastUpdated / migratedAt</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>G6</td><td>AI 问答额度同步分账</td><td>额度 key 改为 <code class="code">fatecipher.ask.quota.{email}</code></td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>G6</td><td>AI 问答额度同步分账</td><td>额度 key 改为 <code>fatecipher.ask.quota.{email}</code></td><td><span class="pill ok">已完成</span></td></tr>
     </tbody>
   </table>
 
-  <h3>暂不纳入（后续版本）</h3>
+  <h3>暂不纳入（v0.3+）</h3>
   <ul class="clean">
     <li>家人档案（多档案切换）</li>
     <li>档案历史版本 / 改档回溯</li>
     <li>命理工具偏好（我只信紫微，不信塔罗）</li>
-    <li>西方占星本命星盘（profile template 抽象层留接口，不实现）</li>
+    <li>西方占星本命星盘（Profile template 抽象层留接口）</li>
     <li>后端同步（当前 localStorage，接口层抽象 async 签名）</li>
     <li>历史结果收藏</li>
   </ul>
 </section>
 
-<!-- 5. 业务流程图 -->
+<!-- 6. 业务流程图 -->
 <section id="flow">
   <h2>业务流程图</h2>
   <div class="card">
-    <p style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-3);margin-top:0;margin-bottom:10px;">档案生命周期主路径：</p>
-    <div class="mermaid">flowchart TD
+    <div class="diagram">flowchart TD
   A[用户注册/登录] --> B{已有档案?}
   B -->|是| C[进入产品]
-  B -->|否| D[八字测算 / 紫微测算 / 档案管理页建档]
-  D --> E[写入 localStorage\nfatecipher.profile.{email}]
+  B -->|否| D[八字测算 / 紫微测算 / /profile 手动建档]
+  D --> E[写入 localStorage\n fatecipher.profile.{email}]
   E --> C
-  C --> F[AI 问答读取档案\n构建个性化上下文]
-  C --> G[档案管理页编辑/删除]
+  C --> F[AI 问答读取档案 → 个性化上下文]
+  C --> G[/profile 档案管理页\n查看/编辑/删除]
   G --> E
 
-  subgraph 入口
+  subgraph 建档入口
     H[SiteHeader 下拉 → 我的档案]
-    I[AI 问答未建档 CTA]
+    I[/ask 未建档 CTA]
     J[AuthGuard 后引导]
   end
 
   H --> D
   I --> D
-  J --> D</div>
+  J --> D
+
+  subgraph 迁移
+    K[signIn/signUp]
+    K --> L{旧 key 存在\n且 新 key 不存在}
+    L -->|是| M[ProfileStore.migrateForUser\n旧 key → 新 key → 删旧 key]
+    L -->|否| N[跳过]
+  end
+  A --> K</div>
   </div>
 </section>
 
-<!-- 6. 详细方案 -->
+<!-- 7. 详细方案 -->
 <section id="detail">
   <h2>详细方案</h2>
 
@@ -229,104 +333,87 @@
   <table style="border:none;">
     <thead>
       <tr>
-        <th style="width:120px;border-bottom:2px solid var(--accent-soft);">一级模块</th>
-        <th style="width:160px;border-bottom:2px solid var(--accent-soft);">二级功能</th>
-        <th style="width:200px;border-bottom:2px solid var(--accent-soft);">页面 / 触发时机</th>
+        <th style="width:110px;border-bottom:2px solid var(--accent-soft);">模块</th>
+        <th style="width:150px;border-bottom:2px solid var(--accent-soft);">功能点</th>
+        <th style="width:220px;border-bottom:2px solid var(--accent-soft);">触发时机</th>
         <th style="border-bottom:2px solid var(--accent-soft);">描述</th>
       </tr>
     </thead>
     <tbody>
 
-      <!-- M1 -->
       <tr>
-        <td rowspan="2"><b>M1<br/>数据层<br/>lib/profile.ts</b></td>
-        <td>档案 Key 改造 + 迁移</td>
-        <td>AuthProvider signIn / signUp 成功后</td>
+        <td rowspan="2"><b>M1<br/>ProfileStore<br/><span style="font-weight:400;">lib/profile.ts</span></b></td>
+        <td>Key 改造 + 迁移</td>
+        <td>signIn / signUp 成功后</td>
         <td>
           <div class="desc-block">
-            <b>【功能逻辑】</b>用户登录时，检查旧 key <code class="code">fatecipher.profile.bazi</code> 是否存在，新 key <code class="code">fatecipher.profile.{email}</code> 是否不存在。两者同时满足时，把旧 key JSON 搬到新 key，加 <code>migratedAt</code> 标记。幂等：新 key 已存在时跳过。迁移完成后删除旧 key。
+            <b>【逻辑】</b>旧 key <code>fatecipher.profile.bazi</code> 存在 && 新 key <code>fatecipher.profile.{email}</code> 不存在 → 搬 JSON → 加 migratedAt → 写新 key → 删旧 key。幂等。
           </div>
           <div class="desc-block">
-            <b>【边界说明】</b>旧 key 不存在（新用户）→ 跳过；新 key 已存在（多账号已建档）→ 跳过；localStorage 不可用 → 静默降级不阻断启动。
+            <b>【额度同步】</b>旧额度 <code>fatecipher.ask.quota</code> 也按同样逻辑搬到 <code>fatecipher.ask.quota.{email}</code>。
           </div>
         </td>
       </tr>
       <tr>
-        <td>档案 Schema 升级</td>
-        <td>写入时</td>
+        <td>档案 CRUD</td>
+        <td>运行时任意时刻</td>
         <td>
           <div class="desc-block">
-            <b>【数据与内容规则】</b>Profile 对象新增字段：<code>createdAt</code>（首次建档 ISO 时间）、<code>lastUpdated</code>（最后修改 ISO 时间）、<code>migratedAt</code>（迁移时间，仅迁移时出现）。
-          </div>
-        </td>
-      </tr>
-
-      <!-- M2 -->
-      <tr>
-        <td rowspan="2"><b>M2<br/>档案管理页<br/>/profile</b></td>
-        <td>档案详情视图</td>
-        <td>/profile（已登录且有档案）</td>
-        <td>
-          <div class="desc-block">
-            <b>【页面元素】</b>页面标题 + 用户名下的档案卡片：出生日期（大号思源宋体）、性别、时辰（或「时辰未知」）、出生地（或未填）、建档时间、上次更新时间。底部编辑 / 删除按钮。
+            <b>【API】</b><code>getProfile(email)</code> / <code>saveProfile(email, data)</code> / <code>deleteProfile(email)</code> / <code>updateProfile(email, patch)</code>
           </div>
           <div class="desc-block">
-            <b>【交互说明】</b>进入页面时通过 ProfileStore 读取 <code class="code">fatecipher.profile.{email}</code>。无档案时展示空态（见 M3）。
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td>编辑档案表单</td>
-        <td>/profile 点击「编辑」→ 同页切换表单</td>
-        <td>
-          <div class="desc-block">
-            <b>【页面元素】</b>出生日期（日期选择器，max=今日，min=1900-01-01）、性别（男/女 toggle）、时辰（子时~亥时 + 时辰未知）、出生地（文本输入，选填）。底部「保存」+「取消」。
-          </div>
-          <div class="desc-block">
-            <b>【交互说明】</b>点击编辑 → 卡片变表单，预填当前值。点击保存 → 写 localStorage + 更新 lastUpdated → 回到详情视图。点击取消 → 不变。
+            <b>【Schema】</b>date, hourBranch(0-11), gender(male|female), place?, focus?, createdAt, lastUpdated, migratedAt?
           </div>
         </td>
       </tr>
 
-      <!-- M3 -->
       <tr>
-        <td><b>M3<br/>空态与引导</b></td>
-        <td>未建档引导 CTA</td>
-        <td>/profile（无档案）<br/>/ask（无档案）</td>
-        <td>
-          <div class="desc-block">
-            <b>【/profile 空态】</b>Card 内图标 + 大标题「还没有命盘档案」+ 副文。主按钮「去八字测算」→ /fortune/bazi，次按钮「手动建档」→ 同页表单。
-          </div>
-          <div class="desc-block">
-            <b>【/ask CTA】</b>AI 问答开场消息下方出现浅紫色提示条：「还没填命盘档案 · 填一次出生信息，AI 会结合你的四柱来答」+ 两个跳转按钮。建档后自动消失。
-          </div>
-        </td>
+        <td rowspan="3"><b>M2<br/>档案管理页<br/><span style="font-weight:400;">/profile</span></b></td>
+        <td>空态</td>
+        <td>/profile（无档案）</td>
+        <td>图标 + 标题「还没有命盘档案」+ 副文 + 主按钮「去八字测算」+ 次按钮「手动建档」</td>
+      </tr>
+      <tr>
+        <td>详情视图</td>
+        <td>/profile（有档案）</td>
+        <td>出生日期（大号思源宋体）+ 性别 + 时辰 + 出生地 + 建档时间 + 上次更新。底部「编辑」+「删除」按钮。</td>
+      </tr>
+      <tr>
+        <td>编辑表单</td>
+        <td>点击「编辑」→ 同页切换</td>
+        <td>日期选择器（min=1900, max=今日）+ 性别 toggle + 时辰 select（含「时辰未知」）+ 出生地文本输入。保存校验：日期必填、性别必填。</td>
       </tr>
 
-      <!-- M4 -->
       <tr>
-        <td><b>M4<br/>导航入口</b></td>
-        <td>SiteHeader 用户下拉</td>
-        <td>已登录状态下 SiteHeader 右侧触发</td>
-        <td>
-          <div class="desc-block">
-            <b>【桌面端】</b>用户头像下拉：用户信息 → 分隔线 → 「我的档案」（→ /profile）→ 分隔线 → 「退出登录」。
-          </div>
-          <div class="desc-block">
-            <b>【移动端】</b>汉堡菜单内保持相同结构。
-          </div>
-        </td>
+        <td><b>M3<br/>SiteHeader</b></td>
+        <td>已登录下拉加「我的档案」</td>
+        <td>桌面端 + 移动端</td>
+        <td>用户信息 → 分隔线 → <b>我的档案</b>（→ /profile）→ 分隔线 → 退出登录。未登录时下拉只有登录/注册。</td>
       </tr>
 
-      <!-- M5 -->
       <tr>
-        <td><b>M5<br/>消费方接入</b></td>
-        <td>bazi-flow / ziwei-flow / ask-engine / ask-chat</td>
-        <td>八字测算页、紫微测算页、AI 问答页</td>
+        <td rowspan="2"><b>M4<br/>AI 问答</b></td>
+        <td>额度分账</td>
+        <td>send() 时</td>
+        <td>改为 <code>consumeQuota(email)</code> / <code>getQuota(email)</code>，每天 5 次，跨天自动重置，email 隔离。</td>
+      </tr>
+      <tr>
+        <td>未建档 CTA</td>
+        <td>/ask 开场</td>
+        <td>开场消息下方显示紫色提示条：「还没填命盘档案 · 填一次出生信息，AI 会结合你的四柱来答」+ 去八字测算 / 手动建档 两个按钮。建档后自动消失。</td>
+      </tr>
+
+      <tr>
+        <td><b>M5<br/>消费方改造</b></td>
+        <td>4 个文件替换直读写</td>
+        <td>启动 / 写入 / 读取时</td>
         <td>
-          <div class="desc-block">
-            <b>【改造内容】</b>所有 <code>fatecipher.profile.bazi</code> 直读写替换为 <code>ProfileStore.getProfile/setProfile(user.email)</code>。AI 问答额度 <code>fatecipher.ask.quota</code> 改为 ProfileStore 内部管理（<code>consumeQuota(email)</code> / <code>getQuota(email)</code>）。
-          </div>
+          <ul class="clean" style="margin-top:6px;">
+            <li><code>bazi-flow.tsx</code> — STORAGE_KEY → ProfileStore.saveProfile(user.email)</li>
+            <li><code>ziwei-flow.tsx</code> — 同上</li>
+            <li><code>ask-engine.ts</code> — loadAskContext(email) 接受 email，内部调 ProfileStore.getProfile</li>
+            <li><code>ask-chat.tsx</code> — 额度用 ProfileStore 统一管理</li>
+          </ul>
         </td>
       </tr>
 
@@ -335,48 +422,194 @@
   </div>
 </section>
 
-<!-- 7. 异常与边界 -->
+<!-- 8. UI 线框图 & 状态机 -->
+<section id="ui">
+  <h2>UI 线框图 & 状态机</h2>
+
+  <h3>8.1 /profile 页面 — 空态</h3>
+  <div class="wf">┌─────────────────────────────────────────────┐
+│  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
+├─────────────────────────────────────────────┤
+│                                             │
+│                    还没有命盘档案              │
+│           填一次出生信息，八字、紫微、AI       │
+│           问答都会贴身解读你。                 │
+│                                             │
+│   ┌──────────────┐    ┌────────────────┐   │
+│   │  去八字测算   │    │   手动建档      │   │
+│   └──────────────┘    └────────────────┘   │
+│                                             │
+└─────────────────────────────────────────────┘</div>
+
+  <h3>8.2 /profile 页面 — 详情视图</h3>
+  <div class="wf">┌─────────────────────────────────────────────┐
+│  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
+├─────────────────────────────────────────────┤
+│                                             │
+│          我的命盘档案         [编辑]          │
+│   [姓名]     · 建档 今天 · 上次更新 2 天前    │
+│                                             │
+│  ┌─────────────────────────────────────┐    │
+│  │ 出生日期         性别                │    │
+│  │  1997-08-15       男                 │    │
+│  │                                     │    │
+│  │  时辰             出生地              │    │
+│  │  申时（16:00-18:00）  北京 海淀       │    │
+│  │                                     │    │
+│  │  这份档案会被八字、紫微、AI 问答共用。 │    │
+│  │                              [删除档案] │    │
+│  └─────────────────────────────────────┘    │
+│                                             │
+└─────────────────────────────────────────────┘</div>
+
+  <h3>8.3 /profile 页面 — 编辑表单</h3>
+  <div class="wf">┌─────────────────────────────────────────────┐
+│  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
+├─────────────────────────────────────────────┤
+│                                             │
+│                 编辑档案                     │
+│                                             │
+│  出生日期 *                                  │
+│  ┌─────────────────────────────────┐        │
+│  │ 1997-08-15              ▼       │        │
+│  └─────────────────────────────────┘        │
+│                                             │
+│  性别 *                                     │
+│  ┌──────────┐    ┌──────────┐               │
+│  │    男    │    │    女    │               │
+│  └──────────┘    └──────────┘               │
+│                                             │
+│  时辰（选填）                                │
+│  ┌─────────────────────────────────┐        │
+│  │ 申时（16:00-18:00）      ▼      │        │
+│  └─────────────────────────────────┘        │
+│                                             │
+│  出生地（选填）                              │
+│  ┌─────────────────────────────────┐        │
+│  │ 北京 海淀                        │        │
+│  └─────────────────────────────────┘        │
+│                                             │
+│  ┌──────────┐    ┌──────────┐               │
+│  │  保存    │    │   取消    │               │
+│  └──────────┘    └──────────┘               │
+│                                             │
+└─────────────────────────────────────────────┘</div>
+
+  <h3>8.4 SiteHeader 下拉（已登录）</h3>
+  <div class="wf">┌──────────────────────────────────────────────┐
+│  Logo  八字  塔罗  紫微  AI问答  [张三 ▼]       │
+└──────────────────────────────────────────────┘
+
+                           ┌─────────────────┐
+                           │ 张三             │  ← 用户信息
+                           │ zhang@example.com│
+                           ├─────────────────┤
+                           │   我的档案  →    │  ← 新增
+                           ├─────────────────┤
+                           │   退出登录      │
+                           └─────────────────┘</div>
+
+  <h3>8.5 档案状态机</h3>
+  <div class="state-grid">
+    <div class="state-box active">
+      <div class="name">❌ 空态</div>
+      <div class="desc">无档案，显示「去八字测算」引导</div>
+    </div>
+    <div class="state-box">
+      <div class="name">📋 详情</div>
+      <div class="desc">有档案，显示完整信息 + 编辑/删除按钮</div>
+    </div>
+    <div class="state-box">
+      <div class="name">✏️ 编辑中</div>
+      <div class="desc">表单预填，保存 → 详情；取消 → 详情</div>
+    </div>
+  </div>
+  <div class="diagram" style="margin-top:10px;">transitionDiagram:
+  空态 ──(建档成功)──→ 详情
+  详情 ──(点击编辑)──→ 编辑中
+  编辑中 ──(保存)──→ 详情（lastUpdated 刷新）
+  编辑中 ──(取消)──→ 详情（不变）
+  详情 ──(删除确认)──→ 空态</div>
+</section>
+
+<!-- 9. 验收 Checklist -->
+<section id="accept">
+  <h2>验收 Checklist</h2>
+
+  <h3>ProfileStore（单元测试已覆盖）</h3>
+  <ul class="checklist">
+    <li class="done">newProfile → saveProfile → getProfile 返回完整对象（含 createdAt）</li>
+    <li class="done">updateProfile patch 后 lastUpdated 自动刷新</li>
+    <li class="done">deleteProfile 后 getProfile 返回 null</li>
+    <li class="done">migrateForUser：旧 key 存在 + 新 key 不存在 → 迁移成功，旧 key 删除</li>
+    <li class="done">migrateForUser：新 key 已存在 → 跳过</li>
+    <li class="done">migrateForUser：旧 key 不存在 → 跳过</li>
+    <li class="done">consumeQuota：第一次返回 true，第 6 次返回 false</li>
+    <li class="done">额度跨天自动重置</li>
+  </ul>
+
+  <h3>多账号隔离（手动）</h3>
+  <ul class="checklist">
+    <li>用户 A（a@ex.com）signIn → 八字测算立盘 → signOut</li>
+    <li>用户 B（b@ex.com）signIn → /profile → 显示空态，/ask → 通用开场 + CTA</li>
+    <li>用户 B signOut → 用户 A signIn → /profile → 显示 A 的档案</li>
+    <li>用户 A 用完 5 次额度 → 用户 B signIn → B 还有 5 次</li>
+  </ul>
+
+  <h3>UI 交互（手动）</h3>
+  <ul class="checklist">
+    <li>SiteHeader 已登录下拉有「我的档案」→ 跳转 /profile</li>
+    <li>/profile 空态 → 点击「去八字测算」→ /fortune/bazi；点击「手动建档」→ 同页表单</li>
+    <li>/profile 详情 → 编辑字段 → 保存 → 回到详情，字段更新，lastUpdated 刷新</li>
+    <li>/profile 详情 → 删除 → confirm → 确认 → 回到空态</li>
+    <li>/profile 编辑表单 → 取消 → 不变</li>
+    <li>/ask 未建档 → 开场下方出现紫色 CTA 条</li>
+    <li>/ask 建档后 → CTA 条自动消失，承接语个性化</li>
+  </ul>
+</section>
+
+<!-- 10. 异常与边界 -->
 <section id="edge">
   <h2>异常与边界</h2>
   <table>
-    <thead><tr><th>#</th><th>场景</th><th>处理</th></tr></thead>
+    <thead><tr><th style="width:30px;">#</th><th>场景</th><th>处理策略</th></tr></thead>
     <tbody>
-      <tr><td>E1</td><td>localStorage 不可用（隐私模式 / 禁用）</td><td>ProfileStore 静默降级，档案页表单禁用提交按钮并提示「当前环境无法保存档案」</td></tr>
-      <tr><td>E2</td><td>编辑保存时另一标签页已改档案</td><td>v0.2 直接覆盖（无多标签冲突检测），后续版本加乐观锁</td></tr>
+      <tr><td>E1</td><td>localStorage 不可用（隐私模式 / 禁用）</td><td>ProfileStore 静默降级，档案页表单禁用提交并提示「当前环境无法保存档案」</td></tr>
+      <tr><td>E2</td><td>编辑保存时另一标签页已改档案</td><td>v0.2 直接覆盖（无多标签冲突检测），待 <span class="pill sk">v0.3+</span> 加乐观锁</td></tr>
       <tr><td>E3</td><td>删除档案 → 确认弹窗 → 用户点取消</td><td>关闭弹窗，不做任何操作</td></tr>
       <tr><td>E4</td><td>删除档案后立刻进入 AI 问答</td><td>AI 问答走通用开场（hasProfile: false），CTA 引导建档重新出现</td></tr>
       <tr><td>E5</td><td>旧 key 数据格式异常（不是合法 JSON）</td><td>迁移 catch 后静默跳过，不阻断 signIn 流程</td></tr>
-      <tr><td>E6</td><td>多用户共用浏览器，其中一人旧 key 未迁移</td><td>迁移只在当前登录用户有新 key 需求时触发，不影响其他用户的旧 key</td></tr>
-      <tr><td>E7</td><td>未登录用户访问 /profile</td><td>AuthGuard 拦截遮罩 + redirect=/profile，登录后自动回跳</td></tr>
+      <tr><td>E6</td><td>未登录访问 /profile</td><td>AuthGuard 拦截遮罩 + redirect=/profile，登录后自动回跳</td></tr>
+      <tr><td>E7</td><td>email 大小写</td><td>ProfileStore 内部 <code>email.toLowerCase()</code> 统一，key 不重复</td></tr>
     </tbody>
   </table>
 </section>
 
-<!-- 8. 数据埋点 -->
+<!-- 11. 数据埋点 -->
 <section id="track">
   <h2>数据埋点</h2>
   <table>
-    <thead><tr><th>事件名</th><th>触发时机</th><th>属性</th></tr></thead>
+    <thead><tr><th>事件名</th><th>触发时机</th><th>属性</th><th>状态</th></tr></thead>
     <tbody>
-      <tr><td>profile_entry</td><td>进入 /profile 页面</td><td>hasProfile: boolean, source: "header" | "cta"</td></tr>
-      <tr><td>profile_edit_start</td><td>点击编辑</td><td>—</td></tr>
-      <tr><td>profile_edit_save</td><td>保存成功</td><td>diffDaysSinceCreation: number</td></tr>
-      <tr><td>profile_delete</td><td>删除确认后</td><td>—</td></tr>
-      <tr><td>profile_migrate</td><td>旧 key 迁移完成</td><td>email（hash 后）, hadOldKey: boolean</td></tr>
-      <tr><td>profile_cta_click</td><td>AI 问答建档 CTA 点击</td><td>—</td></tr>
+      <tr><td>profile_entry</td><td>进入 /profile 页面</td><td>hasProfile: boolean, source: "header" | "cta"</td><td><span class="pill sk">占位</span></td></tr>
+      <tr><td>profile_edit_start</td><td>点击编辑</td><td>—</td><td><span class="pill sk">占位</span></td></tr>
+      <tr><td>profile_edit_save</td><td>保存成功</td><td>diffDaysSinceCreation: number</td><td><span class="pill sk">占位</span></td></tr>
+      <tr><td>profile_delete</td><td>删除确认后</td><td>—</td><td><span class="pill sk">占位</span></td></tr>
+      <tr><td>profile_migrate</td><td>旧 key 迁移完成</td><td>email（hash 后）, hadOldKey: boolean</td><td><span class="pill sk">占位</span></td></tr>
+      <tr><td>profile_cta_click</td><td>AI 问答建档 CTA 点击</td><td>—</td><td><span class="pill sk">占位</span></td></tr>
     </tbody>
   </table>
-  <p style="font-family:system-ui,sans-serif;font-size:12px;color:var(--ink-3);margin-top:10px;">
-    注：当前无埋点 SDK，先在关键路径加 console.log 占位。下一步接入 Plausible / PostHog 时替换为正式上报。
+  <p style="font-family:system-ui,sans-serif;font-size:11.5px;color:var(--ink-3);margin-top:8px;">
+    <b>注：</b>当前无埋点 SDK，关键路径先加 <code>console.log</code> 占位。下一步接入 Plausible / PostHog 时替换为正式上报。email 敏感，必须 hash 后上报。
   </p>
 </section>
 
-<!-- 9. 时序图 -->
+<!-- 12. 时序图 -->
 <section id="seq">
   <h2>时序图</h2>
 
-  <h3>9.1 迁移 + 建档主路径</h3>
-  <div class="mermaid">sequenceDiagram
+  <h3>12.1 signIn → 迁移 → 建档主路径</h3>
+  <div class="diagram">sequenceDiagram
   participant U as 用户
   participant A as AuthProvider
   participant P as ProfileStore
@@ -394,6 +627,7 @@
     P->>L: 写入 fatecipher.profile.{email}
     P->>L: 删除 fatecipher.profile.bazi
   end
+  Note over P: 额度 key 同步迁移
   P-->>A: MigrateResult { profileMigrated, quotaMigrated }
   A-->>U: 进入产品
 
@@ -402,8 +636,8 @@
   P->>P: 更新 lastUpdated = now
   P->>L: 写入 fatecipher.profile.{email}</div>
 
-  <h3>9.2 AI 问答读取档案</h3>
-  <div class="mermaid">sequenceDiagram
+  <h3>12.2 AI 问答读取档案</h3>
+  <div class="diagram">sequenceDiagram
   participant U as 用户
   participant Chat as AskChat
   participant Engine as AskEngine
@@ -419,70 +653,96 @@
   else 无档案
     Engine-->>Chat: { hasProfile:false }
   end
-  Chat->>Chat: 有档案 → 个性化开场；无 → 通用开场 + 建档 CTA</div>
+  Chat->>Chat: 有档案 → 个性化开场\n无 → 通用开场 + 建档 CTA</div>
 </section>
 
-<!-- 10. 上线计划 -->
+<!-- 13. 上线计划 & Git 记录 -->
 <section id="plan">
-  <h2>上线计划</h2>
+  <h2>上线计划 & Git 记录</h2>
+
   <table>
-    <thead><tr><th>阶段</th><th>内容</th><th>前置依赖</th><th>提交</th><th>状态</th></tr></thead>
+    <thead><tr><th style="width:40px;">#</th><th>阶段内容</th><th style="width:100px;">前置</th><th style="width:100px;">Commit</th><th style="width:80px;">状态</th></tr></thead>
     <tbody>
-      <tr><td>1</td><td>lib/profile.ts：ProfileStore（CRUD + 迁移 + 额度）</td><td>无</td><td rowspan="8"><span class="commit-link">35074fc</span></td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>2</td><td>auth-context.tsx：signIn/signUp 后触发迁移</td><td>阶段 1</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>3</td><td>/profile 档案管理页（查看 + 编辑 + 删除 + 空态）</td><td>阶段 1</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>4</td><td>SiteHeader 下拉加「我的档案」（桌面 + 移动端）</td><td>阶段 3</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>5</td><td>AI 问答页未建档 CTA + ask-chat 额度分账</td><td>阶段 3</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>6</td><td>bazi-flow / ziwei-flow / ask-engine 改用 ProfileStore</td><td>阶段 1</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>7</td><td>TypeScript 零错误 + Vitest 8/8 通过</td><td>阶段 1-6</td><td><span class="pill ok">已完成</span></td></tr>
-      <tr><td>8</td><td>Git commit + push 到 GitHub</td><td>阶段 1-7</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>1</td><td>lib/profile.ts：ProfileStore（CRUD + 迁移 + 额度）</td><td>无</td><td rowspan="7" style="text-align:center;"><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/35074fc" target="_blank">35074fc</a></td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>2</td><td>auth-context.tsx：signIn/signUp 后触发 migrateForUser</td><td>1</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>3</td><td>/profile 档案管理页（空态 / 详情 / 编辑）</td><td>1</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>4</td><td>SiteHeader 下拉加「我的档案」（桌面 + 移动端）</td><td>3</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>5</td><td>AI 问答 CTA + 额度分账</td><td>3</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>6</td><td>4 个消费方（bazi/ziwei/ask-engine/ask-chat）改用 ProfileStore</td><td>1</td><td><span class="pill ok">已完成</span></td></tr>
+      <tr><td>7</td><td>TypeScript 零错误 + Vitest 8/8 通过 + Git push</td><td>1-6</td><td><span class="pill ok">已完成</span></td></tr>
     </tbody>
   </table>
+
+  <p style="font-family:system-ui,sans-serif;font-size:11.5px;color:var(--ink-3);margin-top:10px;">
+    <b>Revert 记录：</b>中间尝试左侧 Sidebar 导航（<a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/b0d46a8" target="_blank">b0d46a8</a>），但最终 revert（<a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/98a8131" target="_blank">98a8131</a>），保持顶部导航 4 入口方案。
+  </p>
 </section>
 
-<!-- 11. 附录 -->
+<!-- 14. 附录 -->
 <section id="appendix">
   <h2>附录</h2>
 
-  <h3>A. 档案 Schema（v0.2）</h3>
-  <div class="mermaid">{
-  // FateCipher Profile v2
-  // key: fatecipher.profile.{email}    ← 小写 email
+  <h3>A. 技术栈</h3>
+  <div style="margin-top:8px;">
+    <span class="tech-chip">Next.js 15.5</span>
+    <span class="tech-chip">React 19</span>
+    <span class="tech-chip">TypeScript</span>
+    <span class="tech-chip">Tailwind CSS v4</span>
+    <span class="tech-chip">shadcn/ui</span>
+    <span class="tech-chip">Framer Motion</span>
+    <span class="tech-chip">DeepSeek API（SSE 流式）</span>
+    <span class="tech-chip">Vitest + RTL + jsdom</span>
+    <span class="tech-chip">GitHub</span>
+    <span class="tech-chip">localStorage（无后端）</span>
+  </div>
 
-  date: "YYYY-MM-DD",              // 出生日期 必填
-  hourBranch: 0-11 | undefined,    // 时辰索引（HOUR_SLOTS）
-  gender: "male" | "female",       // 必填
-  place: "string?",                // 出生地 选填
-  focus: ["string"],               // 关注方向
-  // v0.2 新增
-  createdAt: "ISOString",          // 首次建档时间
-  lastUpdated: "ISOString",        // 最后修改时间
-  migratedAt?: "ISOString"         // 从旧 key 迁移时写入
-}</div>
-
-  <h3>B. Key 映射对照表</h3>
+  <h3>B. Key 映射表</h3>
   <table>
-    <thead><tr><th>场景</th><th>v0.1 key</th><th>v0.2 key</th><th>改造者</th></tr></thead>
+    <thead><tr><th>场景</th><th>v0.1 key（全局）</th><th>v0.2 key（带 email）</th><th>迁移策略</th></tr></thead>
     <tbody>
-      <tr><td>八字 / 紫微写入</td><td class="code">fatecipher.profile.bazi</td><td class="code">fatecipher.profile.{email}</td><td>ProfileStore.saveProfile</td></tr>
-      <tr><td>AI 问答读取</td><td class="code">fatecipher.profile.bazi</td><td class="code">fatecipher.profile.{email}</td><td>ProfileStore.getProfile</td></tr>
-      <tr><td>AI 问答额度</td><td class="code">fatecipher.ask.quota</td><td class="code">fatecipher.ask.quota.{email}</td><td>ProfileStore.consumeQuota</td></tr>
-      <tr><td>用户注册列表</td><td class="code">fatecipher.users</td><td>不变</td><td>auth-context</td></tr>
-      <tr><td>当前登录用户</td><td class="code">fatecipher.currentUser</td><td>不变</td><td>auth-context</td></tr>
+      <tr><td>命盘档案</td><td><code>fatecipher.profile.bazi</code></td><td><code>fatecipher.profile.{email}</code></td><td>signIn 时自动搬迁 → 删旧 key</td></tr>
+      <tr><td>AI 问答额度</td><td><code>fatecipher.ask.quota</code></td><td><code>fatecipher.ask.quota.{email}</code></td><td>同上</td></tr>
+      <tr><td>用户列表</td><td><code>fatecipher.users</code></td><td>不变</td><td>—</td></tr>
+      <tr><td>当前登录用户</td><td><code>fatecipher.currentUser</code></td><td>不变</td><td>—</td></tr>
     </tbody>
   </table>
 
-  <h3>C. 影响文件清单</h3>
+  <h3>C. 档案 Schema</h3>
+  <div class="diagram">// Profile v2
+// key: fatecipher.profile.{email}  ← 小写 email
+// created by ProfileStore.saveProfile()
+
+{
+  date:        "YYYY-MM-DD",       // 必填，出生日期
+  hourBranch:  0-11 | undefined,   // 时辰索引（HOUR_SLOTS）或 undefined=未知
+  gender:      "male" | "female",  // 必填
+  place:       string | undefined, // 选填，出生地
+  focus:       string[],           // 关注方向数组
+  // v0.2 新增
+  createdAt:   ISOString,         // 首次建档时间
+  lastUpdated: ISOString,         // 最后修改时间
+  migratedAt?: ISOString          // 仅 v0.1 老用户迁移时出现
+}</div>
+
+  <h3>D. 影响文件清单</h3>
   <ul class="clean">
     <li><code>src/lib/profile.ts</code> — <b>新建</b>，ProfileStore（CRUD + 迁移 + 额度）</li>
-    <li><code>src/components/auth/auth-context.tsx</code> — signIn / signUp 后触发 migrateForUser</li>
-    <li><code>src/app/profile/page.tsx</code> — <b>新建</b>，档案管理页 + AuthGuard + 空态</li>
-    <li><code>src/components/site-header.tsx</code> — 下拉加「我的档案」（桌面 + 移动端）</li>
-    <li><code>src/components/bazi/bazi-flow.tsx</code> — STORAGE_KEY → ProfileStore.saveProfile</li>
+    <li><code>src/components/auth/auth-context.tsx</code> — signIn/signUp 后触发 <code>migrateForUser</code></li>
+    <li><code>src/app/profile/page.tsx</code> — <b>新建</b>，档案管理页（空态 / 详情 / 编辑）+ AuthGuard</li>
+    <li><code>src/components/site-header.tsx</code> — 已登录下拉加「我的档案」（桌面 + 移动端）</li>
+    <li><code>src/components/bazi/bazi-flow.tsx</code> — STORAGE_KEY → <code>saveProfile(user.email)</code></li>
     <li><code>src/components/ziwei/ziwei-flow.tsx</code> — 同上</li>
-    <li><code>src/lib/ask-engine.ts</code> — loadAskContext(email) 接受 email 参数</li>
-    <li><code>src/components/ask/ask-chat.tsx</code> — 额度分账 + 未建档 CTA + 改用 ProfileStore API</li>
-    <li><code>src/components/__tests__/site-header.test.tsx</code> — 适配新导航结构</li>
+    <li><code>src/lib/ask-engine.ts</code> — <code>loadAskContext(email)</code> 接受 email 参数，内部调 <code>getProfile</code></li>
+    <li><code>src/components/ask/ask-chat.tsx</code> — 额度用 ProfileStore、开场加未建档 CTA</li>
+    <li><code>src/components/__tests__/site-header.test.tsx</code> — 适配新导航结构（8/8 通过）</li>
+  </ul>
+
+  <h3>E. 已知技术债</h3>
+  <ul class="clean">
+    <li><span class="pill sk">TODO</span> 多标签页编辑冲突（v0.3+ 加乐观锁）</li>
+    <li><span class="pill sk">TODO</span> 无埋点 SDK，当前 console.log 占位</li>
+    <li><span class="pill sk">TODO</span> 无后端，全部 localStorage，单用户场景可行但无法跨设备同步</li>
+    <li><span class="pill sk">TODO</span> vitest 仅覆盖 site-header，ProfileStore 迁移逻辑需补单元测试</li>
   </ul>
 </section>
 
