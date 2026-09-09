@@ -53,8 +53,18 @@
     display: flex; align-items: center; gap: 8px;
     margin-top: 14px;
     border-top: 1px solid var(--line);
+    cursor: pointer; user-select: none;
+    transition: color .15s;
   }
+  .v-group:hover { color: var(--accent); }
   .v-group:first-of-type { border-top: none; margin-top: 4px; padding-top: 4px; }
+  .v-group .arrow {
+    width: 0; height: 0;
+    border-left: 4px solid transparent; border-right: 4px solid transparent;
+    border-top: 5px solid var(--ink-3);
+    margin-right: auto; transition: transform .2s;
+  }
+  .v-group.collapsed .arrow { transform: rotate(-90deg); }
   .v-badge {
     font-family: ui-monospace, Menlo, monospace; font-size: 11px;
     background: var(--accent-soft); color: var(--accent);
@@ -62,6 +72,16 @@
     text-transform: none; letter-spacing: 0;
   }
   .v-badge.v02 { background: #dbeafe; color: #1e40af; }
+
+  /* Group children collapsible */
+  .sidebar li[data-group-children] {
+    overflow: hidden;
+    transition: max-height .25s ease, opacity .2s;
+    max-height: 300px; opacity: 1;
+  }
+  .sidebar li[data-group-children].collapsed {
+    max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0;
+  }
 
   /* Inner ol */
   .sidebar ol ol { padding-left: 8px; margin-top: 0; }
@@ -179,30 +199,34 @@
   <div class="sidebar-title"><span class="dot"></span>PRD 目录</div>
   <ol>
     <!-- ========== v0.1 ========== -->
-    <li class="v-group"><span class="v-badge">v0.1</span>从 0 到 1 项目</li>
-    <li><a href="#v01-intro"><span class="idx">01</span>为什么做这个产品</a></li>
-    <li><a href="#v01-define"><span class="idx">02</span>产品定位与功能定义</a></li>
-    <li><a href="#v01-layout"><span class="idx">03</span>首页排版分析</a></li>
-    <li><a href="#v01-pages"><span class="idx">04</span>页面逻辑总览</a></li>
-    <li><a href="#v01-tech"><span class="idx">05</span>技术选型决策</a></li>
-    <li><a href="#v01-path"><span class="idx">06</span>从 0 到 1 核心路径</a></li>
-    <li><a href="#v01-rhythm"><span class="idx">07</span>单人全栈迭代节奏</a></li>
-    <li><a href="#v01-learn"><span class="idx">08</span>核心经验</a></li>
+    <li class="v-group" data-group="v01">
+      <span class="v-badge">v0.1</span>从 0 到 1 项目<span class="arrow"></span>
+    </li>
+    <li data-group-children="v01"><a href="#v01-intro"><span class="idx">01</span>为什么做这个产品</a></li>
+    <li data-group-children="v01"><a href="#v01-define"><span class="idx">02</span>产品定位与功能定义</a></li>
+    <li data-group-children="v01"><a href="#v01-layout"><span class="idx">03</span>首页排版分析</a></li>
+    <li data-group-children="v01"><a href="#v01-pages"><span class="idx">04</span>页面逻辑总览</a></li>
+    <li data-group-children="v01"><a href="#v01-tech"><span class="idx">05</span>技术选型决策</a></li>
+    <li data-group-children="v01"><a href="#v01-path"><span class="idx">06</span>从 0 到 1 核心路径</a></li>
+    <li data-group-children="v01"><a href="#v01-rhythm"><span class="idx">07</span>单人全栈迭代节奏</a></li>
+    <li data-group-children="v01"><a href="#v01-learn"><span class="idx">08</span>核心经验</a></li>
 
     <!-- ========== v0.2 ========== -->
-    <li class="v-group" style="border-top-color: var(--sky);"><span class="v-badge v02">v0.2</span>新增功能 · 档案管理</li>
-    <li><a href="#v02-why"><span class="idx">09</span>为什么新增档案管理</a></li>
-    <li><a href="#v02-story"><span class="idx">10</span>用户故事</a></li>
-    <li><a href="#v02-bg"><span class="idx">11</span>需求背景</a></li>
-    <li><a href="#v02-goal"><span class="idx">12</span>需求目标 &amp; 范围</a></li>
-    <li><a href="#v02-flow"><span class="idx">13</span>业务流程图</a></li>
-    <li><a href="#v02-detail"><span class="idx">14</span>详细方案</a></li>
-    <li><a href="#v02-ui"><span class="idx">15</span>流程图 + 运行截图</a></li>
-    <li><a href="#v02-accept"><span class="idx">16</span>验收 Checklist</a></li>
-    <li><a href="#v02-edge"><span class="idx">17</span>异常与边界</a></li>
-    <li><a href="#v02-track"><span class="idx">18</span>数据埋点</a></li>
-    <li><a href="#v02-seq"><span class="idx">19</span>时序图</a></li>
-    <li><a href="#v02-appendix"><span class="idx">20</span>附录</a></li>
+    <li class="v-group" data-group="v02" style="border-top-color: var(--sky);">
+      <span class="v-badge v02">v0.2</span>新增功能 · 档案管理<span class="arrow"></span>
+    </li>
+    <li data-group-children="v02"><a href="#v02-why"><span class="idx">09</span>为什么新增档案管理</a></li>
+    <li data-group-children="v02"><a href="#v02-story"><span class="idx">10</span>用户故事</a></li>
+    <li data-group-children="v02"><a href="#v02-bg"><span class="idx">11</span>需求背景</a></li>
+    <li data-group-children="v02"><a href="#v02-goal"><span class="idx">12</span>需求目标 &amp; 范围</a></li>
+    <li data-group-children="v02"><a href="#v02-flow"><span class="idx">13</span>业务流程图</a></li>
+    <li data-group-children="v02"><a href="#v02-detail"><span class="idx">14</span>详细方案</a></li>
+    <li data-group-children="v02"><a href="#v02-ui"><span class="idx">15</span>流程图 + 运行截图</a></li>
+    <li data-group-children="v02"><a href="#v02-accept"><span class="idx">16</span>验收 Checklist</a></li>
+    <li data-group-children="v02"><a href="#v02-edge"><span class="idx">17</span>异常与边界</a></li>
+    <li data-group-children="v02"><a href="#v02-track"><span class="idx">18</span>数据埋点</a></li>
+    <li data-group-children="v02"><a href="#v02-seq"><span class="idx">19</span>时序图</a></li>
+    <li data-group-children="v02"><a href="#v02-appendix"><span class="idx">20</span>附录</a></li>
   </ol>
 </nav>
 
@@ -730,5 +754,26 @@ v0.1 功能优化（一个晚上）
 </footer>
 
 </div>
+
+<script>
+  // Sidebar version group collapse/expand
+  document.querySelectorAll('.v-group').forEach(group => {
+    const g = group.dataset.group;
+    // Restore saved state or default collapsed (so future versions don't flood)
+    const saved = localStorage.getItem('prd-group-' + g);
+    const collapsed = saved === null ? false : saved === 'collapsed';
+    if (collapsed) {
+      group.classList.add('collapsed');
+      document.querySelectorAll('[data-group-children="' + g + '"]').forEach(li => li.classList.add('collapsed'));
+    }
+    group.addEventListener('click', () => {
+      const isCollapsed = group.classList.toggle('collapsed');
+      document.querySelectorAll('[data-group-children="' + g + '"]').forEach(li => {
+        li.classList.toggle('collapsed', isCollapsed);
+      });
+      localStorage.setItem('prd-group-' + g, isCollapsed ? 'collapsed' : 'expanded');
+    });
+  });
+</script>
 </body>
 </html>
