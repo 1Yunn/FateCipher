@@ -23,9 +23,53 @@
     --danger-soft: #fee2e2;
     --sky: #0284c7;
     --sky-soft: #e0f2fe;
+    --sidebar-w: 232px;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: "Noto Serif SC", "思源宋体", Georgia, serif; line-height: 1.75; }
+  body { padding-left: var(--sidebar-w); counter-reset: h2; }
+
+  /* ============ Fixed Sidebar ============ */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: var(--sidebar-w);
+    background: #fff;
+    border-right: 1px solid var(--line);
+    padding: 28px 18px 24px;
+    overflow-y: auto;
+    z-index: 50;
+  }
+  .sidebar-title {
+    font-family: system-ui,-apple-system,sans-serif;
+    font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600;
+    margin-bottom: 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sidebar-title .dot { display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-right:6px;vertical-align:middle;}
+  .sidebar ol { margin: 0; padding: 0; list-style: none; }
+  .sidebar li { margin-bottom: 2px; }
+  .sidebar a {
+    display: flex; align-items: baseline; gap: 8px;
+    font-family: system-ui,-apple-system,sans-serif;
+    font-size: 12.5px; color: var(--ink-2);
+    text-decoration: none; padding: 5px 8px;
+    border-radius: 6px;
+    transition: background .15s, color .15s;
+    border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { background: var(--accent-soft); color: var(--accent); }
+  .sidebar .idx {
+    flex-shrink: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    width: 22px;
+  }
+  .sidebar a:hover .idx { color: var(--accent); }
+
+  /* ============ Main ============ */
   .wrap { max-width: 960px; margin: 0 auto; padding: 48px 28px 140px; }
   header { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 40px; }
   header .tag { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 4px; margin-bottom: 14px; }
@@ -34,9 +78,10 @@
   header .meta { font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); display: flex; gap: 16px; flex-wrap: wrap; }
   header .meta span { display: inline-flex; align-items: center; gap: 6px; }
   header .meta .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
-  section { margin-bottom: 48px; }
+
+  section { margin-bottom: 48px; scroll-margin-top: 20px; }
   section h2 { font-size: 19px; font-weight: 500; margin: 0 0 16px; padding-bottom: 10px; border-bottom: 1px solid var(--line); letter-spacing: -.005em; counter-increment: h2; }
-  section h2::before { content: counter(h2, decimal-leading-zero) ". "; color: var(--accent); margin-right: 8px; }
+  section h2::before { content: counter(h2, decimal-leading-zero) ". "; color: var(--accent); margin-right: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 17px; }
   section h3 { font-family: system-ui,-apple-system,sans-serif; font-size: 13.5px; font-weight: 600; margin: 20px 0 8px; color: var(--ink-2); }
   table { width: 100%; border-collapse: collapse; font-family: system-ui,-apple-system,sans-serif; font-size: 13px; margin-top: 10px; }
   th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line-2); vertical-align: top; }
@@ -60,11 +105,6 @@
   .desc-block b { color: var(--accent); font-weight: 600; }
   .diagram { background: #fafafb; border: 1px solid var(--line); border-radius: 8px; padding: 14px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--ink-2); white-space: pre; overflow-x: auto; line-height: 1.55; }
   .foot { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); display: flex; justify-content: space-between; }
-  .toc { background: #fafafb; border: 1px solid var(--line); border-radius: 10px; padding: 14px 22px; margin-bottom: 36px; }
-  .toc ol { margin: 0; padding-left: 18px; }
-  .toc li { font-family: system-ui,-apple-system,sans-serif; font-size: 12.5px; color: var(--ink-2); padding: 2px 0; }
-  .toc li a { color: var(--accent); text-decoration: none; }
-  .toc li a:hover { text-decoration: underline; }
   .commit-link { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--ink-3); background: #fafafb; padding: 1px 7px; border-radius: 4px; border: 1px solid var(--line); text-decoration: none; }
   .commit-link:hover { background: var(--accent-soft); color: var(--accent); }
 
@@ -78,7 +118,7 @@
   .story .accept li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 600; }
 
   /* Wireframe */
-  .wf { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; overflow-x: auto; line-height: 1.55; margin-top: 10px; }
+  .wf { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; overflow-x: auto; line-height: 1.55; margin-top: 10px; white-space: pre; }
   .wf .box { border: 1px dashed var(--accent); color: var(--accent); }
   .wf .box-solid { border: 1px solid var(--ink-3); color: var(--ink-3); }
   .wf .btn { background: var(--ink); color: #fff; padding: 2px 8px; border-radius: 3px; }
@@ -100,9 +140,38 @@
   .state-box .name { font-family: system-ui,-apple-system,sans-serif; font-size: 13px; font-weight: 600; color: var(--ink); }
   .state-box .desc { font-family: system-ui,-apple-system,sans-serif; font-size: 11.5px; color: var(--ink-3); margin-top: 4px; }
   .state-box.active { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* Responsive — hide sidebar on small screens */
+  @media (max-width: 860px) {
+    :root { --sidebar-w: 0px; }
+    body { padding-left: 0; }
+    .sidebar { display: none; }
+  }
 </style>
 </head>
 <body>
+
+<!-- Fixed Sidebar TOC -->
+<nav class="sidebar">
+  <div class="sidebar-title"><span class="dot"></span>PRD 目录</div>
+  <ol>
+    <li><a href="#members"><span class="idx">01</span>项目相关人员</a></li>
+    <li><a href="#story"><span class="idx">02</span>用户故事 &amp; 核心场景</a></li>
+    <li><a href="#bg"><span class="idx">03</span>版本记录</a></li>
+    <li><a href="#bg2"><span class="idx">04</span>需求背景</a></li>
+    <li><a href="#goal"><span class="idx">05</span>需求目标 &amp; 范围</a></li>
+    <li><a href="#flow"><span class="idx">06</span>业务流程图</a></li>
+    <li><a href="#detail"><span class="idx">07</span>详细方案</a></li>
+    <li><a href="#ui"><span class="idx">08</span>UI 线框图 &amp; 状态机</a></li>
+    <li><a href="#accept"><span class="idx">09</span>验收 Checklist</a></li>
+    <li><a href="#edge"><span class="idx">10</span>异常与边界</a></li>
+    <li><a href="#track"><span class="idx">11</span>数据埋点</a></li>
+    <li><a href="#seq"><span class="idx">12</span>时序图</a></li>
+    <li><a href="#plan"><span class="idx">13</span>上线计划 &amp; Git 记录</a></li>
+    <li><a href="#appendix"><span class="idx">14</span>附录</a></li>
+  </ol>
+</nav>
+
 <div class="wrap">
 
 <header>
@@ -118,27 +187,7 @@
   </div>
 </header>
 
-<!-- TOC -->
-<div class="toc">
-  <ol>
-    <li><a href="#members">项目相关人员</a></li>
-    <li><a href="#story">用户故事 & 核心场景</a></li>
-    <li><a href="#bg">版本记录</a></li>
-    <li><a href="#bg2">需求背景</a></li>
-    <li><a href="#goal">需求目标 & 范围</a></li>
-    <li><a href="#flow">业务流程图</a></li>
-    <li><a href="#detail">详细方案</a></li>
-    <li><a href="#ui">UI 线框图 & 状态机</a></li>
-    <li><a href="#accept">验收 Checklist</a></li>
-    <li><a href="#edge">异常与边界</a></li>
-    <li><a href="#track">数据埋点</a></li>
-    <li><a href="#seq">时序图</a></li>
-    <li><a href="#plan">上线计划 & Git 记录</a></li>
-    <li><a href="#appendix">附录</a></li>
-  </ol>
-</div>
-
-<!-- 1. 项目相关人员 -->
+<!-- 01 项目相关人员 -->
 <section id="members">
   <h2>项目相关人员</h2>
   <div class="card">
@@ -169,9 +218,9 @@
   </div>
 </section>
 
-<!-- 2. 用户故事 -->
+<!-- 02 用户故事 -->
 <section id="story">
-  <h2>用户故事 & 核心场景</h2>
+  <h2>用户故事 &amp; 核心场景</h2>
 
   <h3>US-01 多账号建档隔离（P0）</h3>
   <div class="story">
@@ -226,7 +275,7 @@
   </div>
 </section>
 
-<!-- 3. 版本记录 -->
+<!-- 03 版本记录 -->
 <section id="bg">
   <h2>版本记录</h2>
   <table>
@@ -241,7 +290,7 @@
   </table>
 </section>
 
-<!-- 4. 需求背景 -->
+<!-- 04 需求背景 -->
 <section id="bg2">
   <h2>需求背景</h2>
   <div class="card">
@@ -263,9 +312,9 @@
   </div>
 </section>
 
-<!-- 5. 需求目标 & 范围 -->
+<!-- 05 需求目标 & 范围 -->
 <section id="goal">
-  <h2>需求目标 & 范围</h2>
+  <h2>需求目标 &amp; 范围</h2>
 
   <h3>本期目标（v0.2）— 全部已完成</h3>
   <table>
@@ -291,7 +340,7 @@
   </ul>
 </section>
 
-<!-- 6. 业务流程图 -->
+<!-- 06 业务流程图 -->
 <section id="flow">
   <h2>业务流程图</h2>
   <div class="card">
@@ -299,10 +348,12 @@
   A[用户注册/登录] --> B{已有档案?}
   B -->|是| C[进入产品]
   B -->|否| D[八字测算 / 紫微测算 / /profile 手动建档]
-  D --> E[写入 localStorage\n fatecipher.profile.{email}]
+  D --> E[写入 localStorage
+ fatecipher.profile.{email}]
   E --> C
   C --> F[AI 问答读取档案 → 个性化上下文]
-  C --> G[/profile 档案管理页\n查看/编辑/删除]
+  C --> G[/profile 档案管理页
+查看/编辑/删除]
   G --> E
 
   subgraph 建档入口
@@ -316,16 +367,18 @@
   J --> D
 
   subgraph 迁移
-    K[signIn/signUp]
-    K --> L{旧 key 存在\n且 新 key 不存在}
-    L -->|是| M[ProfileStore.migrateForUser\n旧 key → 新 key → 删旧 key]
+    K[signIn / signUp]
+    K --> L{旧 key 存在
+且 新 key 不存在}
+    L -->|是| M[ProfileStore.migrateForUser
+旧 key → 新 key → 删旧 key]
     L -->|否| N[跳过]
   end
   A --> K</div>
   </div>
 </section>
 
-<!-- 7. 详细方案 -->
+<!-- 07 详细方案 -->
 <section id="detail">
   <h2>详细方案</h2>
 
@@ -422,11 +475,11 @@
   </div>
 </section>
 
-<!-- 8. UI 线框图 & 状态机 -->
+<!-- 08 UI 线框图 & 状态机 -->
 <section id="ui">
-  <h2>UI 线框图 & 状态机</h2>
+  <h2>UI 线框图 &amp; 状态机</h2>
 
-  <h3>8.1 /profile 页面 — 空态</h3>
+  <h3>08.1 /profile 页面 — 空态</h3>
   <div class="wf">┌─────────────────────────────────────────────┐
 │  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
 ├─────────────────────────────────────────────┤
@@ -441,7 +494,7 @@
 │                                             │
 └─────────────────────────────────────────────┘</div>
 
-  <h3>8.2 /profile 页面 — 详情视图</h3>
+  <h3>08.2 /profile 页面 — 详情视图</h3>
   <div class="wf">┌─────────────────────────────────────────────┐
 │  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
 ├─────────────────────────────────────────────┤
@@ -462,7 +515,7 @@
 │                                             │
 └─────────────────────────────────────────────┘</div>
 
-  <h3>8.3 /profile 页面 — 编辑表单</h3>
+  <h3>08.3 /profile 页面 — 编辑表单</h3>
   <div class="wf">┌─────────────────────────────────────────────┐
 │  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
 ├─────────────────────────────────────────────┤
@@ -495,21 +548,21 @@
 │                                             │
 └─────────────────────────────────────────────┘</div>
 
-  <h3>8.4 SiteHeader 下拉（已登录）</h3>
+  <h3>08.4 SiteHeader 下拉（已登录）</h3>
   <div class="wf">┌──────────────────────────────────────────────┐
 │  Logo  八字  塔罗  紫微  AI问答  [张三 ▼]       │
 └──────────────────────────────────────────────┘
 
                            ┌─────────────────┐
-                           │ 张三             │  ← 用户信息
+                           │ 张三             │
                            │ zhang@example.com│
                            ├─────────────────┤
-                           │   我的档案  →    │  ← 新增
+                           │   我的档案  →    │
                            ├─────────────────┤
                            │   退出登录      │
                            └─────────────────┘</div>
 
-  <h3>8.5 档案状态机</h3>
+  <h3>08.5 档案状态机</h3>
   <div class="state-grid">
     <div class="state-box active">
       <div class="name">❌ 空态</div>
@@ -532,7 +585,7 @@
   详情 ──(删除确认)──→ 空态</div>
 </section>
 
-<!-- 9. 验收 Checklist -->
+<!-- 09 验收 Checklist -->
 <section id="accept">
   <h2>验收 Checklist</h2>
 
@@ -568,7 +621,7 @@
   </ul>
 </section>
 
-<!-- 10. 异常与边界 -->
+<!-- 10 异常与边界 -->
 <section id="edge">
   <h2>异常与边界</h2>
   <table>
@@ -585,11 +638,11 @@
   </table>
 </section>
 
-<!-- 11. 数据埋点 -->
+<!-- 11 数据埋点 -->
 <section id="track">
   <h2>数据埋点</h2>
   <table>
-    <thead><tr><th>事件名</th><th>触发时机</th><th>属性</th><th>状态</th></tr></thead>
+    <thead><tr><th>事件名</th><th>触发时机</th><th>属性</th><th style="width:80px;">状态</th></tr></thead>
     <tbody>
       <tr><td>profile_entry</td><td>进入 /profile 页面</td><td>hasProfile: boolean, source: "header" | "cta"</td><td><span class="pill sk">占位</span></td></tr>
       <tr><td>profile_edit_start</td><td>点击编辑</td><td>—</td><td><span class="pill sk">占位</span></td></tr>
@@ -604,7 +657,7 @@
   </p>
 </section>
 
-<!-- 12. 时序图 -->
+<!-- 12 时序图 -->
 <section id="seq">
   <h2>时序图</h2>
 
@@ -653,12 +706,13 @@
   else 无档案
     Engine-->>Chat: { hasProfile:false }
   end
-  Chat->>Chat: 有档案 → 个性化开场\n无 → 通用开场 + 建档 CTA</div>
+  Chat->>Chat: 有档案 → 个性化开场
+无 → 通用开场 + 建档 CTA</div>
 </section>
 
-<!-- 13. 上线计划 & Git 记录 -->
+<!-- 13 上线计划 & Git 记录 -->
 <section id="plan">
-  <h2>上线计划 & Git 记录</h2>
+  <h2>上线计划 &amp; Git 记录</h2>
 
   <table>
     <thead><tr><th style="width:40px;">#</th><th>阶段内容</th><th style="width:100px;">前置</th><th style="width:100px;">Commit</th><th style="width:80px;">状态</th></tr></thead>
@@ -678,7 +732,7 @@
   </p>
 </section>
 
-<!-- 14. 附录 -->
+<!-- 14 附录 -->
 <section id="appendix">
   <h2>附录</h2>
 
