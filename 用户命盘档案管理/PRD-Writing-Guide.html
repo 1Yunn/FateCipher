@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>PRD 写作规范 · FateCipher</title>
+<style>
+  :root { --bg:#fbfbfd; --ink:#1a1a1f; --ink-2:#4a4a52; --ink-3:#8a8a93; --line:#e8e8ec; --accent:#6b46c1; --accent-soft:#f3efff; --sky:#3b82f6; --ok:#16a34a; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,sans-serif; background:var(--bg); color:var(--ink); line-height:1.8; padding:40px 32px 80px; max-width:880px; margin:0 auto; }
+  h1 { font-family:ui-serif,"Noto Serif SC",Georgia,serif; font-size:28px; font-weight:400; margin-bottom:6px; }
+  .sub { font-size:13px; color:var(--ink-3); margin-bottom:32px; }
+  h2 { font-size:16px; font-weight:600; color:var(--accent); margin:36px 0 12px; padding-bottom:8px; border-bottom:2px solid var(--accent-soft); }
+  h3 { font-size:13px; font-weight:600; color:var(--ink); margin:18px 0 8px; }
+  p, li { font-size:13px; color:var(--ink-2); }
+  li { margin-left:18px; }
+  code { background:#f4f4f6; padding:1px 6px; border-radius:3px; font-size:12px; font-family:ui-monospace,Menlo,monospace; }
+  table { width:100%; border-collapse:collapse; margin:10px 0; font-size:12.5px; }
+  th { text-align:left; font-weight:600; padding:8px 10px; border-bottom:2px solid var(--line); font-size:11.5px; }
+  td { padding:7px 10px; border-bottom:1px solid var(--line); color:var(--ink-2); vertical-align:top; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-top:10px; }
+  .diagram { font-family:ui-monospace,Menlo,monospace; font-size:11.5px; background:#1a1a1f; color:#d4d4d8; padding:14px 18px; border-radius:8px; white-space:pre-wrap; line-height:1.65; }
+  .pill { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; margin-right:4px; }
+  .pill.o { background:#dcfce7; color:#166534; }
+  .pill.s { background:#dbeafe; color:#1e40af; }
+  .pill.k { background:#f0f0f4; color:var(--ink-3); }
+  .pill.w { background:#fef3c7; color:#92400e; }
+  footer { margin-top:48px; padding-top:20px; border-top:1px solid var(--line); font-size:11px; color:var(--ink-3); text-align:center; }
+</style>
+</head>
+<body>
+
+<h1>PRD 写作规范</h1>
+<p class="sub">FateCipher 多版本 PRD 的统一格式约定。v0.3+ 直接按这个来。</p>
+
+<!-- ======================================================== -->
+<h2>一、目录结构</h2>
+<pre class="diagram">d:\FateCipher\用户命盘档案管理\
+├── PRD.html              ← 唯一的 HTML（所有版本在这一个文件里）
+└── assets\               ← 所有截图
+    ├── v01-xxx.png       ← 前缀 = 版本号两位 + 连字符 + 描述
+    ├── v02-yyy.png
+    └── v03-zzz.png       ← 未来 v0.3 的截图</pre>
+
+<p>新增版本时：</p>
+<ol>
+  <li><b>不新建目录</b>，继续往 <code>assets/</code> 里丢截图，前缀改一下就行</li>
+  <li><b>不新建 HTML</b>，继续往 <code>PRD.html</code> 里追加版本 section</li>
+</ol>
+
+<!-- ======================================================== -->
+<h2>二、14 个标准子章节（每个版本固定这 14 个）</h2>
+<table>
+  <thead><tr><th style="width:28px;">#</th><th>章节名</th><th>回答什么问题</th><th>配什么视觉元素</th></tr></thead>
+  <tbody>
+    <tr><td>一</td><td><b>项目相关人员</b></td><td>谁来做？一个人分饰几个角色？</td><td>人员表（角色/姓名/职责）</td></tr>
+    <tr><td>二</td><td><b>项目开发排期</b></td><td>花多长时间？几个 commit？</td><td>阶段表（阶段/周期/commit/产出）</td></tr>
+    <tr><td>三</td><td><b>项目背景</b></td><td>为什么要做？v0.X 里暴露了什么问题？</td><td>痛点表（P0/P1 分级）+ 一句话卡片</td></tr>
+    <tr><td>四</td><td><b>项目目标</b></td><td>这次要达成什么？</td><td>目标表（带 pill 状态）或 clean list</td></tr>
+    <tr><td>五</td><td><b>目标用户</b></td><td>谁会用这个新功能？用户故事？</td><td>用户画像表 / 用户故事表（US-01, US-02...）</td></tr>
+    <tr><td>六</td><td><b>竞品分析与方案选型</b></td><td>为什么选这个技术？为什么不那样做？</td><td>竞品对比表 + 技术选型表 + 1-2 个"为什么"段落</td></tr>
+    <tr><td>七</td><td><b>设计思路</b></td><td>UI 怎么想的？key 怎么分？状态怎么切？</td><td>Key 映射表 / 排版决策表 + 截图</td></tr>
+    <tr><td>八</td><td><b>核心功能详细说明</b></td><td>API 长什么样？页面有几态？</td><td>API 表 / 状态表 + 低保真流程图 + 运行截图（shot-grid 或 shot-pair）</td></tr>
+    <tr><td>九</td><td><b>数据埋点</b></td><td>需要埋哪些事件？</td><td>事件表（事件名/触发时机/状态）</td></tr>
+    <tr><td>十</td><td><b>完整主流程图</b></td><td>功能的完整路径从哪到哪？</td><td>CSS 低保真 <code>.lf</code> 流程图（菱形决策 + 圆角起止 + page 占位）</td></tr>
+    <tr><td>十一</td><td><b>系统交互时序图</b></td><td>核心交互的时序细节？</td><td>ASCII <code>.diagram</code> 时序图（User → 组件 → API）</td></tr>
+    <tr><td>十二</td><td><b>异常流程与规则</b></td><td>出错怎么办？边界怎么处理？</td><td>异常表（#/场景/处理），E1/E2 编号</td></tr>
+    <tr><td>十三</td><td><b>验收标准</b></td><td>怎么算做完了？</td><td>验收表（项/结果 ✅），分组列（多账号隔离/自动迁移/...）</td></tr>
+    <tr><td>十四</td><td><b>迭代规划</b></td><td>下一个版本做什么？</td><td>版本链表（版本号/内容）</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================================================== -->
+<h2>三、Sidebar 命名规则</h2>
+
+<p>每个版本在 sidebar 里占一组，父级是 <code>.v-group</code>，子级是 <code>data-group-children="v{NN}"</code>。</p>
+
+<h3>骨架复制模板（v0.3 只改 <code>v03</code> 这个串 + 文字）</h3>
+<pre class="diagram">
+    <!-- ===== v0.3 ===== -->
+    <li class="v-group" data-group="v03"><span class="v-badge">v0.3</span>版本标题<span class="arrow"></span></li>
+    <li data-group-children="v03"><a href="#v03-1"><span class="idx">一</span>项目相关人员</a></li>
+    <li data-group-children="v03"><a href="#v03-2"><span class="idx">二</span>项目开发排期</a></li>
+    <li data-group-children="v03"><a href="#v03-3"><span class="idx">三</span>项目背景</a></li>
+    ...（到十四）
+    <li data-group-children="v03"><a href="#v03-14"><span class="idx">十四</span>迭代规划</a></li>
+</pre>
+
+<h3>正文 section 骨架</h3>
+<pre class="diagram">
+<!-- v0.3 Banner -->
+<div class="v-banner"><span class="vb-badge">v0.3</span><span class="vb-title">版本标题</span><span class="vb-sub">commit xxxxxxx · YYYY-MM-DD</span></div>
+
+<section id="v03-1"><h2><span class="section-no">一</span>项目相关人员</h2>
+  ...内容...
+</section>
+
+<section id="v03-2"><h2><span class="section-no">二</span>项目开发排期</h2>
+  ...内容...
+</section>
+...
+<section id="v03-14"><h2><span class="section-no">十四</span>迭代规划</h2>
+  ...内容...
+</section>
+</pre>
+
+<p class="card" style="font-size:12.5px;color:var(--ink-2);">
+  <b>关键约束</b>：sidebar 的 <code>href</code> 和正文的 <code>section id</code> 必须严格一致（<code>#v03-1</code> ↔ <code>id="v03-1"</code>），中文序号（一/二/三/.../十四）两边也必须一致。
+</p>
+
+<!-- ======================================================== -->
+<h2>四、截图命名规则</h2>
+
+<p>格式：<code>v{NN}-{描述}.png</code></p>
+<table>
+  <thead><tr><th>示例</th><th>含义</th></tr></thead>
+  <tbody>
+    <tr><td><code>v01-homepage.png</code></td><td>v0.1 首页截图</td></tr>
+    <tr><td><code>v01-bazi-chart.png</code></td><td>v0.1 八字排盘结果页</td></tr>
+    <tr><td><code>v02-siteheader-dropdown.png</code></td><td>v0.2 SiteHeader 下拉菜单</td></tr>
+    <tr><td><code>v02-profile-empty.png</code></td><td>v0.2 /profile 空态</td></tr>
+    <tr><td><code>v02-ask-cta-banner.png</code></td><td>v0.2 AI 问答 CTA 条</td></tr>
+  </tbody>
+</table>
+<p>截图引用：<code>&lt;img src="./assets/v03-xxx.png" alt="描述" /&gt;</code></p>
+
+<!-- ======================================================== -->
+<h2>五、CSS 组件速查</h2>
+<table>
+  <thead><tr><th>Class</th><th>用途</th><th>v0.1/v0.2 示例</th></tr></thead>
+  <tbody>
+    <tr><td><code>.v-banner</code></td><td>版本切换横幅（灰底 + 版本 badge + 标题 + commit 日期）</td><td>两个版本之间都有一条</td></tr>
+    <tr><td><code>.section-no</code></td><td>章节前的中文序号（紫色等宽）</td><td><code>&lt;span class="section-no"&gt;一&lt;/span&gt;</code></td></tr>
+    <tr><td><code>.card</code></td><td>白底圆角卡片（装表格/列表）</td><td>用得最多的容器</td></tr>
+    <tr><td><code>.shot-box</code></td><td>截图容器（带 caption）</td><td>单张图</td></tr>
+    <tr><td><code>.shot-pair</code></td><td>2 列并排图</td><td>低保真 + 运行截图对照</td></tr>
+    <tr><td><code>.shot-grid</code></td><td>自适应网格（auto-fit, minmax 250px）</td><td>三态截图</td></tr>
+    <tr><td><code>.lf</code></td><td>低保真流程图容器（CSS 画的）</td><td>档案生命周期 / signIn 迁移</td></tr>
+    <tr><td><code>.diagram</code></td><td>暗色等宽代码块（ASCII 时序图）</td><td>AI 问答 SSE / 迁移时序</td></tr>
+    <tr><td><code>.pill</code></td><td>彩色状态标签</td><td><span class="pill o">ok</span><span class="pill s">sky</span><span class="pill k">sk</span><span class="pill w">warn</span></td></tr>
+    <tr><td><code>.clean</code></td><td>无序列表（padding:0）</td><td>干净的项目符号</td></tr>
+    <tr><td><code>.v-group</code></td><td>sidebar 版本组标题（可展开收起）</td><td>带 arrow 指示器</td></tr>
+    <tr><td><code>.v-badge</code></td><td>sidebar 版本号标签（紫/蓝）</td><td>v0.1 紫色 / v0.2 蓝色</td></tr>
+  </tbody>
+</table>
+
+<!-- ======================================================== -->
+<h2>六、版本写作 Checklist</h2>
+<p>每次写完一个版本，核对这 8 项：</p>
+<div class="card">
+  <ul class="clean">
+    <li>✅ sidebar 里 <code>data-group-children="v{NN}"</code> 的 li 数量 = 14 个</li>
+    <li>✅ 正文 section id 全部能被 sidebar 链接到（点一下能跳）</li>
+    <li>✅ 每个 section 的 h2 都有 <code>&lt;span class="section-no"&gt;一&lt;/span&gt;</code></li>
+    <li>✅ 中文序号一~十四在 sidebar 和正文完全一致</li>
+    <li>✅ Banner 里的 commit hash 指向真实 commit</li>
+    <li>✅ 截图文件名以正确版本号开头（<code>v03-xxx.png</code>）</li>
+    <li>✅ 至少一张低保真 <code>.lf</code> 流程图（第十章）</li>
+    <li>✅ 至少一张 ASCII <code>.diagram</code> 时序图（第十一章）</li>
+  </ul>
+</div>
+
+<!-- ======================================================== -->
+<h2>七、版本分组颜色约定</h2>
+<table>
+  <thead><tr><th>版本类型</th><th>sidebar v-badge 颜色</th><th>banner vb-badge 颜色</th></tr></thead>
+  <tbody>
+    <tr><td>从 0 到 1 项目</td><td><code>.v-badge</code> 紫色（默认）</td><td><code>.vb-badge</code> 紫色（默认）</td></tr>
+    <tr><td>新功能 / 基础架构</td><td><code>.v-badge.v02</code> 蓝色</td><td><code>.vb-badge.v02</code> 蓝色</td></tr>
+    <tr><td>小修复 / 补丁</td><td>灰色（新增 <code>.v-badge.v03</code>）</td><td>灰色</td></tr>
+  </tbody>
+</table>
+<p>CSS 加颜色只要新增一条：<code>.v-badge.v03 { background: #fef3c7; color: #92400e; }</code>（warning 黄）</p>
+
+<footer>PRD Writing Guide · FateCipher · 章青云</footer>
+
+</body>
+</html>
