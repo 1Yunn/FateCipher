@@ -22,6 +22,7 @@
   .sidebar ol { list-style: none; }
   .sidebar a { display: flex; align-items: center; gap: 10px; font-family: system-ui, sans-serif; font-size: 12.5px; color: var(--ink-2); text-decoration: none; padding: 5px 8px; border-radius: 6px; border-left: 2px solid transparent; transition: all .15s; }
   .sidebar a:hover { background: var(--accent-soft); color: var(--ink); border-left-color: var(--accent); }
+  .sidebar a.active { background: var(--accent-soft); color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
   .sidebar .idx { width: 44px; text-align: right; font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; color: var(--ink-3); flex-shrink: 0; }
 
   .v-group { font-family: system-ui, sans-serif; font-size: 10px; font-weight: 700; color: var(--ink); text-transform: uppercase; letter-spacing: .08em; padding: 18px 8px 8px; display: flex; align-items: center; gap: 8px; margin-top: 14px; border-top: 1px solid var(--line); cursor: pointer; user-select: none; transition: color .15s; }
@@ -773,6 +774,7 @@
 </div>
 
 <script>
+  // Sidebar version group collapse/expand
   document.querySelectorAll('.v-group').forEach(group => {
     const g = group.dataset.group;
     const saved = localStorage.getItem('prd-group-' + g);
@@ -787,6 +789,40 @@
       localStorage.setItem('prd-group-' + g, isCollapsed ? 'collapsed' : 'expanded');
     });
   });
+
+  // Scrollspy: highlight sidebar link based on current visible section
+  const sections = document.querySelectorAll('section[id]');
+  const sidebarLinks = {};
+  document.querySelectorAll('.sidebar a[href^="#"]').forEach(a => {
+    sidebarLinks[a.getAttribute('href').slice(1)] = a;
+  });
+  let currentActive = null;
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        if (currentActive && sidebarLinks[currentActive]) sidebarLinks[currentActive].classList.remove('active');
+        if (sidebarLinks[id]) {
+          sidebarLinks[id].classList.add('active');
+          // Auto-expand parent group if collapsed
+          const parentLi = sidebarLinks[id].closest('[data-group-children]');
+          if (parentLi) {
+            const group = parentLi.dataset.groupChildren;
+            const groupHeader = document.querySelector('.v-group[data-group="' + group + '"]');
+            if (groupHeader && groupHeader.classList.contains('collapsed')) {
+              groupHeader.classList.remove('collapsed');
+              document.querySelectorAll('[data-group-children="' + group + '"]').forEach(li => li.classList.remove('collapsed'));
+              localStorage.setItem('prd-group-' + group, 'expanded');
+            }
+          }
+          currentActive = id;
+        }
+      }
+    });
+  }, { rootMargin: '-80px 0px -70% 0px', threshold: 0 });
+
+  sections.forEach(s => observer.observe(s));
 </script>
 </body>
 </html>
