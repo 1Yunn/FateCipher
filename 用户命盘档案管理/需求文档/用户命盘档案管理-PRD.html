@@ -117,12 +117,120 @@
   .story .accept li { font-family: system-ui,-apple-system,sans-serif; font-size: 12.5px; color: var(--ink-2); padding: 1px 0; padding-left: 16px; position: relative; list-style: none; }
   .story .accept li::before { content: "✓"; position: absolute; left: 0; color: var(--ok); font-weight: 600; }
 
-  /* Wireframe */
-  .wf { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; color: var(--ink-2); background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; overflow-x: auto; line-height: 1.55; margin-top: 10px; white-space: pre; }
-  .wf .box { border: 1px dashed var(--accent); color: var(--accent); }
-  .wf .box-solid { border: 1px solid var(--ink-3); color: var(--ink-3); }
-  .wf .btn { background: var(--ink); color: #fff; padding: 2px 8px; border-radius: 3px; }
-  .wf .btn-outline { border: 1px solid var(--ink-3); color: var(--ink-2); padding: 2px 8px; border-radius: 3px; }
+  /* Low-fidelity flow diagram */
+  .lf { margin-top: 10px; font-family: system-ui,-apple-system,sans-serif; }
+  .lf-wrap { position: relative; padding: 28px 20px 20px; background: #fafafb; border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; }
+  .lf-row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 8px; flex-wrap: wrap; }
+  .lf-col { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .lf-node {
+    padding: 10px 18px;
+    border: 1.5px solid #0f0f12;
+    background: #fff;
+    font-size: 12px;
+    color: #0f0f12;
+    text-align: center;
+    line-height: 1.4;
+    min-width: 110px;
+    max-width: 200px;
+    font-weight: 500;
+  }
+  .lf-node.start { border-radius: 30px; background: #fff; }
+  .lf-node.end { border-radius: 30px; background: #fff; }
+  .lf-node.proc { border-radius: 4px; background: #fff; }
+  .lf-node.io { border-radius: 0; transform: skewX(-8deg); background: #fff; }
+  .lf-node.io > * { transform: skewX(8deg); display: inline-block; }
+  .lf-node.decision {
+    width: 140px; height: 70px;
+    border: 1.5px solid #0f0f12;
+    background: #fff;
+    transform: rotate(45deg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lf-node.decision .inner {
+    transform: rotate(-45deg);
+    font-size: 11.5px;
+    color: #0f0f12;
+    font-weight: 500;
+    text-align: center;
+    padding: 6px;
+    line-height: 1.35;
+  }
+  .lf-node.page {
+    border: 1.5px solid #0f0f12;
+    border-radius: 4px;
+    background: #fff;
+    padding: 0;
+    min-width: 200px;
+    overflow: hidden;
+  }
+  .lf-node.page .ph-header {
+    background: #f0f0f5;
+    border-bottom: 1px solid #0f0f12;
+    padding: 5px 10px;
+    font-size: 10px;
+    color: #5a5a68;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .lf-node.page .ph-body { padding: 10px 14px; font-size: 11.5px; color: #0f0f12; font-weight: 500; }
+  .lf-node.page .ph-body .btn-row { display: flex; gap: 8px; justify-content: center; margin-top: 8px; }
+  .lf-node.page .ph-body .btn {
+    border: 1.5px solid #0f0f12;
+    padding: 3px 10px;
+    font-size: 10.5px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  .lf-node.page .ph-body .btn.primary { background: #0f0f12; color: #fff; }
+  .lf-node.page .ph-body .btn.secondary { background: #fff; color: #0f0f12; }
+
+  /* Arrow: horizontal */
+  .lf-arrow {
+    width: 32px; height: 0;
+    border-top: 1.5px solid #0f0f12;
+    position: relative; flex-shrink: 0;
+  }
+  .lf-arrow::after {
+    content: "";
+    position: absolute; right: -1px; top: -4px;
+    border: 5px solid transparent;
+    border-left-color: #0f0f12;
+  }
+  .lf-arrow.down {
+    width: 0; height: 32px;
+    border-top: none;
+    border-left: 1.5px solid #0f0f12;
+    margin: 0 auto;
+  }
+  .lf-arrow.down::after {
+    content: ""; position: absolute;
+    left: -5px; top: auto; bottom: -1px;
+    border: 5px solid transparent;
+    border-top-color: #0f0f12;
+  }
+  .lf-arrow.up {
+    width: 0; height: 32px;
+    border-top: none;
+    border-left: 1.5px solid #0f0f12;
+    margin: 0 auto;
+  }
+  .lf-arrow.up::after {
+    content: ""; position: absolute;
+    left: -5px; top: -1px;
+    border: 5px solid transparent;
+    border-bottom-color: #0f0f12;
+  }
+  .lf-label {
+    font-size: 10.5px;
+    color: #5a5a68;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    background: #fafafb;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin: 0 2px;
+    border: 1px solid var(--line);
+  }
+  .lf-branch { display: flex; justify-content: center; gap: 30px; margin-top: 10px; }
+  .lf-branch > .lf-col { align-items: center; }
 
   /* Checklist */
   .checklist { font-family: system-ui,-apple-system,sans-serif; }
@@ -475,114 +583,233 @@
   </div>
 </section>
 
-<!-- 08 UI 线框图 & 状态机 -->
+<!-- 08 低保真流程图 -->
 <section id="ui">
-  <h2>UI 线框图 &amp; 状态机</h2>
+  <h2>低保真流程图</h2>
 
-  <h3>08.1 /profile 页面 — 空态</h3>
-  <div class="wf">┌─────────────────────────────────────────────┐
-│  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
-├─────────────────────────────────────────────┤
-│                                             │
-│                    还没有命盘档案              │
-│           填一次出生信息，八字、紫微、AI       │
-│           问答都会贴身解读你。                 │
-│                                             │
-│   ┌──────────────┐    ┌────────────────┐   │
-│   │  去八字测算   │    │   手动建档      │   │
-│   └──────────────┘    └────────────────┘   │
-│                                             │
-└─────────────────────────────────────────────┘</div>
-
-  <h3>08.2 /profile 页面 — 详情视图</h3>
-  <div class="wf">┌─────────────────────────────────────────────┐
-│  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
-├─────────────────────────────────────────────┤
-│                                             │
-│          我的命盘档案         [编辑]          │
-│   [姓名]     · 建档 今天 · 上次更新 2 天前    │
-│                                             │
-│  ┌─────────────────────────────────────┐    │
-│  │ 出生日期         性别                │    │
-│  │  1997-08-15       男                 │    │
-│  │                                     │    │
-│  │  时辰             出生地              │    │
-│  │  申时（16:00-18:00）  北京 海淀       │    │
-│  │                                     │    │
-│  │  这份档案会被八字、紫微、AI 问答共用。 │    │
-│  │                              [删除档案] │    │
-│  └─────────────────────────────────────┘    │
-│                                             │
-└─────────────────────────────────────────────┘</div>
-
-  <h3>08.3 /profile 页面 — 编辑表单</h3>
-  <div class="wf">┌─────────────────────────────────────────────┐
-│  SiteHeader · Logo  八字 塔罗 紫微 AI问答  [头像▼] │
-├─────────────────────────────────────────────┤
-│                                             │
-│                 编辑档案                     │
-│                                             │
-│  出生日期 *                                  │
-│  ┌─────────────────────────────────┐        │
-│  │ 1997-08-15              ▼       │        │
-│  └─────────────────────────────────┘        │
-│                                             │
-│  性别 *                                     │
-│  ┌──────────┐    ┌──────────┐               │
-│  │    男    │    │    女    │               │
-│  └──────────┘    └──────────┘               │
-│                                             │
-│  时辰（选填）                                │
-│  ┌─────────────────────────────────┐        │
-│  │ 申时（16:00-18:00）      ▼      │        │
-│  └─────────────────────────────────┘        │
-│                                             │
-│  出生地（选填）                              │
-│  ┌─────────────────────────────────┐        │
-│  │ 北京 海淀                        │        │
-│  └─────────────────────────────────┘        │
-│                                             │
-│  ┌──────────┐    ┌──────────┐               │
-│  │  保存    │    │   取消    │               │
-│  └──────────┘    └──────────┘               │
-│                                             │
-└─────────────────────────────────────────────┘</div>
-
-  <h3>08.4 SiteHeader 下拉（已登录）</h3>
-  <div class="wf">┌──────────────────────────────────────────────┐
-│  Logo  八字  塔罗  紫微  AI问答  [张三 ▼]       │
-└──────────────────────────────────────────────┘
-
-                           ┌─────────────────┐
-                           │ 张三             │
-                           │ zhang@example.com│
-                           ├─────────────────┤
-                           │   我的档案  →    │
-                           ├─────────────────┤
-                           │   退出登录      │
-                           └─────────────────┘</div>
-
-  <h3>08.5 档案状态机</h3>
-  <div class="state-grid">
-    <div class="state-box active">
-      <div class="name">❌ 空态</div>
-      <div class="desc">无档案，显示「去八字测算」引导</div>
-    </div>
-    <div class="state-box">
-      <div class="name">📋 详情</div>
-      <div class="desc">有档案，显示完整信息 + 编辑/删除按钮</div>
-    </div>
-    <div class="state-box">
-      <div class="name">✏️ 编辑中</div>
-      <div class="desc">表单预填，保存 → 详情；取消 → 详情</div>
+  <h3>08.1 档案生命周期总览</h3>
+  <div class="lf">
+    <div class="lf-wrap">
+      <div class="lf-row">
+        <div class="lf-node start">进入 /profile</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node decision">
+          <div class="inner">已有档案?</div>
+        </div>
+      </div>
+      <div class="lf-branch">
+        <div class="lf-col">
+          <span class="lf-label">是</span>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node page">
+            <div class="ph-header">PROFILE · 详情</div>
+            <div class="ph-body">
+              出生日期 / 性别 / 时辰 / 出生地
+              <div class="btn-row">
+                <span class="btn secondary">编辑</span>
+                <span class="btn secondary">删除</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lf-col">
+          <span class="lf-label">否</span>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node page">
+            <div class="ph-header">PROFILE · 空态</div>
+            <div class="ph-body">
+              还没有命盘档案
+              <div class="btn-row">
+                <span class="btn primary">去八字测算</span>
+                <span class="btn secondary">手动建档</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="diagram" style="margin-top:10px;">transitionDiagram:
-  空态 ──(建档成功)──→ 详情
-  详情 ──(点击编辑)──→ 编辑中
-  编辑中 ──(保存)──→ 详情（lastUpdated 刷新）
-  编辑中 ──(取消)──→ 详情（不变）
-  详情 ──(删除确认)──→ 空态</div>
+
+  <h3>08.2 建档入口（4 个 CTA 汇总）</h3>
+  <div class="lf">
+    <div class="lf-wrap">
+      <div class="lf-row">
+        <div class="lf-node proc">SiteHeader 下拉</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-label">我的档案</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">/profile 建档</div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-node proc">AI 问答开场 CTA</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">/profile 建档</div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-node proc">八字测算引导</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">/fortune/bazi 立盘</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-label">自动写入</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">/profile 建档</div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-node proc">紫微测算引导</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">/fortune/ziwei 立盘</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-label">自动写入</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">/profile 建档</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>08.3 档案管理操作流程（查看 / 编辑 / 删除）</h3>
+  <div class="lf">
+    <div class="lf-wrap">
+      <div class="lf-row">
+        <div class="lf-node start">档案详情</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node decision">
+          <div class="inner">用户点击?</div>
+        </div>
+      </div>
+      <div class="lf-branch">
+        <div class="lf-col">
+          <span class="lf-label">编辑</span>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node page">
+            <div class="ph-header">PROFILE · 编辑表单</div>
+            <div class="ph-body">
+              出生日期 [____]
+              性别 [男][女]
+              时辰 [申时 ▼]
+              出生地 [____]
+              <div class="btn-row">
+                <span class="btn primary">保存</span>
+                <span class="btn secondary">取消</span>
+              </div>
+            </div>
+          </div>
+          <div class="lf-branch" style="gap:16px; margin-top:14px;">
+            <div class="lf-col">
+              <span class="lf-label">保存</span>
+              <div class="lf-arrow down"></div>
+              <div class="lf-node proc">写 localStorage<br/>更新 lastUpdated</div>
+            </div>
+            <div class="lf-col">
+              <span class="lf-label">取消</span>
+              <div class="lf-arrow down"></div>
+              <div class="lf-node proc">放弃修改</div>
+            </div>
+          </div>
+        </div>
+        <div class="lf-col">
+          <span class="lf-label">删除</span>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node proc">弹出 confirm 弹窗</div>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node decision">
+            <div class="inner">确认删除?</div>
+          </div>
+          <div class="lf-branch" style="gap:16px; margin-top:14px;">
+            <div class="lf-col">
+              <span class="lf-label">是</span>
+              <div class="lf-arrow down"></div>
+              <div class="lf-node proc">清除 localStorage</div>
+              <div class="lf-arrow down"></div>
+              <div class="lf-node end">回到空态</div>
+            </div>
+            <div class="lf-col">
+              <span class="lf-label">否</span>
+              <div class="lf-arrow down"></div>
+              <div class="lf-node proc">关闭弹窗</div>
+              <div class="lf-arrow down"></div>
+              <div class="lf-node end">保持详情页</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>08.4 signIn 自动迁移流程</h3>
+  <div class="lf">
+    <div class="lf-wrap">
+      <div class="lf-row">
+        <div class="lf-node start">用户 signIn / signUp</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">AuthProvider 触发 migrateForUser(email)</div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-arrow down"></div>
+      </div>
+      <div class="lf-row">
+        <div class="lf-node proc">读旧 key fatecipher.profile.bazi</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node decision">
+          <div class="inner">旧 key 存在<br/>且 新 key 不存在?</div>
+        </div>
+      </div>
+      <div class="lf-branch">
+        <div class="lf-col">
+          <span class="lf-label">是</span>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node proc">搬 JSON → 新 key<br/>加 migratedAt</div>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node proc">删除旧 key</div>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node end">迁移完成</div>
+        </div>
+        <div class="lf-col">
+          <span class="lf-label">否</span>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node proc">跳过</div>
+          <div class="lf-arrow down"></div>
+          <div class="lf-node end">幂等，什么都不做</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>08.5 档案状态机</h3>
+  <div class="lf">
+    <div class="lf-wrap" style="display:flex; justify-content:center; gap:0; padding-top:36px;">
+      <div class="lf-col">
+        <div class="lf-node proc">❌ 空态</div>
+        <span class="lf-label">建档成功</span>
+        <div class="lf-arrow down"></div>
+      </div>
+      <div style="width:28px;"></div>
+      <div class="lf-col">
+        <div class="lf-node proc">📋 详情</div>
+        <span class="lf-label">点击编辑</span>
+        <div class="lf-arrow down"></div>
+        <span class="lf-label">取消 / 保存</span>
+        <div class="lf-arrow up" style="height:60px; transform:translateY(14px);"></div>
+      </div>
+      <div style="width:28px;"></div>
+      <div class="lf-col">
+        <div class="lf-node proc">✏️ 编辑中</div>
+        <span class="lf-label">删除确认</span>
+        <div class="lf-arrow down"></div>
+        <div class="lf-node proc">❌ 空态</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>图例</h3>
+  <table>
+    <thead><tr><th>形状</th><th>含义</th><th>对应场景</th></tr></thead>
+    <tbody>
+      <tr><td><span class="lf-node start" style="padding:6px 14px;min-width:auto;">圆角</span></td><td>开始 / 结束</td><td>signIn、进入 /profile、回到空态</td></tr>
+      <tr><td><span class="lf-node proc" style="padding:6px 14px;min-width:auto;">矩形</span></td><td>处理 / 操作</td><td>写 localStorage、触发迁移、清空档案</td></tr>
+      <tr><td><span class="lf-node decision" style="width:36px;height:36px;display:inline-flex;"><span class="inner" style="font-size:9px;">◇</span></span></td><td>判断 / 分支</td><td>已有档案?、确认删除?</td></tr>
+      <tr><td><span class="lf-node page" style="display:inline-flex;min-width:100px;"><div class="ph-header" style="padding:2px 6px;font-size:8px;">PROFILE</div></span></td><td>低保真页面占位</td><td>详情页、空态、编辑表单</td></tr>
+    </tbody>
+  </table>
 </section>
 
 <!-- 09 验收 Checklist -->
