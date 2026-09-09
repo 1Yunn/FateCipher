@@ -232,6 +232,48 @@
   .lf-branch { display: flex; justify-content: center; gap: 30px; margin-top: 10px; }
   .lf-branch > .lf-col { align-items: center; }
 
+  /* Screenshot containers */
+  .shot-pair {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) minmax(300px, 1fr);
+    gap: 20px;
+    margin-top: 10px;
+    align-items: start;
+  }
+  .shot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .shot-box {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 10px;
+    margin-top: 0;
+  }
+  .shot-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    border: 1px solid var(--line-2);
+  }
+  .shot-caption {
+    font-family: system-ui,-apple-system,sans-serif;
+    font-size: 11.5px;
+    color: var(--ink-3);
+    padding: 8px 4px 2px;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 720px) {
+    .shot-pair { grid-template-columns: 1fr; }
+  }
+
   /* Checklist */
   .checklist { font-family: system-ui,-apple-system,sans-serif; }
   .checklist li { padding: 4px 0; padding-left: 22px; position: relative; font-size: 13px; color: var(--ink-2); }
@@ -583,54 +625,144 @@
   </div>
 </section>
 
-<!-- 08 低保真流程图 -->
+<!-- 08 流程图 + 运行截图 -->
 <section id="ui">
-  <h2>低保真流程图</h2>
+  <h2>流程图 · 运行截图</h2>
 
-  <h3>08.1 档案生命周期总览</h3>
-  <div class="lf">
-    <div class="lf-wrap">
-      <div class="lf-row">
-        <div class="lf-node start">进入 /profile</div>
-        <div class="lf-arrow"></div>
-        <div class="lf-node decision">
-          <div class="inner">已有档案?</div>
+  <p style="font-family:system-ui,sans-serif;font-size:12.5px;color:var(--ink-3);margin-top:-6px;margin-bottom:20px;">
+    每组先看低保真流程图（左/上），再看对应页面实际运行截图（右/下）。所有截图来自 localhost:3000 真实页面。
+  </p>
+
+  <!-- ============ 08.1 SiteHeader 入口 ============ -->
+  <h3>08.1 SiteHeader 下拉入口</h3>
+  <div class="shot-pair">
+    <div class="lf">
+      <div class="lf-wrap" style="padding:14px 18px;">
+        <div class="lf-row" style="justify-content:flex-start;">
+          <div class="lf-node proc">点击用户头像</div>
+          <div class="lf-arrow"></div>
+          <div class="lf-node page" style="min-width:160px;">
+            <div class="ph-header">DROPDOWN</div>
+            <div class="ph-body" style="padding:6px 14px; text-align:left; font-size:11px;">
+              · 用户信息<br/>
+              · <span style="color:var(--accent);font-weight:600;">我的档案</span><br/>
+              · 退出登录
+            </div>
+          </div>
+          <div class="lf-arrow"></div>
+          <div class="lf-node proc">跳转 /profile</div>
         </div>
       </div>
-      <div class="lf-branch">
-        <div class="lf-col">
-          <span class="lf-label">是</span>
-          <div class="lf-arrow down"></div>
-          <div class="lf-node page">
-            <div class="ph-header">PROFILE · 详情</div>
-            <div class="ph-body">
-              出生日期 / 性别 / 时辰 / 出生地
-              <div class="btn-row">
-                <span class="btn secondary">编辑</span>
-                <span class="btn secondary">删除</span>
+    </div>
+    <div class="shot-box">
+      <img src="../assets/01-siteheader-dropdown.png" alt="SiteHeader 下拉" />
+      <div class="shot-caption">实际运行：hover 用户头像后显示下拉，「我的档案」在分隔线下方</div>
+    </div>
+  </div>
+
+  <!-- ============ 08.2 档案生命周期（空态 ↔ 详情） ============ -->
+  <h3>08.2 档案生命周期（空态 ↔ 详情）</h3>
+  <div class="shot-pair">
+    <div class="lf">
+      <div class="lf-wrap">
+        <div class="lf-row">
+          <div class="lf-node start">进入 /profile</div>
+          <div class="lf-arrow"></div>
+          <div class="lf-node decision">
+            <div class="inner">已有档案?</div>
+          </div>
+        </div>
+        <div class="lf-branch">
+          <div class="lf-col">
+            <span class="lf-label">否</span>
+            <div class="lf-arrow down"></div>
+            <div class="lf-node page">
+              <div class="ph-header">PROFILE · 空态</div>
+              <div class="ph-body">还没有命盘档案<br/>
+                <div class="btn-row">
+                  <span class="btn primary">去八字测算</span>
+                  <span class="btn secondary">手动建档</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div class="lf-col">
-          <span class="lf-label">否</span>
-          <div class="lf-arrow down"></div>
-          <div class="lf-node page">
-            <div class="ph-header">PROFILE · 空态</div>
-            <div class="ph-body">
-              还没有命盘档案
-              <div class="btn-row">
-                <span class="btn primary">去八字测算</span>
-                <span class="btn secondary">手动建档</span>
+          <div class="lf-col">
+            <span class="lf-label">是</span>
+            <div class="lf-arrow down"></div>
+            <div class="lf-node page">
+              <div class="ph-header">PROFILE · 详情</div>
+              <div class="ph-body">出生日期 / 性别 / 时辰 / 出生地<br/>
+                <div class="btn-row">
+                  <span class="btn secondary">编辑</span>
+                  <span class="btn secondary">删除</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <div class="shot-grid">
+      <div class="shot-box">
+        <img src="../assets/02-profile-empty.png" alt="/profile 空态" />
+        <div class="shot-caption">空态：「还没有命盘档案」+ 双 CTA 入口</div>
+      </div>
+      <div class="shot-box">
+        <img src="../assets/04-profile-detail.png" alt="/profile 详情" />
+        <div class="shot-caption">详情：已建档用户看到出生日期、性别、时辰、出生地</div>
+      </div>
+    </div>
   </div>
 
-  <h3>08.2 建档入口（4 个 CTA 汇总）</h3>
+  <!-- ============ 08.3 建档 & 编辑表单 ============ -->
+  <h3>08.3 建档 / 编辑表单</h3>
+  <div class="shot-pair">
+    <div class="lf">
+      <div class="lf-wrap" style="padding:14px 18px;">
+        <div class="lf-row" style="justify-content:flex-start;">
+          <div class="lf-node page" style="min-width:220px;">
+            <div class="ph-header">PROFILE · 编辑表单</div>
+            <div class="ph-body" style="text-align:left; font-size:10.5px; line-height:1.9;">
+              出生日期 *<br/>[_______________]<br/>
+              性别 *<br/>[ 男 ] [ 女 ]<br/>
+              时辰（选填）<br/>[ 申时（15–17） ▼ ]<br/>
+              出生地（选填）<br/>[_______________]<br/>
+              <div class="btn-row" style="justify-content:flex-start;margin-top:6px;">
+                <span class="btn primary">保存</span>
+                <span class="btn secondary">取消</span>
+              </div>
+            </div>
+          </div>
+          <div style="width:20px;"></div>
+          <div class="lf-col">
+            <div class="lf-node proc">保存 → 写 localStorage<br/>更新 lastUpdated</div>
+            <div class="lf-arrow down"></div>
+            <div class="lf-node proc">取消 → 放弃修改</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="shot-box">
+      <img src="../assets/03-profile-edit-form.png" alt="编辑表单" />
+      <div class="shot-caption">实际运行：新建档案表单，日期、性别、时辰、出生地四个字段</div>
+    </div>
+  </div>
+
+  <!-- ============ 08.4 AI 问答开场（有档案 / 无档案对照） ============ -->
+  <h3>08.4 AI 问答开场（有档案 vs 无档案）</h3>
+  <div class="shot-grid" style="grid-template-columns:1fr 1fr;">
+    <div class="shot-box">
+      <img src="../assets/05-ask-opening.png" alt="AI 问答有档案" />
+      <div class="shot-caption">有档案：个性化承接语 + 5 次额度</div>
+    </div>
+    <div class="shot-box">
+      <img src="../assets/06-ask-cta-banner.png" alt="AI 问答无档案 CTA" />
+      <div class="shot-caption">无档案：通用开场 + 紫色建档 CTA 条</div>
+    </div>
+  </div>
+
+  <!-- ============ 08.5 建档入口汇总 ============ -->
+  <h3>08.5 建档入口（4 个 CTA）</h3>
   <div class="lf">
     <div class="lf-wrap">
       <div class="lf-row">
@@ -666,76 +798,8 @@
     </div>
   </div>
 
-  <h3>08.3 档案管理操作流程（查看 / 编辑 / 删除）</h3>
-  <div class="lf">
-    <div class="lf-wrap">
-      <div class="lf-row">
-        <div class="lf-node start">档案详情</div>
-        <div class="lf-arrow"></div>
-        <div class="lf-node decision">
-          <div class="inner">用户点击?</div>
-        </div>
-      </div>
-      <div class="lf-branch">
-        <div class="lf-col">
-          <span class="lf-label">编辑</span>
-          <div class="lf-arrow down"></div>
-          <div class="lf-node page">
-            <div class="ph-header">PROFILE · 编辑表单</div>
-            <div class="ph-body">
-              出生日期 [____]
-              性别 [男][女]
-              时辰 [申时 ▼]
-              出生地 [____]
-              <div class="btn-row">
-                <span class="btn primary">保存</span>
-                <span class="btn secondary">取消</span>
-              </div>
-            </div>
-          </div>
-          <div class="lf-branch" style="gap:16px; margin-top:14px;">
-            <div class="lf-col">
-              <span class="lf-label">保存</span>
-              <div class="lf-arrow down"></div>
-              <div class="lf-node proc">写 localStorage<br/>更新 lastUpdated</div>
-            </div>
-            <div class="lf-col">
-              <span class="lf-label">取消</span>
-              <div class="lf-arrow down"></div>
-              <div class="lf-node proc">放弃修改</div>
-            </div>
-          </div>
-        </div>
-        <div class="lf-col">
-          <span class="lf-label">删除</span>
-          <div class="lf-arrow down"></div>
-          <div class="lf-node proc">弹出 confirm 弹窗</div>
-          <div class="lf-arrow down"></div>
-          <div class="lf-node decision">
-            <div class="inner">确认删除?</div>
-          </div>
-          <div class="lf-branch" style="gap:16px; margin-top:14px;">
-            <div class="lf-col">
-              <span class="lf-label">是</span>
-              <div class="lf-arrow down"></div>
-              <div class="lf-node proc">清除 localStorage</div>
-              <div class="lf-arrow down"></div>
-              <div class="lf-node end">回到空态</div>
-            </div>
-            <div class="lf-col">
-              <span class="lf-label">否</span>
-              <div class="lf-arrow down"></div>
-              <div class="lf-node proc">关闭弹窗</div>
-              <div class="lf-arrow down"></div>
-              <div class="lf-node end">保持详情页</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <h3>08.4 signIn 自动迁移流程</h3>
+  <!-- ============ 08.6 signIn 自动迁移 ============ -->
+  <h3>08.6 signIn 自动迁移流程</h3>
   <div class="lf">
     <div class="lf-wrap">
       <div class="lf-row">
@@ -774,32 +838,7 @@
     </div>
   </div>
 
-  <h3>08.5 档案状态机</h3>
-  <div class="lf">
-    <div class="lf-wrap" style="display:flex; justify-content:center; gap:0; padding-top:36px;">
-      <div class="lf-col">
-        <div class="lf-node proc">❌ 空态</div>
-        <span class="lf-label">建档成功</span>
-        <div class="lf-arrow down"></div>
-      </div>
-      <div style="width:28px;"></div>
-      <div class="lf-col">
-        <div class="lf-node proc">📋 详情</div>
-        <span class="lf-label">点击编辑</span>
-        <div class="lf-arrow down"></div>
-        <span class="lf-label">取消 / 保存</span>
-        <div class="lf-arrow up" style="height:60px; transform:translateY(14px);"></div>
-      </div>
-      <div style="width:28px;"></div>
-      <div class="lf-col">
-        <div class="lf-node proc">✏️ 编辑中</div>
-        <span class="lf-label">删除确认</span>
-        <div class="lf-arrow down"></div>
-        <div class="lf-node proc">❌ 空态</div>
-      </div>
-    </div>
-  </div>
-
+  <!-- ============ 图例 ============ -->
   <h3>图例</h3>
   <table>
     <thead><tr><th>形状</th><th>含义</th><th>对应场景</th></tr></thead>
