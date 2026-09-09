@@ -221,7 +221,7 @@ export function SectionWide({
       id={id}
       className={`scroll-mt-24 px-12 py-28 sm:px-16 sm:py-40 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-7xl">{children}</div>
+      <div className="mx-auto max-w-6xl">{children}</div>
     </section>
   );
 }
@@ -241,7 +241,7 @@ export function SectionFullBleed({
       id={id}
       className={`scroll-mt-24 px-12 py-32 sm:px-16 sm:py-48 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-7xl">{children}</div>
+      <div className="mx-auto max-w-6xl">{children}</div>
     </section>
   );
 }
