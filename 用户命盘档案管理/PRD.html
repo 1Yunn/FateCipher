@@ -189,19 +189,39 @@
 </section>
 
 <section id="v01-3"><h2><span class="section-no">三</span>项目背景</h2>
-  <p style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-2);line-height:1.8;">
-    市面上的命理产品分两类：<b>传统排盘网站</b>（某果网、某子平）堆术语、广告多、UI 停留在 2010 年，排出来的四柱看不懂；<b>AI 算命 app</b>（某小算、某大师）要付费、要注册、AI 怎么得出结论的完全黑盒。用户想试试命理，但搜出来的内容太散、太玄，信不过。
-  </p>
+  <h3>竞品痛点</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>产品类型</th><th>代表</th><th>问题</th></tr></thead>
+      <tbody>
+        <tr><td>C1</td><td>传统排盘网站</td><td>某果网、某子平</td><td>堆术语、广告多、UI 停留在 2010 年，排出来的四柱看不懂</td></tr>
+        <tr><td>C2</td><td>AI 算命 app</td><td>某小算、某大师</td><td>要付费、要注册、AI 怎么得出结论的完全黑盒</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>用户痛点</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>#</th><th>场景</th><th>发生了什么</th></tr></thead>
+      <tbody>
+        <tr><td>P0</td><td>第一次接触命理</td><td>搜出来的内容太散太玄，信不过——怕被"大师"骗</td></tr>
+        <tr><td>P1</td><td>想换个玩法看看</td><td>算了八字又想试试塔罗，每个产品都要重新注册、重新填出生信息</td></tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <section id="v01-4"><h2><span class="section-no">四</span>项目目标</h2>
   <div class="card">
-    <ul class="clean">
-      <li>✓ <b>AI 深度思考可见</b>：前 6 段结构化推演（五行分析 → 日主旺衰 → 喜忌判断 → 大运流年 → 风险提醒 → 行动建议）全部展示</li>
-      <li>✓ <b>数据不出浏览器</b>：八字/紫微排盘本地引擎，AI API 只接收排好的四柱，不碰原始出生数据</li>
-      <li>✓ <b>四种玩法一个入口</b>：首页直接露出，不做二级菜单</li>
-      <li>✓ <b>免费 + 无注册门槛</b>：首页八字直接排、塔罗直接抽</li>
-    </ul>
+    <table>
+      <thead><tr><th>目标</th><th>说明</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>AI 深度思考可见</td><td>前 6 段结构化推演（五行 → 旺衰 → 喜忌 → 大运 → 风险 → 建议）全部展示</td><td><span class="pill ok">已完成</span></td></tr>
+        <tr><td>数据不出浏览器</td><td>八字/紫微排盘本地引擎，AI API 只接收四柱</td><td><span class="pill ok">已完成</span></td></tr>
+        <tr><td>四种玩法一个入口</td><td>首页直接露出，不做二级菜单</td><td><span class="pill ok">已完成</span></td></tr>
+        <tr><td>免费 + 无注册门槛</td><td>首页八字直接排、塔罗直接抽</td><td><span class="pill ok">已完成</span></td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
@@ -243,6 +263,30 @@
       </tbody>
     </table>
   </div>
+
+  <h3>系统架构（v0.1）</h3>
+  <div class="diagram">┌──────────────────────────────────────────────────────┐
+│                    Next.js 15 App                      │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐ │
+│  │ /fortune│  │ /fortune│  │/fortune │  │  /ask    │ │
+│  │  /bazi  │  │ /ziwei  │  │ /tarot  │  │  SSE 流  │ │
+│  └────┬────┘  └────┬────┘  └────┬────┘  └────┬────┘ │
+│       │            │            │             │        │
+│       ▼            ▼            ▼             ▼        │
+│  ┌──────────────────────────────────┐   ┌──────────┐  │
+│  │   本地排盘引擎（纯 TS）            │   │ask-engine│  │
+│  │   bazi-engine / ziwei-engine      │   │本地规则  │  │
+│  └──────────────────────────────────┘   └─────┬────┘  │
+│                                                │       │
+│  ┌─────────────┐    ┌─────────────────────┐   │       │
+│  │ localStorage │◀──▶│ AuthContext (mock) │   │       │
+│  │ fatecipher.* │    │ users / currentUser │   │       │
+│  └─────────────┘    └─────────────────────┘   │       │
+└────────────────────────────────────────────────┼──────┘
+                                                 │
+                                                 ▼
+                                           DeepSeek API
+                                           /api/ask SSE</div>
 </section>
 
 <section id="v01-7"><h2><span class="section-no">七</span>设计思路</h2>
@@ -261,6 +305,18 @@
         <tr><td>字体</td><td>标题宋体 / 正文无衬线</td><td>传统文化 + 现代 AI 调性</td></tr>
         <tr><td>导航栏</td><td>4 产品入口直接露出</td><td>只有 4 个，露出 = 降低决策成本</td></tr>
         <tr><td>四玩法排序</td><td>八字 → 塔罗 → 紫微 → AI 问答</td><td>门槛从低到高；消费型 AI 问答放在最后</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <h3>四玩法排序 rationale</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>排名</th><th>玩法</th><th>门槛</th><th>为什么排在这</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>八字</td><td>只要出生日期 + 时辰</td><td>"我到底是什么命"的原始需求最直接；本地排盘秒出结果，转化路径最短</td></tr>
+        <tr><td>2</td><td>塔罗</td><td>只要一个问题 + 抽牌</td><td>门槛比八字更低（不需要精确时辰），适合"试试看"</td></tr>
+        <tr><td>3</td><td>紫微</td><td>出生日期 + 时辰 + 性别</td><td>排盘最复杂、术语最多，给愿意深入的用户</td></tr>
+        <tr><td>4</td><td>AI 问答</td><td>需要建档（拿到个性化回答）</td><td>消费型工具，放在最后——前面三个玩法先帮用户建档</td></tr>
       </tbody>
     </table>
   </div>
@@ -284,11 +340,41 @@
       </tbody>
     </table>
   </div>
+
+  <h3>AI 问答 SSE 流式（低保真）</h3>
+  <div class="lf">
+    <div class="lf-wrap">
+      <div class="lf-row">
+        <div class="lf-node start">用户输入困惑</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node proc">POST /api/ask</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node page"><div class="ph-header">思考区</div><div class="ph-body">五行 → 旺衰 → 喜忌 → 大运 → 风险 → 建议（SSE chunk 逐个出现）</div></div>
+      </div>
+      <div class="lf-row" style="margin-top:10px;">
+        <div class="lf-node proc">6 段思考推完</div>
+        <div class="lf-arrow"></div>
+        <div class="lf-node page"><div class="ph-header">行动建议</div><div class="ph-body">大号字、深色、放在最底部（SSE chunk 继续追加）</div></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section id="v01-9"><h2><span class="section-no">九</span>数据埋点</h2>
-  <div class="card" style="background:#fafafb;">
-    <p style="margin:0;"><span class="pill warn">未接入</span>v0.1 无埋点 SDK。规划 v0.3 接入 Plausible（隐私友好的轻量埋点）。</p>
+  <div class="card">
+    <p style="margin-bottom:10px;"><span class="pill warn">未接入</span>v0.1 无埋点 SDK。以下事件已设计，等 v0.3 接入 Plausible 后落地。</p>
+    <table>
+      <thead><tr><th>事件</th><th>触发时机</th><th>状态</th></tr></thead>
+      <tbody>
+        <tr><td>homepage_view</td><td>首页加载</td><td><span class="pill sk">占位</span></td></tr>
+        <tr><td>fortune_click</td><td>点击四玩法入口（含玩法区分）</td><td><span class="pill sk">占位</span></td></tr>
+        <tr><td>bazi_submit</td><td>八字排盘提交</td><td><span class="pill sk">占位</span></td></tr>
+        <tr><td>ziwei_submit</td><td>紫微排盘提交</td><td><span class="pill sk">占位</span></td></tr>
+        <tr><td>tarot_submit</td><td>塔罗抽牌</td><td><span class="pill sk">占位</span></td></tr>
+        <tr><td>ask_send</td><td>AI 问答发送</td><td><span class="pill sk">占位</span></td></tr>
+        <tr><td>auth_signup</td><td>注册成功</td><td><span class="pill sk">占位</span></td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
@@ -459,6 +545,44 @@
   <div class="card">
     <p>旧代码里档案读取散落在 <code>bazi-flow.tsx</code>、<code>ziwei-flow.tsx</code>、<code>ask-engine.ts</code>、<code>ask-chat.tsx</code> 四个文件里各自硬编码 key。如果只改 key 不改架构：① 每改一次档案结构，四处都要改；② 迁移逻辑无处安放。所以先抽 ProfileStore 统一 API，再让四个消费方改成调 ProfileStore。</p>
   </div>
+
+  <h3>系统架构（v0.2 · ProfileStore 加入）</h3>
+  <div class="diagram">┌─────────────────────────────────────────────────────────────┐
+│                       Next.js 15 App                        │
+│                                                             │
+│  ┌────────────┐  ┌────────────┐  ┌────────────┐          │
+│  │  AuthContext │  │ SiteHeader  │  │  /profile   │          │
+│  │ signIn/signUp│  │ 下拉菜单    │  │ 档案管理页  │          │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘          │
+│         │migrate            │getProfile        │getProfile    │
+│         ▼                   ▼                  ▼              │
+│  ┌──────────────────────────────────────────────────┐        │
+│  │            ProfileStore (lib/profile.ts)         │        │
+│  │  getProfile / saveProfile / deleteProfile        │        │
+│  │  migrateFromLegacy / getQuota / consumeQuota     │        │
+│  └────────┬──────────────────────┬──────────────────┘        │
+│           │                      │                            │
+│  ┌────────┴──────────┐  ┌────────┴──────────┐               │
+│  │ 档案 key 读写      │  │ 额度 key 读写      │               │
+│  │ profile.{email}   │  │ quota.{email}     │               │
+│  └────────┬──────────┘  └────────┬──────────┘               │
+│           │                      │                            │
+│           ▼                      ▼                            │
+│  ┌─────────────────────────────────────────────┐            │
+│  │              localStorage 浏览器              │            │
+│  │  fatecipher.users  fatecipher.currentUser    │            │
+│  │  fatecipher.profile.{email}  fatecipher...   │            │
+│  │  fatecipher.ask.quota.{email}                 │            │
+│  └─────────────────────────────────────────────┘            │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌────────────┐  │
+│  │ bazi-flow.tsx   │  │ ziwei-flow.tsx  │  │ ask-engine  │  │
+│  │ ↑ getProfile    │  │ ↑ getProfile    │  │ ↑ loadCtx   │  │
+│  └─────────────────┘  └─────────────────┘  └──────┬─────┘  │
+└────────────────────────────────────────────────────┼────────┘
+                                                     │
+                                                     ▼
+                                               DeepSeek SSE</div>
 </section>
 
 <section id="v02-7"><h2><span class="section-no">七</span>设计思路</h2>
