@@ -4,16 +4,17 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronLeft, Orbit } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { useAuth } from "@/components/auth/auth-context";
 import { RitualOverlay } from "@/components/ritual-overlay";
 import { Button } from "@/components/ui/button";
 import { HOUR_SLOTS } from "@/lib/bazi";
+import { getProfile, type Profile } from "@/lib/profile";
 import { computeZiwei, type ZiweiChart } from "@/lib/ziwei";
 import { cn } from "@/lib/utils";
 
 import { ZiweiResult } from "./ziwei-result";
 
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const STORAGE_KEY = "xuanji.profile.bazi"; // 复用八字出生档案
 const RITUAL_LINES = [
   "安星 · 定命宫",
   "布曜 · 排十二宫",
@@ -23,13 +24,6 @@ const MIN_BIRTH = "1900-01-01";
 const FOCUS_OPTIONS = ["事业", "财运", "感情", "健康", "贵人"] as const;
 
 type Gender = "male" | "female";
-
-interface Profile {
-  date: string;
-  hourBranch?: number;
-  gender: Gender;
-  focus: string[];
-}
 
 const inputCls =
   "w-full rounded-xl glass px-4 py-3 text-[15px] outline-none transition-shadow placeholder:text-muted-foreground/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[invalid=true]:border-destructive";
@@ -41,6 +35,7 @@ function hourLabel(hourBranch?: number): string {
 }
 
 export function ZiweiFlow() {
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [date, setDate] = useState("");
   const [hourValue, setHourValue] = useState<number | null>(null);
@@ -54,14 +49,11 @@ export function ZiweiFlow() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setSaved(JSON.parse(raw) as Profile);
-    } catch {
-      // 本地存储不可用时静默降级
+    if (user) {
+      setSaved(getProfile(user.email));
     }
     setMaxDate(new Date().toISOString().slice(0, 10));
-  }, []);
+  }, [user?.email]);
 
   const validateDate = (value: string): string | null => {
     if (!value) return "请选择出生日期";

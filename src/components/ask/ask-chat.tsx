@@ -2,15 +2,16 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, CornerDownLeft, Crown, SendHorizonal, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { useAuth } from "@/components/auth/auth-context";
 import { Button } from "@/components/ui/button";
 import { buildReply, generateThinkingText, loadAskContext, type AskContext } from "@/lib/ask-engine";
+import { consumeQuota, getProfile, getQuota, QUOTA_DAILY_LIMIT } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const QUOTA_KEY = "xuanji.ask.quota";
-const DAILY_LIMIT = 5;
 
 const WELCOME =
   "施主请讲。把你的困惑直接丢给我——事业、姻缘、财运、健康都可以问。若已在「八字测算」立过命盘，我会结合你的盘面来答。";
@@ -35,25 +36,17 @@ interface Message {
   thinkingMs?: number;      // 思考耗时（毫秒）
 }
 
-interface Quota {
-  date: string;
-  used: number;
-}
-
-/** 本地日期（避免 UTC 偏移导致跨天判断错误） */
-function today(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-}
-
 export function AskChat() {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([
     { id: "welcome", role: "assistant", content: WELCOME },
   ]);
   const [input, setInput] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
-  const [quota, setQuota] = useState<Quota>({ date: today(), used: 0 });
+  const [remaining, setRemaining] = useState(QUOTA_DAILY_LIMIT);
+  const [exhausted, setExhausted] = useState(false);
   const [ctx, setCtx] = useState<AskContext>({ hasProfile: false });
+  const [hasProfile, setHasProfile] = useState(false);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -61,41 +54,23 @@ export function AskChat() {
   const thinkTimer = useRef<number | null>(null);
 
   useEffect(() => {
-    setCtx(loadAskContext());
-    try {
-      const raw = window.localStorage.getItem(QUOTA_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Quota;
-        if (parsed?.date === today() && typeof parsed.used === "number") {
-          setQuota(parsed);
-        }
-      }
-    } catch {
-      // 本地存储不可用时静默降级
-    }
+    if (!user) return;
+    setCtx(loadAskContext(user.email));
+    setHasProfile(getProfile(user.email) !== null);
+    const q = getQuota(user.email);
+    setRemaining(q.limit - q.count);
+    setExhausted(q.exhausted);
     return () => {
       if (streamTimer.current) window.clearInterval(streamTimer.current);
       if (thinkTimer.current) window.clearTimeout(thinkTimer.current);
     };
-  }, []);
+  }, [user?.email]);
 
   // 新消息 / 流式输出时自动滚动到底部
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, phase]);
-
-  const remaining = Math.max(0, DAILY_LIMIT - quota.used);
-  const exhausted = remaining <= 0;
-
-  const persistQuota = (next: Quota) => {
-    setQuota(next);
-    try {
-      window.localStorage.setItem(QUOTA_KEY, JSON.stringify(next));
-    } catch {
-      // 本地存储不可用时静默降级
-    }
-  };
 
   const streamReply = (full: string, thinkMs?: number, thinkText?: string) => {
     const id = `${Date.now()}-a`;
@@ -107,7 +82,7 @@ export function AskChat() {
         content: "",
         streaming: true,
         thinking: thinkText,
-        thinkingMs,
+        thinkingMs: thinkMs,
         thinkingStreamed: thinkText ? false : undefined,
       },
     ]);
@@ -293,12 +268,17 @@ export function AskChat() {
 
   const send = (raw?: string) => {
     const text = (raw ?? input).trim();
-    if (!text || phase !== "idle" || exhausted) return;
+    if (!text || phase !== "idle" || exhausted || !user) return;
 
-    // 跨天自动重置额度
-    const t = today();
-    const used = quota.date === t ? quota.used : 0;
-    persistQuota({ date: t, used: used + 1 });
+    const ok = consumeQuota(user.email);
+    if (!ok) {
+      const q = getQuota(user.email);
+      setRemaining(q.limit - q.count);
+      setExhausted(q.exhausted);
+      return;
+    }
+    setRemaining((r) => Math.max(0, r - 1));
+    if (remaining <= 1) setExhausted(true);
 
     setMessages((current) => [
       ...current,
@@ -346,7 +326,7 @@ export function AskChat() {
             exhausted ? "text-gold-400" : "text-muted-foreground"
           )}
         >
-          今日免费 · 剩余 {remaining}/{DAILY_LIMIT} 次
+          今日免费 · 剩余 {remaining}/{QUOTA_DAILY_LIMIT} 次
         </p>
       </div>
 
@@ -401,13 +381,36 @@ export function AskChat() {
         ) : null}
       </AnimatePresence>
 
+      {/* 未建档引导：仅开场时出现 */}
+      {messages.length <= 1 && phase === "idle" && !hasProfile ? (
+        <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-violet-400/20 bg-violet-400/[0.06] px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-[13px] leading-relaxed text-muted-foreground">
+            还没填命盘档案 · 填一次出生信息，AI 会结合你的四柱来答。
+          </p>
+          <div className="flex gap-2">
+            <Link
+              href="/fortune/bazi"
+              className="inline-flex h-8 items-center justify-center rounded-full bg-foreground px-4 text-[12px] font-medium text-background transition-opacity hover:opacity-90"
+            >
+              去八字测算
+            </Link>
+            <Link
+              href="/profile"
+              className="inline-flex h-8 items-center justify-center rounded-full border border-border px-4 text-[12px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+            >
+              手动建档
+            </Link>
+          </div>
+        </div>
+      ) : null}
+
       {/* 额度用尽：付费提示 */}
       {exhausted ? (
         <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-gold-500/30 bg-gold-500/10 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2.5">
             <Crown className="size-4 shrink-0 text-gold-400" aria-hidden />
             <p className="text-[13px] leading-relaxed">
-              今日 {DAILY_LIMIT} 次免费提问已用完，会员可解锁不限次追问。
+              今日 {QUOTA_DAILY_LIMIT} 次免费提问已用完，会员可解锁不限次追问。
             </p>
           </div>
           <Button size="sm" disabled className="shrink-0">

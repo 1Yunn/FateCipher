@@ -151,6 +151,13 @@ export function SiteHeader() {
                         <p className="truncate text-[11px] text-muted-foreground">{user.email}</p>
                       </div>
                       <div className="my-1 h-px bg-border/60" />
+                      <Link
+                        href="/profile"
+                        onClick={() => setOpen(false)}
+                        className="block rounded-lg px-3 py-2 text-left text-[13px] text-foreground transition-colors hover:bg-accent"
+                      >
+                        我的档案
+                      </Link>
                       <button
                         type="button"
                         onClick={handleSignOut}
@@ -216,6 +223,13 @@ export function SiteHeader() {
                       <p className="text-[13px] font-medium">{user.name}</p>
                       <p className="text-[11px] text-muted-foreground">{user.email}</p>
                     </div>
+                    <Link
+                      href="/profile"
+                      onClick={() => setOpen(false)}
+                      className="rounded-xl px-3 py-2.5 text-left text-[15px] text-foreground transition-colors hover:bg-accent"
+                    >
+                      我的档案
+                    </Link>
                     <button
                       type="button"
                       onClick={() => {

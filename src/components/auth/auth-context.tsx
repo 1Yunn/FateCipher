@@ -8,6 +8,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { migrateForUser } from "@/lib/profile";
 
 export type User = {
   email: string;
@@ -73,6 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       writeUsers(users);
       const newUser: User = { email, name };
       window.localStorage.setItem(CURRENT_KEY, JSON.stringify(newUser));
+      migrateForUser(email); // 迁移旧 key（仅影响已有档案的老用户）
       setUser(newUser);
     },
     []
@@ -90,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       const current: User = { email: found.email, name: found.name };
       window.localStorage.setItem(CURRENT_KEY, JSON.stringify(current));
+      migrateForUser(email); // 迁移旧 key（仅影响已有档案的老用户）
       setUser(current);
     },
     []

@@ -4,6 +4,7 @@ import {
   computeBazi,
   type FiveElement,
 } from "@/lib/bazi";
+import { getProfile, type Profile } from "@/lib/profile";
 
 /** 问答主题分类 */
 export type AskTopic =
@@ -25,25 +26,12 @@ export interface AskContext {
   dominantElement?: FiveElement;
 }
 
-interface ProfileCtx {
-  zodiac: string;
-  dayStem: string;
-  dayElement: FiveElement;
-  dominantElement: FiveElement;
-}
-
-const PROFILE_KEY = "xuanji.profile.bazi";
-
-/** 从本地命盘档案（八字测算页写入）构建问答上下文 */
-export function loadAskContext(): AskContext {
+/** 从本地命盘档案构建问答上下文（传 email 取用户专属档案） */
+export function loadAskContext(email?: string): AskContext {
   try {
-    const raw = window.localStorage.getItem(PROFILE_KEY);
-    if (!raw) return { hasProfile: false };
-    const parsed = JSON.parse(raw) as { date?: unknown; hourBranch?: unknown };
-    if (typeof parsed.date !== "string") return { hasProfile: false };
-    const hour =
-      typeof parsed.hourBranch === "number" ? parsed.hourBranch : undefined;
-    const chart = computeBazi(parsed.date, hour);
+    const profile: Profile | null = email ? getProfile(email) : null;
+    if (!profile) return { hasProfile: false };
+    const chart = computeBazi(profile.date, profile.hourBranch);
     const dayPillar = chart.pillars.find((pillar) => pillar.key === "day");
     if (!dayPillar) return { hasProfile: false };
     const dominantElement = (
@@ -121,6 +109,13 @@ export function detectTopic(input: string): AskTopic {
 
 function pick<T>(list: T[]): T {
   return list[Math.floor(Math.random() * list.length)];
+}
+
+interface ProfileCtx {
+  zodiac: string;
+  dayStem: string;
+  dayElement: FiveElement;
+  dominantElement: FiveElement;
 }
 
 /** 有档案时的开场承接（随机变化，制造「真人感」） */

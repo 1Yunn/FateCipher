@@ -5,6 +5,7 @@ import { ArrowRight, ChevronLeft, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { BaziResult, type BaziResultInfo } from "@/components/bazi/bazi-result";
+import { useAuth } from "@/components/auth/auth-context";
 import { RitualOverlay } from "@/components/ritual-overlay";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,10 +13,10 @@ import {
   HOUR_SLOTS,
   type BaziChart,
 } from "@/lib/bazi";
+import { getProfile, saveProfile, type Profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
 
 const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const STORAGE_KEY = "xuanji.profile.bazi";
 const RITUAL_LINES = [
   "推演天机 · 起四柱",
   "观星定位 · 定五行",
@@ -25,15 +26,6 @@ const MIN_BIRTH = "1900-01-01";
 const FOCUS_OPTIONS = ["姻缘", "事业", "财富", "学业", "健康"] as const;
 
 type Gender = "male" | "female";
-
-interface Profile {
-  date: string;
-  hourBranch?: number;
-  gender: Gender;
-  focus: string[];
-  place?: string;
-  savedAt: string;
-}
 
 const inputCls =
   "w-full rounded-xl glass px-4 py-3 text-[15px] outline-none transition-shadow placeholder:text-muted-foreground/40 focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-[invalid=true]:border-destructive";
@@ -45,6 +37,7 @@ function hourLabel(hourBranch?: number): string {
 }
 
 export function BaziFlow() {
+  const { user } = useAuth();
   const [step, setStep] = useState(0);
   const [date, setDate] = useState("");
   const [hourValue, setHourValue] = useState<number | null>(null); // -1 = 时辰未知
@@ -60,14 +53,11 @@ export function BaziFlow() {
   const [resultInfo, setResultInfo] = useState<BaziResultInfo | null>(null);
 
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setSaved(JSON.parse(raw) as Profile);
-    } catch {
-      // 本地存储不可用时静默降级
+    if (user) {
+      setSaved(getProfile(user.email));
     }
     setMaxDate(new Date().toISOString().slice(0, 10));
-  }, []);
+  }, [user?.email]);
 
   const validateDate = (value: string): string | null => {
     if (!value) return "请选择出生日期";
@@ -119,23 +109,23 @@ export function BaziFlow() {
       setGenderError(true);
       return;
     }
-    const profile: Profile = {
-      date,
-      hourBranch: hourValue !== null && hourValue >= 0 ? hourValue : undefined,
-      gender,
-      focus,
-      place: place || undefined,
-      savedAt: new Date().toISOString(),
-    };
+    if (!user) return;
+    let newProfile: Profile | null = null;
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-      setSaved(profile);
+      newProfile = saveProfile(user.email, {
+        date,
+        hourBranch: hourValue !== null && hourValue >= 0 ? hourValue : undefined,
+        gender,
+        focus,
+        place: place || undefined,
+      });
+      setSaved(newProfile);
     } catch {
       // 本地存储不可用时静默降级
     }
     setResultInfo({
-      date: profile.date,
-      hourText: hourLabel(profile.hourBranch),
+      date,
+      hourText: hourLabel(newProfile?.hourBranch),
       genderText: gender === "male" ? "男命" : "女命",
     });
     setRitual(true);
