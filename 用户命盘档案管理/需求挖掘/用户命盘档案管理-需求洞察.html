@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>用户命盘档案管理 · 需求洞察</title>
+<style>
+  :root {
+    --bg: #fbfbfd;
+    --ink: #0f0f12;
+    --ink-2: #5a5a68;
+    --ink-3: #9a9aa7;
+    --line: #eaeaf0;
+    --accent: #6b46c1;
+    --accent-soft: #ede9fe;
+    --card: #ffffff;
+    --warn: #b45309;
+    --warn-soft: #fef3c7;
+    --good: #047857;
+    --good-soft: #d1fae5;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: "Noto Serif SC", "思源宋体", Georgia, serif; line-height: 1.7; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 120px; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 32px; margin-bottom: 48px; }
+  header .tag { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; }
+  header h1 { font-size: clamp(28px, 3.2vw, 42px); font-weight: 500; margin: 0 0 12px; letter-spacing: -.01em; }
+  header .meta { font-family: system-ui,-apple-system,sans-serif; font-size: 13px; color: var(--ink-3); margin-top: 8px; }
+  section { margin-bottom: 56px; }
+  section h2 { font-size: 20px; font-weight: 500; margin: 0 0 20px; padding-bottom: 10px; border-bottom: 1px solid var(--line); letter-spacing: -.005em; }
+  section h3 { font-size: 15px; font-weight: 500; margin: 28px 0 12px; color: var(--ink); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px 28px; margin-top: 16px; }
+  .card + .card { margin-top: 14px; }
+  .row { display: grid; gap: 16px; }
+  .row.cols-2 { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 640px) { .row.cols-2 { grid-template-columns: 1fr; } }
+  .kv { display: flex; gap: 14px; font-family: system-ui,-apple-system,sans-serif; font-size: 13px; }
+  .kv .k { width: 88px; flex-shrink: 0; color: var(--ink-3); }
+  .kv .v { color: var(--ink-2); }
+  ul.clean { margin: 0; padding: 0; list-style: none; }
+  ul.clean li { padding: 6px 0; padding-left: 16px; position: relative; font-family: system-ui,-apple-system,sans-serif; font-size: 14px; color: var(--ink-2); }
+  ul.clean li::before { content: ""; position: absolute; left: 0; top: 14px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-soft); }
+  ul.clean li.muted::before { background: #e5e5eb; }
+  .pill { display: inline-block; font-family: system-ui,-apple-system,sans-serif; font-size: 11px; padding: 2px 8px; border-radius: 999px; margin-right: 6px; }
+  .pill.a { background: var(--accent-soft); color: var(--accent); }
+  .pill.w { background: var(--warn-soft); color: var(--warn); }
+  .pill.g { background: var(--good-soft); color: var(--good); }
+  blockquote { border-left: 3px solid var(--accent); padding: 8px 16px; margin: 12px 0; color: var(--ink-2); font-family: system-ui,-apple-system,sans-serif; font-size: 14px; background: var(--accent-soft); border-radius: 0 8px 8px 0; }
+  .evidence { background: #fafafb; border: 1px dashed #e5e5eb; border-radius: 10px; padding: 16px 20px; margin-top: 12px; }
+  .evidence .src { font-family: system-ui,-apple-system,sans-serif; font-size: 11px; color: var(--ink-3); margin-bottom: 8px; letter-spacing: .04em; }
+  .num { font-family: system-ui,-apple-system,sans-serif; font-size: 28px; font-weight: 300; color: var(--accent); }
+  .num + span { font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); margin-left: 6px; }
+  table { width: 100%; border-collapse: collapse; font-family: system-ui,-apple-system,sans-serif; font-size: 13.5px; margin-top: 12px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 500; color: var(--ink-2); background: #fafafb; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+  td { color: var(--ink-2); }
+  .foot { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line); font-family: system-ui,-apple-system,sans-serif; font-size: 12px; color: var(--ink-3); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="tag">需求挖掘 · 2026-09-09</span>
+  <h1>用户命盘档案管理</h1>
+  <p style="color:var(--ink-2); margin:0;">把「填一次生日」从一次性动作，变成可管理、可复用、可增长的用户资产。</p>
+  <div class="meta">项目：FateCipher · 产出：用户命盘档案管理功能 · 作者：产品团队（AI 辅助整理）</div>
+</header>
+
+<!-- 一、问题摘要 -->
+<section>
+  <h2>一、问题摘要</h2>
+  <div class="card">
+    <div class="row cols-2">
+      <div>
+        <div class="num">4</div><span>种命理玩法共用一份命盘</span>
+        <div style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-3);margin-top:8px;">八字 / 塔罗 / 紫微 / AI 问答，都依赖命盘档案做个性化解读。</div>
+      </div>
+      <div>
+        <div class="num">1</div><span>唯一档案入口：八字测算</span>
+        <div style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-3);margin-top:8px;">目前没有独立的档案管理界面，档案等于八字测算的副产物。</div>
+      </div>
+    </div>
+    <div class="evidence" style="margin-top:20px;">
+      <div class="src">来源 · 代码走查 2026-09-09</div>
+      <blockquote style="margin:0;">
+        ask-engine.ts L40: <code>window.localStorage.getItem("fatecipher.profile.bazi")</code><br/>
+        bazi-flow.ts L18 / ziwei-flow.ts L16: 复用同一个 STORAGE_KEY<br/>
+        ask-engine.ts L235: 「去八字测算花三分钟立个盘，下次的回答会贴身得多」
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- 二、现状证据 -->
+<section>
+  <h2>二、现状证据（代码走查）</h2>
+  <table>
+    <thead><tr><th>维度</th><th>现状</th><th>问题</th></tr></thead>
+    <tbody>
+      <tr><td>存储位置</td><td>localStorage 全局 key <code>fatecipher.profile.bazi</code></td><td>无用户隔离，多账号共用同一浏览器会串数据</td></tr>
+      <tr><td>写入入口</td><td>仅八字测算 + 紫微测算两个流程</td><td>没有独立建档页面，塔罗和 AI 问答无法主动引导用户建档</td></tr>
+      <tr><td>读取者</td><td>ask-engine.ts 读取，判断 <code>hasProfile</code></td><td>只有「有/无」二态，没有版本/完整度/来源记录</td></tr>
+      <tr><td>档案结构</td><td>flat JSON：出生时间、性别、四柱子、五行分布</td><td>没有命理工具偏好、问题历史、AI 问答上下文的关联</td></tr>
+      <tr><td>认证系统</td><td>AuthProvider（localStorage mock，无后端）</td><td>档案未挂到 user.id，AuthContext 与 Profile 完全独立</td></tr>
+      <tr><td>管理入口</td><td>不存在</td><td>用户无法查看、编辑、删除、备份自己的档案</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- 三、问题分类 -->
+<section>
+  <h2>三、问题分类（按影响链）</h2>
+
+  <div class="card">
+    <h3><span class="pill a">P0</span>数据隔离缺失</h3>
+    <div class="kv"><div class="k">证据</div><div class="v">localStorage key 全局 <code>fatecipher.profile.bazi</code>，未拼接 user.id / email 前缀</div></div>
+    <div class="kv"><div class="k">影响</div><div class="v">同一浏览器切换账号，B 用户能看到 A 的出生时辰，且 AI 问答会基于 A 的盘面解读 B 的问题</div></div>
+    <div class="kv"><div class="k">修复成本</div><div class="v">低：改 3 个常量 + 加迁移逻辑</div></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill a">P0</span>没有档案管理界面</h3>
+    <div class="kv"><div class="k">证据</div><div class="v">SiteHeader 右侧只有「用户图标」下拉（登录/注册/退出）；已登录后下拉只有「命理体系 / AI 问答 / 退出登录」，无档案入口</div></div>
+    <div class="kv"><div class="k">影响</div><div class="v">用户想改出生时辰（例如记错了）只能重新跑一遍八字测算；建档后无法确认存了什么；产品没有「我的档案」这个心智入口</div></div>
+    <div class="kv"><div class="k">修复成本</div><div class="v">中：新增 /profile 页面 + 导航入口 + 读写逻辑</div></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill w">P1</span>建档入口被动</h3>
+    <div class="kv"><div class="k">证据</div><div class="v">ask-engine.ts L235 只能文案引导「去八字测算」；塔罗测算页没有建档 CTA；AuthGuard 拦截后不提示建档</div></div>
+    <div class="kv"><div class="k">影响</div><div class="v">AI 问答重复输出「你还没立命盘档案」通用开场，降低回答质量；塔罗用户流失（塔罗不需要出生时辰但体验不如有档案时连贯）</div></div>
+    <div class="kv"><div class="k">修复成本</div><div class="v">中：需要设计主动建档场景和引导链路</div></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill w">P1</span>档案只支持「生辰八字」一种模板</h3>
+    <div class="kv"><div class="k">证据</div><div class="v">STORAGE_KEY 叫 <code>profile.bazi</code>，结构里只有四柱相关字段；紫微复用同一份出生时间但没有紫微特有的辅助字段</div></div>
+    <div class="kv"><div class="k">影响</div><div class="v">产品叫「命盘档案」实际是「八字档案」；未来若接入西方占星（本命星盘）需要新档案类型</div></div>
+    <div class="kv"><div class="k">修复成本</div><div class="v">中：抽象成 profile template registry</div></div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill">P2</span>档案生命周期无感知</h3>
+    <div class="kv"><div class="k">现状</div><div class="v">没有 lastUpdated、createdAt 时间戳；AI 问答不知道档案是 1 年前填的还是刚填的；没有「档案完整度」概念</div></div>
+    <div class="kv"><div class="k">影响</div><div class="v">AI 无法提示「你的档案还缺出生地，补上后紫微排盘更准」</div></div>
+  </div>
+</section>
+
+<!-- 四、竞品参考 -->
+<section>
+  <h2>四、竞品参考（功能层面）</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>竞品</th><th>档案管理方式</th><th>亮点</th><th>与 FateCipher 差异</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>神巴巴（shen85）</td>
+          <td>独立「我的命盘」页面，支持多个命盘（自己 + 家人）</td>
+          <td>家人档案、档案切换</td>
+          <td>FateCipher 暂不需要多人档案，但「独立档案页」模式可参考</td>
+        </tr>
+        <tr>
+          <td>测测（cecer123）</td>
+          <td>按测算类型分别建档，结果收藏与档案关联</td>
+          <td>档案 ↔ 历史结果双向跳转</td>
+          <td>FateCipher 暂无历史结果功能，可作为后续扩展</td>
+        </tr>
+        <tr>
+          <td>DeepSeek / Kimi</td>
+          <td>上传文件 / 对话中提取 → 长期记忆</td>
+          <td>「让 AI 记住我」主动心智</td>
+          <td>FateCipher 的命盘是结构化强数据，不是自由文本</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- 五、机会点与验证计划 -->
+<section>
+  <h2>五、机会点（按优先级）</h2>
+
+  <div class="card">
+    <h3><span class="pill a">必须做</span>机会 1：数据隔离 + 用户维度 key</h3>
+    <div class="evidence">
+      <div class="src">关联证据</div>
+      <ul class="clean">
+        <li>当前 localStorage key 全局共享</li>
+        <li>AuthProvider 已有 user.email</li>
+      </ul>
+    </div>
+    <div class="evidence">
+      <div class="src">预期价值</div>
+      <ul class="clean">
+        <li>修复安全/隐私 bug</li>
+        <li>为后续多档案类型和后端同步铺路</li>
+      </ul>
+    </div>
+    <div class="evidence">
+      <div class="src">验证方法</div>
+      <ul class="clean">
+        <li>手动切换账号，检查各账号 AI 问答的开场承接是否对应各自档案</li>
+        <li>本地写迁移脚本：旧 key → 新 key（如果新 key 不存在）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill a">必须做</span>机会 2：独立档案管理页 /profile</h3>
+    <div class="evidence">
+      <div class="src">关联证据</div>
+      <ul class="clean">
+        <li>用户下拉菜单没有档案入口</li>
+        <li>ask-engine.ts 文案主动引导「去八字测算立个盘」</li>
+      </ul>
+    </div>
+    <div class="evidence">
+      <div class="src">预期价值</div>
+      <ul class="clean">
+        <li>建立产品心智：FateCipher 有「我的档案」</li>
+        <li>减少建档摩擦：3 分钟建档 vs 必须跑完 2 分钟八字仪式</li>
+        <li>塔罗/紫微用户也能建档，扩大档案覆盖率</li>
+      </ul>
+    </div>
+    <div class="evidence">
+      <div class="src">验证方法</div>
+      <ul class="clean">
+        <li>建档完成率：从「进入八字测算」到「档案写入成功」的漏斗</li>
+        <li>AI 问答承接质量：有档案用户的回答长度 / 追问次数</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill w">应该做</span>机会 3：主动建档引导链路</h3>
+    <div class="evidence">
+      <div class="src">场景</div>
+      <ul class="clean">
+        <li>AI 问答欢迎语「施主请讲」→ 未建档用户 → CTA「先立个档案让回答更贴身」</li>
+        <li>AuthGuard 拦截遮罩 → 登录后 → 引导建档</li>
+        <li>塔罗测算结果页 → 推荐「补个出生时辰，下次就能结合你的盘来解」</li>
+      </ul>
+    </div>
+    <div class="evidence">
+      <div class="src">验证方法</div>
+      <ul class="clean">
+        <li>建档入口点击率（埋点）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3><span class="pill">可以做</span>机会 4：档案完整度 + 智能补充提示</h3>
+    <div class="evidence">
+      <div class="src">场景</div>
+      <ul class="clean">
+        <li>出生地缺失 → 提示「补上出生地，紫微排盘会更准」</li>
+        <li>档案年龄 > 180 天 → 提示「你的档案是半年前填的，要不要确认一下？」</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 六、移交 PRD 范围 -->
+<section>
+  <h2>六、移交 PRD 的范围与约束</h2>
+
+  <h3 class="pill g">本期（v0.2）纳入 PRD 的范围</h3>
+  <ul class="clean">
+    <li>用户维度 localStorage key 改造（含迁移）</li>
+    <li>/profile 档案管理页：查看、编辑（出生时间 / 性别 / 出生地）、删除</li>
+    <li>SiteHeader 用户下拉菜单新增「我的档案」入口（已登录可见）</li>
+    <li>AI 问答页：未建档用户的主动建档 CTA</li>
+    <li>AuthGuard 后的建档引导</li>
+    <li>档案字段加 createdAt / lastUpdated 时间戳</li>
+  </ul>
+
+  <h3 class="pill w">暂不纳入</h3>
+  <ul class="clean muted">
+    <li>家人档案（多个档案切换）—— 当前 v0.2 只有单档案</li>
+    <li>档案历史版本 / 改档回溯</li>
+    <li>命理工具偏好（比如「我只信紫微，不信塔罗」）</li>
+    <li>西方占星本命星盘模板（profile 模板抽象层留接口，不实现）</li>
+    <li>后端同步（当前 Auth 全部 localStorage mock，PRD 里注明「预留 async 接口」）</li>
+    <li>历史结果收藏（测测那种模式）</li>
+  </ul>
+
+  <h3>关键约束</h3>
+  <ul class="clean">
+    <li>不破坏现有八字 / 紫微的写入链路（它们仍是建档入口之一）</li>
+    <li>不引入后端依赖（继续 localStorage），接口层抽象好 async 签名方便后续迁移</li>
+    <li>迁移脚本幂等：跑多次不会重复搬数据或覆盖新数据</li>
+  </ul>
+</section>
+
+<div class="foot">
+  FateCipher · 需求挖掘报告 · 本地生成 · 不包含模拟数据 · 2026-09-09
+</div>
+
+</div>
+</body>
+</html>

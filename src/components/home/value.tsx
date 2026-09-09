@@ -36,7 +36,7 @@ export function Value() {
   return (
     <SectionWide className="py-28 sm:py-40">
       <SectionHeadingRight
-        eyebrow="Why XuanJi"
+        eyebrow="Why FateCipher"
         title="它不做预测，它做翻译"
         subtitle="把古老的方法论，翻译成现代人的自我认知工具。"
       />

@@ -81,7 +81,7 @@ export function Founder() {
                 variants={item}
                 className="text-sm leading-relaxed text-muted-foreground sm:text-[15px]"
               >
-                那么玄机想做的，不是告诉你答案是什么，而是陪你把模糊的焦虑，拆成可以动手的下一步。
+                那么 FateCipher 想做的，不是告诉你答案是什么，而是陪你把模糊的焦虑，拆成可以动手的下一步。
               </motion.p>
               <motion.p
                 variants={item}

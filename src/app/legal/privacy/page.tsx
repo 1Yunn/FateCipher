@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { AuraBackground } from "@/components/aura-background";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+
 
 export const metadata: Metadata = {
   title: "隐私政策",
@@ -13,7 +13,6 @@ export default function PrivacyPage() {
   return (
     <div className="relative flex min-h-dvh flex-col">
       <AuraBackground />
-      <SiteHeader />
       <main className="flex-1">
         <section className="px-12 py-28 sm:px-16 sm:py-40 lg:px-24">
           <div className="mx-auto max-w-2xl">

@@ -3,18 +3,17 @@ import type { Metadata } from "next";
 import { AuraBackground } from "@/components/aura-background";
 import { ContactForm } from "@/components/contact/contact-form";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+
 
 export const metadata: Metadata = {
   title: "联系我们",
-  description: "有任何想法或反馈，欢迎告诉玄机团队。我们会认真阅读每一条留言。",
+  description: "有任何想法或反馈，欢迎告诉 FateCipher 团队。我们会认真阅读每一条留言。",
 };
 
 export default function ContactPage() {
   return (
     <div className="relative flex min-h-dvh flex-col">
       <AuraBackground />
-      <SiteHeader />
       <main className="flex-1">
         <section className="px-4 pt-32 pb-28 sm:px-6 sm:pt-36">
           <div className="mx-auto max-w-2xl">

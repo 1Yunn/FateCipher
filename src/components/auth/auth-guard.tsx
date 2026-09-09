@@ -11,7 +11,7 @@ const EASE_OUT: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 /**
  * 路由守卫：未登录时拦截页面，显示登录/注册 CTA。
- * 正常渲染（已登录/加载中）时只返回 children，不重复渲染 SiteHeader/AuraBackground。
+ * 正常渲染（已登录/加载中）时只返回 children，不重复渲染页头/AuraBackground。
  * 未登录拦截时返回遮罩页面，自带背景。
  */
 export function AuthGuard({ children }: { children: React.ReactNode }) {

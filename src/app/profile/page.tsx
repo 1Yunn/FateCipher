@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { useAuth } from "@/components/auth/auth-context";
-import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import {
   getProfile,
@@ -96,7 +95,6 @@ function ProfileInner() {
 
   return (
     <>
-      <SiteHeader />
       <main className="min-h-dvh pt-28 pb-16">
         <div className="mx-auto max-w-2xl px-4 sm:px-6">
           {/* 标题区 */}
