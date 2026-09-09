@@ -84,7 +84,7 @@ function LoginInner() {
                 欢迎回来
               </h1>
               <p className="mt-2 text-[13px] text-muted-foreground">
-                输入邮箱和密码登录你的账户
+                邮箱密码登录
               </p>
             </div>
 
@@ -219,7 +219,7 @@ function LoginInner() {
           </div>
 
           <p className="mt-6 text-center text-[11px] text-muted-foreground/50">
-            本站内容仅供娱乐，不构成任何决策建议
+            内容仅供娱乐
           </p>
         </motion.div>
       </main>
