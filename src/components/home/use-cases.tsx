@@ -17,10 +17,11 @@ type Crossroad = {
   id: string;
   icon: LucideIcon;
   accent: string;
-  ring: string;
+  glow: string;
+  roman: string;
+  enTitle: string;
   title: string;
   tagline: string;
-  points: string[];
   caseSummary: string;
 };
 
@@ -29,157 +30,275 @@ const CROSSROADS: Crossroad[] = [
     id: "career",
     icon: Compass,
     accent: "text-indigo-400",
-    ring: "bg-indigo-400/10 ring-indigo-400/20",
+    glow: "group-hover:shadow-[0_0_60px_-10px_rgba(99,102,241,0.5)]",
+    roman: "Ⅰ",
+    enTitle: "Career",
     title: "职业规划",
-    tagline: "判断行业与岗位是否匹配你的长期节奏。",
-    points: ["行业趋势适配", "能力边界识别", "时机窗口判断"],
-    caseSummary: "28 岁，从教育转 AI 赛道前想看清时机。",
+    tagline: "判断行业与岗位是否匹配你的长期节奏",
+    caseSummary: "28 岁，从教育转 AI 赛道前想看清时机窗口。",
   },
   {
     id: "love",
     icon: HeartHandshake,
     accent: "text-rose-400",
-    ring: "bg-rose-400/10 ring-rose-400/20",
+    glow: "group-hover:shadow-[0_0_60px_-10px_rgba(244,63,94,0.5)]",
+    roman: "Ⅱ",
+    enTitle: "Love",
     title: "感情困惑",
-    tagline: "理解两个人的相处模式与彼此需要。",
-    points: ["相处模式拆解", "彼此需求对位", "关键节点预判"],
-    caseSummary: "相恋三年，想分清是磨合还是错配。",
+    tagline: "理解两个人的相处模式与彼此需要的节奏",
+    caseSummary: "相恋三年，想分清是磨合期还是根本错配。",
   },
   {
     id: "startup",
     icon: Rocket,
     accent: "text-violet-400",
-    ring: "bg-violet-400/10 ring-violet-400/20",
+    glow: "group-hover:shadow-[0_0_60px_-10px_rgba(139,92,246,0.5)]",
+    roman: "Ⅲ",
+    enTitle: "Startup",
     title: "创业决策",
-    tagline: "看清时机与自身准备是否在同一步伐。",
-    points: ["时机与天时", "自身准备度", "风险与节奏"],
-    caseSummary: "纠结是否 all in，想看清准备是否到位。",
+    tagline: "看清时机与自身准备是否在同一步伐上",
+    caseSummary: "纠结是否 all in，想看清准备是否真的到位。",
   },
   {
     id: "direction",
     icon: Telescope,
     accent: "text-teal-400",
-    ring: "bg-teal-400/10 ring-teal-400/20",
+    glow: "group-hover:shadow-[0_0_60px_-10px_rgba(20,184,166,0.5)]",
+    roman: "Ⅳ",
+    enTitle: "Direction",
     title: "人生方向",
-    tagline: "在迷茫期给自己一张更大比例尺的地图。",
-    points: ["核心优势锚定", "阶段节奏对齐", "内驱力溯源"],
+    tagline: "在迷茫期给自己一张更大比例尺的人生地图",
     caseSummary: "毕业五年仍在试错，想找到值得 all in 的方向。",
   },
 ] as const;
 
 /* 堆叠态偏移：扑克牌式微错位 */
 const STACK = [
-  { x: -14, y: 10, rotate: -8, z: 1 },
-  { x: -5, y: 4, rotate: -3, z: 2 },
-  { x: 5, y: -4, rotate: 3, z: 3 },
-  { x: 14, y: -10, rotate: 8, z: 4 },
+  { x: -16, y: 12, rotate: -6, z: 1 },
+  { x: -5, y: 4, rotate: -2, z: 2 },
+  { x: 5, y: -4, rotate: 2, z: 3 },
+  { x: 16, y: -12, rotate: 6, z: 4 },
 ];
 
-/* 扇形展开：横向辐射 + 弧形升降（收窄防溢出） */
+/* 扇形展开：横向辐射 + 弧形升降 */
 const SPREAD = [
-  { x: -270, y: 40, rotate: -9, z: 1 },
-  { x: -90, y: -16, rotate: -3, z: 2 },
-  { x: 90, y: -16, rotate: 3, z: 3 },
-  { x: 270, y: 40, rotate: 9, z: 4 },
+  { x: -280, y: 30, rotate: -8, z: 1 },
+  { x: -95, y: -10, rotate: -2.5, z: 2 },
+  { x: 95, y: -10, rotate: 2.5, z: 3 },
+  { x: 280, y: 30, rotate: 8, z: 4 },
 ];
 
-const CARD_W = 260;
-const CARD_H = 380;
+const CARD_W = 200;
+const CARD_H = 460;
 
-/* ─── 单卡内容（无翻转，全部信息一面展示）─── */
+/* ─── 塔罗牌单卡：正面 + 背面（翻牌显示真实案例） ─── */
 
-function CardContent({ card }: { card: Crossroad }) {
+function TarotCard({
+  card,
+  flipped,
+}: {
+  card: Crossroad;
+  flipped: boolean;
+}) {
   const Icon = card.icon;
-  return (
-    <div className="flex h-full flex-col px-5 pb-5 pt-6">
-      <span
-        className={cn(
-          "inline-flex size-10 items-center justify-center rounded-2xl ring-1",
-          card.ring,
-        )}
-      >
-        <Icon className={cn("size-5", card.accent)} aria-hidden />
-      </span>
-      <h3 className="mt-4 text-[15px] font-medium">{card.title}</h3>
-      <p className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
-        {card.tagline}
-      </p>
 
-      <ul className="mt-4 space-y-2">
-        {card.points.map((p) => (
-          <li
-            key={p}
-            className="flex items-center gap-2 text-[12px] text-muted-foreground"
-          >
-            <span
+  return (
+    <div
+      className="relative h-full w-full"
+      style={{ perspective: 1000 }}
+    >
+      <motion.div
+        className="relative h-full w-full"
+        style={{ transformStyle: "preserve-3d" }}
+        animate={{ rotateY: flipped ? 180 : 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* ─── 正面 ─── */}
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col overflow-hidden rounded-2xl",
+            "border border-border/60 bg-gradient-to-b from-card to-card/60",
+            "shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)]",
+            card.glow,
+            "transition-shadow duration-500",
+          )}
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          {/* 装饰边框：双层内框 */}
+          <div className="pointer-events-none absolute inset-2 rounded-xl ring-1 ring-border/30" />
+          <div className="pointer-events-none absolute inset-3 rounded-lg ring-1 ring-border/20" />
+
+          {/* 顶部：罗马数字 + 英文副标题 */}
+          <div className="px-5 pt-6">
+            <div className="flex items-baseline justify-between">
+              <span
+                className={cn(
+                  "font-serif text-3xl font-bold leading-none tracking-tight",
+                  card.accent,
+                )}
+              >
+                {card.roman}
+              </span>
+              <span className="text-[10px] font-medium uppercase tracking-[0.25em] text-muted-foreground/50">
+                {card.enTitle}
+              </span>
+            </div>
+            {/* 分隔线 */}
+            <div
               className={cn(
-                "size-1.5 shrink-0 rounded-full bg-current",
-                card.accent,
+                "mt-3 h-px w-12",
+                card.accent.replace("text-", "bg-").replace("400", "400/50"),
               )}
             />
-            {p}
-          </li>
-        ))}
-      </ul>
+          </div>
 
-      {/* 真实案例 */}
-      <div className="mt-auto rounded-xl bg-muted/30 p-3">
-        <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground/50">
-          真实案例
-        </p>
-        <p className="mt-1.5 font-serif text-[12px] italic leading-relaxed text-foreground/80">
-          {card.caseSummary}
-        </p>
-      </div>
+          {/* 中部：大图标居中 */}
+          <div className="flex flex-1 items-center justify-center">
+            <div
+              className={cn(
+                "relative flex size-24 items-center justify-center rounded-2xl",
+                card.accent.replace("text-", "bg-").replace("400", "400/10"),
+              )}
+            >
+              <Icon className={cn("size-10", card.accent)} strokeWidth={1.25} />
+              {/* 图标外圈光晕 */}
+              <div
+                className={cn(
+                  "absolute -inset-4 rounded-3xl opacity-40 blur-2xl",
+                  card.accent.replace("text-", "bg-").replace("400", "300"),
+                )}
+              />
+            </div>
+          </div>
+
+          {/* 底部：标题 + tagline */}
+          <div className="px-5 pb-6">
+            <h3 className="font-serif text-2xl font-semibold leading-tight tracking-tight">
+              {card.title}
+            </h3>
+            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground/80">
+              {card.tagline}
+            </p>
+            {/* 底部分隔线 */}
+            <div
+              className={cn(
+                "mt-4 h-px w-full",
+                card.accent.replace("text-", "bg-").replace("400", "400/20"),
+              )}
+            />
+            <p className="mt-3 text-center text-[9px] uppercase tracking-[0.3em] text-muted-foreground/40">
+              翻转查看 →
+            </p>
+          </div>
+        </div>
+
+        {/* ─── 背面（真实案例） ─── */}
+        <div
+          className={cn(
+            "absolute inset-0 flex flex-col items-center justify-center overflow-hidden rounded-2xl",
+            "border border-border/60 bg-gradient-to-br from-foreground/[0.03] to-muted/50",
+            "shadow-[0_4px_24px_-8px_rgba(0,0,0,0.08)]",
+          )}
+          style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
+        >
+          {/* 装饰边框 */}
+          <div className="pointer-events-none absolute inset-2 rounded-xl ring-1 ring-border/30" />
+          <div className="pointer-events-none absolute inset-3 rounded-lg ring-1 ring-border/20" />
+
+          {/* 背面纹样：四角小圆 */}
+          <div
+            className={cn(
+              "pointer-events-none absolute left-5 top-5 size-2 rounded-full",
+              card.accent.replace("text-", "bg-").replace("400", "400/40"),
+            )}
+          />
+          <div
+            className={cn(
+              "pointer-events-none absolute right-5 top-5 size-2 rounded-full",
+              card.accent.replace("text-", "bg-").replace("400", "400/40"),
+            )}
+          />
+          <div
+            className={cn(
+              "pointer-events-none absolute bottom-5 left-5 size-2 rounded-full",
+              card.accent.replace("text-", "bg-").replace("400", "400/40"),
+            )}
+          />
+          <div
+            className={cn(
+              "pointer-events-none absolute bottom-5 right-5 size-2 rounded-full",
+              card.accent.replace("text-", "bg-").replace("400", "400/40"),
+            )}
+          />
+
+          <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-muted-foreground/50">
+            Real Story
+          </p>
+          <div
+            className={cn(
+              "mx-6 mt-4 h-px w-8",
+              card.accent.replace("text-", "bg-").replace("400", "400/40"),
+            )}
+          />
+          <p className="mt-6 px-6 text-center font-serif text-[14px] italic leading-relaxed text-foreground/80">
+            {card.caseSummary}
+          </p>
+          <div
+            className={cn(
+              "mt-6 h-px w-8",
+              card.accent.replace("text-", "bg-").replace("400", "400/40"),
+            )}
+          />
+          <p className="mt-6 text-[9px] uppercase tracking-[0.3em] text-muted-foreground/40">
+            FateCipher
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 }
 
-/* ─── 桌面端：堆叠 → 扇形展开 → hover 上浮高亮 ─── */
+/* ─── 桌面端：堆叠 → 扇形展开 → hover 翻牌 ─── */
 
 function StackCrossroads() {
   const [isSpread, setIsSpread] = useState(false);
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [flippedId, setFlippedId] = useState<string | null>(null);
 
   return (
     <div
-      className="relative mx-auto h-[480px] max-w-5xl"
+      className="relative mx-auto h-[540px] max-w-5xl"
       onMouseEnter={() => setIsSpread(true)}
       onMouseLeave={() => {
         setIsSpread(false);
-        setActiveId(null);
+        setFlippedId(null);
       }}
     >
       {CROSSROADS.map((card, i) => {
         const base = SPREAD[i];
         const stack = STACK[i];
+        const isFlipped = flippedId === card.id;
 
         const posAnim = !isSpread
           ? { x: stack.x, y: stack.y, rotate: stack.rotate, scale: 1, opacity: 1, zIndex: stack.z }
-          : activeId === card.id
-            ? { x: base.x, y: base.y - 20, rotate: base.rotate, scale: 1.06, opacity: 1, zIndex: 10 }
-            : activeId !== null
-              ? { x: base.x, y: base.y, rotate: base.rotate, scale: 0.92, opacity: 0.45, zIndex: base.z }
-              : { x: base.x, y: base.y, rotate: base.rotate, scale: 1, opacity: 1, zIndex: base.z };
+          : flippedId !== null && !isFlipped
+            ? { x: base.x, y: base.y + 6, rotate: base.rotate, scale: 0.9, opacity: 0.4, zIndex: base.z }
+            : { x: base.x, y: base.y - (isFlipped ? 16 : 0), rotate: base.rotate, scale: isFlipped ? 1.04 : 1, opacity: 1, zIndex: isFlipped ? 20 : base.z };
 
         return (
           <div
             key={card.id}
-            className="absolute left-1/2 top-1/2"
+            className="group absolute left-1/2 top-1/2 cursor-pointer"
             style={{ transform: "translate(-50%, -50%)" }}
+            onClick={() =>
+              setFlippedId((prev) => (prev === card.id ? null : card.id))
+            }
           >
-            {/* 扩大的触发热区：卡片外圈 padding 区域也响应 hover */}
             <motion.div
-              className="cursor-default rounded-[1.75rem] border border-border/50 bg-card/80 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] shadow-[0_1px_3px_-1px_rgba(0,0,0,0.04)] backdrop-blur-2xl transition-shadow duration-300 hover:shadow-[0_8px_32px_-12px_rgba(109,90,224,0.12)]"
-              style={{ transformOrigin: "center", width: CARD_W, height: CARD_H, padding: 16 }}
+              style={{ width: CARD_W, height: CARD_H }}
               animate={posAnim}
-              transition={{ type: "spring", stiffness: 200, damping: 24, mass: 0.8 }}
-              onMouseEnter={() => setActiveId(card.id)}
-              onMouseLeave={() => setActiveId(null)}
+              transition={{ type: "spring", stiffness: 180, damping: 22, mass: 0.8 }}
             >
-              <div className="h-full w-full rounded-[1.5rem] overflow-hidden">
-                <CardContent card={card} />
-              </div>
+              <TarotCard card={card} flipped={isFlipped} />
             </motion.div>
           </div>
         );
@@ -188,25 +307,30 @@ function StackCrossroads() {
   );
 }
 
-/* ─── 移动端 / reduceMotion：网格 ─── */
+/* ─── 移动端 / reduceMotion：2 列 grid ─── */
 
 function GridCrossroads() {
+  const [flippedId, setFlippedId] = useState<string | null>(null);
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-5 sm:grid-cols-2">
       {CROSSROADS.map((card) => (
         <div
           key={card.id}
-          className="rounded-[1.5rem] border border-border/50 bg-card/80 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.06)] shadow-[0_1px_3px_-1px_rgba(0,0,0,0.04)] backdrop-blur-2xl transition-shadow duration-300 hover:shadow-[0_8px_32px_-12px_rgba(109,90,224,0.12)]"
-          style={{ height: CARD_H }}
+          className="mx-auto cursor-pointer"
+          style={{ width: CARD_W, height: CARD_H }}
+          onClick={() =>
+            setFlippedId((prev) => (prev === card.id ? null : card.id))
+          }
         >
-          <CardContent card={card} />
+          <TarotCard card={card} flipped={flippedId === card.id} />
         </div>
       ))}
     </div>
   );
 }
 
-/** 使用场景：堆叠扑克 → 扇形展开 → hover 上浮高亮 */
+/** 使用场景：塔罗牌式卡片 — 堆叠扑克 → 扇形展开 → 点击翻牌看真实案例 */
 export function UseCases() {
   const reduceMotion = useReducedMotion();
 
