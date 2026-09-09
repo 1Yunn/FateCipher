@@ -333,22 +333,25 @@
     <li><div class="group-title"><span class="v-num">v0.1</span> 功能优化</div></li>
     <li><a href="https://github.com/1Yunn/FateCipher/commit/a246656" target="_blank"><span class="idx">—</span>导航栏 UI · AI 问答重构 · 品牌替换</a></li>
 
-    <li><div class="group-title"><span class="v-num">v0.2</span> 基础架构 + 新模块交付</div>
+    <li><div class="group-title"><span class="v-num">v0.1.1</span> 基础架构 + 新模块交付</div>
       <ol class="sub">
-        <li><a href="#members"><span class="idx">01</span>项目相关人员</a></li>
-        <li><a href="#story"><span class="idx">02</span>用户故事 &amp; 核心场景</a></li>
-        <li><a href="#bg"><span class="idx">03</span>版本记录</a></li>
-        <li><a href="#bg2"><span class="idx">04</span>需求背景</a></li>
-        <li><a href="#goal"><span class="idx">05</span>需求目标 &amp; 范围</a></li>
-        <li><a href="#flow"><span class="idx">06</span>业务流程图</a></li>
-        <li><a href="#detail"><span class="idx">07</span>详细方案</a></li>
-        <li><a href="#ui"><span class="idx">08</span>流程图 · 运行截图</a></li>
-        <li><a href="#accept"><span class="idx">09</span>验收 Checklist</a></li>
-        <li><a href="#edge"><span class="idx">10</span>异常与边界</a></li>
-        <li><a href="#track"><span class="idx">11</span>数据埋点</a></li>
-        <li><a href="#seq"><span class="idx">12</span>时序图</a></li>
-        <li><a href="#plan"><span class="idx">13</span>上线计划 &amp; Git 记录</a></li>
-        <li><a href="#appendix"><span class="idx">14</span>附录</a></li>
+        <li><a href="#define"><span class="idx">01</span>产品定位与功能定义</a></li>
+        <li><a href="#layout"><span class="idx">02</span>首页排版分析</a></li>
+        <li><a href="#flow1to1"><span class="idx">03</span>从 0 到 1 项目流程</a></li>
+        <li><a href="#members"><span class="idx">04</span>项目相关人员</a></li>
+        <li><a href="#story"><span class="idx">05</span>用户故事 &amp; 核心场景</a></li>
+        <li><a href="#bg"><span class="idx">06</span>版本记录</a></li>
+        <li><a href="#bg2"><span class="idx">07</span>需求背景</a></li>
+        <li><a href="#goal"><span class="idx">08</span>需求目标 &amp; 范围</a></li>
+        <li><a href="#flow"><span class="idx">09</span>业务流程图</a></li>
+        <li><a href="#detail"><span class="idx">10</span>详细方案</a></li>
+        <li><a href="#ui"><span class="idx">11</span>流程图 · 运行截图</a></li>
+        <li><a href="#accept"><span class="idx">12</span>验收 Checklist</a></li>
+        <li><a href="#edge"><span class="idx">13</span>异常与边界</a></li>
+        <li><a href="#track"><span class="idx">14</span>数据埋点</a></li>
+        <li><a href="#seq"><span class="idx">15</span>时序图</a></li>
+        <li><a href="#plan"><span class="idx">16</span>上线计划 &amp; Git 记录</a></li>
+        <li><a href="#appendix"><span class="idx">17</span>附录</a></li>
       </ol>
     </li>
   </ol>
@@ -357,7 +360,7 @@
 <div class="wrap">
 
 <header>
-  <span class="tag">PRD · v0.2 · 基础架构 + 新模块交付</span>
+  <span class="tag">PRD · v0.1.1 · 基础架构 + 新模块交付</span>
   <h1>用户命盘档案管理</h1>
   <p class="sub">把「填一次出生信息」从一次性动作，变成可管理、可复用、可增长的用户资产。</p>
   <div class="meta">
@@ -401,6 +404,158 @@
       FateCipher 是 0→1 独立项目，单人全栈推进。产品→设计→开发→测试→上线 全链路由章青云一人完成。
       技术协作栈：VS Code + GitHub + Vitest + DeepSeek / Claude（代码辅助）。
     </p>
+  </div>
+</section>
+
+<!-- 产品定位与功能定义 -->
+<section id="define">
+  <h2>产品定位与功能定义</h2>
+
+  <h3>一句话定位</h3>
+  <p style="font-family:system-ui,sans-serif;font-size:13.5px;color:var(--ink-2);line-height:1.8;">
+    <b style="color:var(--ink);">FateCipher = 命理工具 + AI 老师傅</b>。用八字 / 紫微 / 塔罗把你的出生数据结构化成「命盘」，再用 AI 把命理语言翻译成人话，让你对当下和下一步看得更清。
+  </p>
+
+  <h3>为什么做这个产品</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th style="width:110px;">用户画像</th><th>痛点</th><th>FateCipher 怎么解</th></tr></thead>
+      <tbody>
+        <tr><td>25–32 岁<br/>职场/情感交叉期</td><td>"工作要不要跳？""ta 是不是我对的人？"<br/>搜索出来的命理内容太散、太玄</td><td>AI 老师傅结合你的命盘四柱来答，不是瞎蒙</td></tr>
+        <tr><td>第一次接触命理<br/>想"试试看"</td><td>排盘网站把你吓跑——看不懂术语、不知道自己盘里有啥</td><td>AI 问答开场主动问"要不要看看你今年事业怎么走"，帮你翻译盘面</td></tr>
+        <tr><td>老用户<br/>想换个方向看看</td><td>算了八字又想试试塔罗，每个都要重填一次出生信息</td><td>填一次档案，四种玩法共用</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>四大玩法定义</h3>
+  <div class="shot-pair" style="grid-template-columns:1fr 1fr; margin-top:6px;">
+    <div>
+      <div class="shot-box" style="margin-top:4px;">
+        <img src="../assets/07-homepage.png" alt="首页" />
+        <div class="shot-caption">首页 · Hero + 四玩法入口</div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0; padding:14px 18px;">
+      <table>
+        <thead><tr><th>玩法</th><th>输入</th><th>输出</th></tr></thead>
+        <tbody>
+          <tr><td><b>八字测算</b></td><td>出生日期 + 时辰</td><td>四柱排盘 + 五行分析<br/>(本地引擎，数据不出浏览器)</td></tr>
+          <tr><td><b>紫微斗数</b></td><td>出生日期 + 时辰 + 性别</td><td>紫微命盘 + 十二宫解读</td></tr>
+          <tr><td><b>塔罗占卜</b></td><td>一个问题 + 抽牌</td><td>三张牌阵解读</td></tr>
+          <tr><td><b>AI 问答</b></td><td>你的困惑（事业/感情/财运/健康）</td><td>结合命盘的 AI 回答<br/>(5 次/天免费)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 首页排版分析 -->
+<section id="layout">
+  <h2>首页排版分析</h2>
+
+  <div class="shot-box" style="margin-top:4px;">
+    <img src="../assets/07-homepage.png" alt="首页全览" style="width:100%;" />
+    <div class="shot-caption">首页完整排版（Hero + 四玩法 + 三个场景 + 团队介绍 + 页脚）</div>
+  </div>
+
+  <h3>Hero 区</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th style="width:120px;">设计决策</th><th>选型</th><th>为什么</th></tr></thead>
+      <tbody>
+        <tr><td>Slogan</td><td>"认清自己，看清下一步"</td><td>16 字，讲清楚产品解决什么问题，用行动动词锚定用户预期</td></tr>
+        <tr><td>主 CTA</td><td>"开始我的第一份洞察" → /fortune/bazi</td><td>八字是四种玩法里最"权威"的——四柱排盘有明确的出生信息绑定，对新用户最有说服力</td></tr>
+        <tr><td>次 CTA</td><td>"看 AI 怎么思考" → #ai-demo</td><td>先给信心（展示 AI 深度思考），再转化。降低新用户"这 AI 会不会瞎说"的心理门槛</td></tr>
+        <tr><td>副标题</td><td>"AI Personal Insight · 仅供娱乐"</td><td>双重信号：AI 技术感 + 合规免责（命理内容不做医疗/投资建议）</td></tr>
+        <tr><td>导航栏</td><td>4 产品入口直接露出</td><td>不做二级菜单、不做下拉。理由：产品只有 4 个玩法，完全放得下；露出 = 降低决策成本</td></tr>
+        <tr><td>品牌色</td><td>白底 #fbfbfd + 紫色 #6b46c1</td><td>紫色 = 神秘（命理感）+ 科技（AI 感），兼顾两种调性。禁止黄/橙/红（太"娱乐算命"）</td></tr>
+        <tr><td>字体</td><td>标题思源宋体 / 正文无衬线</td><td>宋体 = 传统文化 + 命理权威感；无衬线 = 现代感 + AI 产品调性。双语体切换形成层次</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>四玩法入口卡片</h3>
+  <div class="card">
+    <p style="font-family:system-ui,sans-serif;font-size:13px;color:var(--ink-2);margin:0 0 10px;">
+      首页下方按「八字 → 塔罗 → 紫微 → AI 问答」顺序排列。为什么这么排？
+    </p>
+    <ul class="clean">
+      <li><b>八字排第一</b>：对"我到底是什么命"的原始需求最直接，转化路径最短</li>
+      <li><b>塔罗排第二</b>：比紫微门槛低（不需要精确时辰），适合"我就想问个简单的"</li>
+      <li><b>紫微排第三</b>：排盘最复杂（需要精确出生时间 + 性别），放到后面给已经建档的老用户</li>
+      <li><b>AI 问答排最后</b>：它是消费型工具——需要建档后才能发挥"个性化"优势，所以依赖前面几个玩法先帮用户建档</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 从 0 到 1 项目流程 -->
+<section id="flow1to1">
+  <h2>从 0 到 1 项目流程</h2>
+
+  <h3>技术选型决策</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>选型</th><th>决定</th><th>理由</th></tr></thead>
+      <tbody>
+        <tr><td>框架</td><td>Next.js 15 (App Router)</td><td>SSR/SSG 对 SEO 友好（命理内容 Google 有搜索量）；App Router 是 Next 新范式，未来维护成本低</td></tr>
+        <tr><td>语言</td><td>TypeScript</td><td>一个人全栈，类型安全 = 少踩坑；ProfileStore 的 email key 拼错这种问题编译期就能发现</td></tr>
+        <tr><td>样式</td><td>Tailwind CSS v4</td><td>Utility-first，单人快速迭代；v4 零配置更干净</td></tr>
+        <tr><td>组件库</td><td>shadcn/ui</td><td>复制粘贴进项目，不绑死；按钮、弹窗、下拉这些基础组件省得自己重写</td></tr>
+        <tr><td>AI API</td><td>DeepSeek (SSE 流式)</td><td>性价比最高的大模型之一；SSE 流式体验好，用户看得到 AI 一步步思考的过程</td></tr>
+        <tr><td>数据存储</td><td>localStorage（无后端）</td><td>0→1 阶段先验证产品，不做后端 = 省掉部署/运维成本；后续加后端时 ProfileStore 的 API 层已经抽象好 async 签名，无痛迁移</td></tr>
+        <tr><td>测试</td><td>Vitest + RTL + jsdom</td><td>和 Vite/Next 集成好；jsdom 足够覆盖前端组件逻辑</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>核心路径（MVP 先做什么）</h3>
+  <div class="card">
+    <div class="diagram">v0.0 项目初始化（一个周末）
+  ├─ Next.js 脚手架 + Tailwind v4 + shadcn/ui
+  ├─ 首页 Hero + 四玩法骨架页面（空壳路由）
+  └─ 八字本地排盘引擎（关键：四柱 + 五行）
+
+v0.1 功能优化（一个晚上）
+  ├─ AI 问答深度思考重构（前 6 段推演 + 大号行动建议）
+  ├─ 导航栏 UI 优化（4 入口直接露出）
+  └─ 品牌名全局替换（xuanji → fatecipher）
+
+v0.1.1 基础架构 + 新模块交付（两天）
+  ├─ ProfileStore（CRUD + localStorage 按 email 隔离 + 迁移 + 额度）
+  ├─ /profile 档案管理页（空态/详情/编辑/删除 三态）
+  ├─ SiteHeader 下拉加「我的档案」
+  └─ 四个消费方改造（bazi/ziwei/ask-engine/ask-chat 统一接入）
+
+v0.2 未来规划
+  ├─ 后端同步（Supabase / Cloudflare D1）
+  ├─ 多档案切换（家人档案）
+  ├─ 历史结果收藏
+  └─ 埋点 SDK + Plausible</div>
+  </div>
+
+  <h3>单人全栈迭代节奏</h3>
+  <div class="card">
+    <table>
+      <thead><tr><th>阶段</th><th>周期</th><th>产出</th><th>工作方式</th></tr></thead>
+      <tbody>
+        <tr><td>需求 &amp; 设计</td><td>半天 – 1 天</td><td>PRD + 低保真流程图 + 截图占位</td><td>写 PRD = 倒逼自己想清楚每个边界 case；写不出来的地方 = 没想清楚</td></tr>
+        <tr><td>开发</td><td>1 – 2 天</td><td>TypeScript + Tailwind 代码</td><td>一个模块一个模块做：ProfileStore → 页面 → 消费方。每步 commit，保证随时能跑</td></tr>
+        <tr><td>测试</td><td>半天</td><td>Vitest + 手动多账号隔离测试</td><td>重点测边界：新 key 已存在？旧 key 是坏 JSON？email 大小写？</td></tr>
+        <tr><td>上线</td><td>10 分钟</td><td>git push → GitHub</td><td>单人项目 = 直接 main 分支，PR 流程跳过（一个人 review 自己 commit 意义不大）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>核心经验</h3>
+  <div class="card" style="background:#fafafb;">
+    <ul class="clean">
+      <li><b>本地存储 + 抽象层</b>是 0→1 最优解：先跑起来，后续接后端时 ProfileStore 的 async 签名已经对齐，数据迁移写一次就行</li>
+      <li><b>AI 深度思考 = 差异化</b>：市面上命理产品只给结果，我们让用户看到 AI 怎么一步步推演的。前 6 段推演 + 大号行动建议的结构，既透明又有决策抓手</li>
+      <li><b>低保真流程图 + 真实截图</b>的 PRD 格式：左边流程图讲逻辑，右边截图讲真实效果。比纯文字 PRD 好 10 倍——未来回看时一眼能对比设计 vs 实际</li>
+      <li><b>多账号隔离必须早做</b>：用户 A 建档 → signOut → 用户 B signIn 看到 A 的盘 = 信任直接崩塌。ProfileStore 按 email 隔离是最基础的安全底线</li>
+      <li><b>版本号要反映改动性质</b>：v0.0 初始化、v0.1 功能优化、v0.1.1 基础架构 + 新模块交付。不要全叫 v0.2，半年后回头看会忘</li>
+    </ul>
   </div>
 </section>
 
@@ -453,7 +608,7 @@
     <div class="body">作为 <em>v0.1 已建档的老用户</em>，我希望 <em>升级后我的档案自动出现在新版本</em>，这样 <em>我不用重新填一遍出生信息</em>。</div>
     <div class="accept">
       <ul>
-        <li>v0.2 第一次 signIn / signUp → 自动把旧 key <code>fatecipher.profile.bazi</code> 搬到 <code>fatecipher.profile.{email}</code></li>
+        <li>v0.1.1 第一次 signIn / signUp → 自动把旧 key <code>fatecipher.profile.bazi</code> 搬到 <code>fatecipher.profile.{email}</code></li>
         <li>迁移幂等：signIn 多次不会重复搬迁</li>
         <li>迁移完成后删除旧 key，避免污染后续登录</li>
       </ul>
@@ -467,9 +622,9 @@
   <table>
     <thead><tr><th style="width:90px;">版本</th><th style="width:100px;">时间</th><th style="width:80px;">修订人</th><th style="width:130px;">版本类型</th><th>修订内容</th><th style="width:90px;">Commit</th></tr></thead>
     <tbody>
-      <tr><td><b>v0.2</b> <span class="pill ok">已上线</span></td><td>2026-09-09</td><td>章青云</td><td><span class="pill sky">基础架构 + 新模块交付</span></td><td>完成用户命盘档案管理完整方案：ProfileStore（CRUD + 迁移 + 额度）、/profile 档案页、额度分账、SiteHeader 下拉加「我的档案」、ask-chat 未建档 CTA、bazi/ziwei/ask-engine 全部消费方接入。tsc 零错误，vitest 8/8 通过。<span class="pill a">PRD v0.2-release</span></td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/35074fc" target="_blank">35074fc</a></td></tr>
+      <tr><td><b>v0.1.1</b> <span class="pill ok">已上线</span></td><td>2026-09-09</td><td>章青云</td><td><span class="pill sky">基础架构 + 新模块交付</span></td><td>完成用户命盘档案管理完整方案：ProfileStore（CRUD + 迁移 + 额度）、/profile 档案页、额度分账、SiteHeader 下拉加「我的档案」、ask-chat 未建档 CTA、bazi/ziwei/ask-engine 全部消费方接入。tsc 零错误，vitest 8/8 通过。<span class="pill a">PRD v0.2-release</span></td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/35074fc" target="_blank">35074fc</a></td></tr>
       <tr><td>—</td><td>2026-09-09</td><td>章青云</td><td><span class="pill sk">探索</span></td><td>尝试：导航栏改左侧 Sidebar + 全局 SiteNav 引入（19 files），<span class="pill danger">已 revert</span>（回退到顶部导航 4 入口）</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/b0d46a8" target="_blank">b0d46a8</a><br/><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/98a8131" target="_blank">98a8131</a></td></tr>
-      <tr><td>v0.2-draft</td><td>2026-09-09</td><td>章青云</td><td><span class="pill sk">文档</span></td><td>PRD 初稿 + 需求洞察 + Mermaid 流程图 + 时序图 + 埋点设计</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/597772e" target="_blank">597772e</a></td></tr>
+      <tr><td>v0.1.1-draft</td><td>2026-09-09</td><td>章青云</td><td><span class="pill sk">文档</span></td><td>PRD 初稿 + 需求洞察 + Mermaid 流程图 + 时序图 + 埋点设计</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/597772e" target="_blank">597772e</a></td></tr>
       <tr><td>v0.1</td><td>2026-09-09</td><td>章青云</td><td><span class="pill a">功能优化</span></td><td>登录保护、AI 问答深度思考重构、导航栏 UI 优化（4 产品入口直接露出）、品牌名全局替换（xuanji → fatecipher）</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/a246656" target="_blank">a246656</a></td></tr>
       <tr><td>v0.0</td><td>2026-09-08</td><td>章青云</td><td><span class="pill warn">项目初始化</span></td><td>项目初始化：Next.js 15 + React 19 + Tailwind v4 脚手架、shadcn/ui 组件库、首页 Hero、八字/塔罗/紫微/AI 问答四大玩法</td><td><a class="commit-link" href="https://github.com/1Yunn/FateCipher/commit/b06b7b5" target="_blank">b06b7b5</a></td></tr>
     </tbody>
@@ -502,7 +657,7 @@
 <section id="goal">
   <h2>需求目标 &amp; 范围</h2>
 
-  <h3>本期目标（v0.2）— 全部已完成</h3>
+  <h3>本期目标（v0.1.1）— 全部已完成</h3>
   <table>
     <thead><tr><th style="width:30px;">#</th><th>目标</th><th>验收标准</th><th style="width:80px;">状态</th></tr></thead>
     <tbody>
@@ -930,7 +1085,7 @@
     <thead><tr><th style="width:30px;">#</th><th>场景</th><th>处理策略</th></tr></thead>
     <tbody>
       <tr><td>E1</td><td>localStorage 不可用（隐私模式 / 禁用）</td><td>ProfileStore 静默降级，档案页表单禁用提交并提示「当前环境无法保存档案」</td></tr>
-      <tr><td>E2</td><td>编辑保存时另一标签页已改档案</td><td>v0.2 直接覆盖（无多标签冲突检测），待 <span class="pill sk">v0.3+</span> 加乐观锁</td></tr>
+      <tr><td>E2</td><td>编辑保存时另一标签页已改档案</td><td>v0.1.1 直接覆盖（无多标签冲突检测），待 <span class="pill sk">v0.3+</span> 加乐观锁</td></tr>
       <tr><td>E3</td><td>删除档案 → 确认弹窗 → 用户点取消</td><td>关闭弹窗，不做任何操作</td></tr>
       <tr><td>E4</td><td>删除档案后立刻进入 AI 问答</td><td>AI 问答走通用开场（hasProfile: false），CTA 引导建档重新出现</td></tr>
       <tr><td>E5</td><td>旧 key 数据格式异常（不是合法 JSON）</td><td>迁移 catch 后静默跳过，不阻断 signIn 流程</td></tr>
@@ -1054,7 +1209,7 @@
 
   <h3>B. Key 映射表</h3>
   <table>
-    <thead><tr><th>场景</th><th>v0.1 key（全局）</th><th>v0.2 key（带 email）</th><th>迁移策略</th></tr></thead>
+    <thead><tr><th>场景</th><th>v0.1 key（全局）</th><th>v0.1.1 key（带 email）</th><th>迁移策略</th></tr></thead>
     <tbody>
       <tr><td>命盘档案</td><td><code>fatecipher.profile.bazi</code></td><td><code>fatecipher.profile.{email}</code></td><td>signIn 时自动搬迁 → 删旧 key</td></tr>
       <tr><td>AI 问答额度</td><td><code>fatecipher.ask.quota</code></td><td><code>fatecipher.ask.quota.{email}</code></td><td>同上</td></tr>
@@ -1074,7 +1229,7 @@
   gender:      "male" | "female",  // 必填
   place:       string | undefined, // 选填，出生地
   focus:       string[],           // 关注方向数组
-  // v0.2 新增
+  // v0.1.1 新增
   createdAt:   ISOString,         // 首次建档时间
   lastUpdated: ISOString,         // 最后修改时间
   migratedAt?: ISOString          // 仅 v0.1 老用户迁移时出现
@@ -1103,7 +1258,7 @@
 </section>
 
 <div class="foot">
-  <span>FateCipher · 用户命盘档案管理 PRD · v0.2 · Release</span>
+  <span>FateCipher · 用户命盘档案管理 PRD · v0.1.1 · Release</span>
   <span>章青云 · 2026-09-09</span>
 </div>
 
