@@ -57,19 +57,19 @@ const AUDIENCES: Audience[] = [
   },
 ];
 
-/** ② 适合人群：右对齐 + 窄容器 + 纯淡入，最克制的一节 */
+/** ② 适合人群：左对齐 + 窄容器 + 纯淡入，最克制的一节 */
 export function WhoFor() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionNarrow className="py-24 sm:py-32">
-      <SectionHeadingLeft
-        eyebrow="Made For"
-        title="它为谁而做"
-        subtitle="不需要懂命理，只需要对自己与未来保持好奇。"
-      />
-
+    <SectionNarrow>
       <div className="mx-auto max-w-4xl">
+        <SectionHeadingLeft
+          eyebrow="Made For"
+          title="它为谁而做"
+          subtitle="不需要懂命理，只需要对自己与未来保持好奇。"
+        />
+
         <motion.div
           variants={containerFast}
           initial={reduceMotion ? "show" : "hidden"}
@@ -77,26 +77,26 @@ export function WhoFor() {
           viewport={{ once: false, margin: "-80px" }}
           className="mt-14 grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3"
         >
-        {AUDIENCES.map((audience) => {
-          const Icon = audience.icon;
-          return (
-            <motion.div
-              key={audience.title}
-              variants={itemFade}
-              className="group flex items-start gap-4 rounded-2xl border border-transparent p-5 transition-all duration-300 hover:border-border/40"
-            >
-              <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors duration-300 group-hover:bg-gold-500/10 group-hover:text-gold-400">
-                <Icon className="size-4" aria-hidden />
-              </span>
-              <div>
-                <h3 className="text-[15px] font-medium">{audience.title}</h3>
-                <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
-                  {audience.desc}
-                </p>
-              </div>
-            </motion.div>
-          );
-        })}
+          {AUDIENCES.map((audience) => {
+            const Icon = audience.icon;
+            return (
+              <motion.div
+                key={audience.title}
+                variants={itemFade}
+                className="group flex items-start gap-4 rounded-2xl border border-transparent p-5 transition-all duration-300 hover:border-border/40"
+              >
+                <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors duration-300 group-hover:bg-gold-500/10 group-hover:text-gold-400">
+                  <Icon className="size-4" aria-hidden />
+                </span>
+                <div>
+                  <h3 className="text-[15px] font-medium">{audience.title}</h3>
+                  <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
+                    {audience.desc}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </SectionNarrow>

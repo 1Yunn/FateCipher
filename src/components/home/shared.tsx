@@ -177,7 +177,7 @@ export function Section({
   return (
     <section
       id={id}
-      className={`scroll-mt-24 px-12 py-28 sm:px-16 sm:py-40 lg:px-24 ${className ?? ""}`}
+      className={`scroll-mt-24 px-12 py-24 sm:px-16 sm:py-28 lg:px-24 ${className ?? ""}`}
     >
       <div className="mx-auto max-w-6xl">{children}</div>
     </section>
@@ -186,7 +186,7 @@ export function Section({
 
 /* ───── 新增布局变体 ───── */
 
-/** 窄容器：问题共鸣、适合人群 —— 对话感更紧 */
+/** 窄容器：问题共鸣、适合人群 —— 对话感更紧（Tight: py-16 sm:py-20） */
 export function SectionNarrow({
   id,
   children,
@@ -199,14 +199,14 @@ export function SectionNarrow({
   return (
     <section
       id={id}
-      className={`scroll-mt-24 px-12 py-24 sm:px-16 sm:py-32 lg:px-24 ${className ?? ""}`}
+      className={`scroll-mt-24 px-12 py-16 sm:px-16 sm:py-20 lg:px-24 ${className ?? ""}`}
     >
       <div className="mx-auto max-w-6xl">{children}</div>
     </section>
   );
 }
 
-/** 宽容器：使用场景、价值主张 —— 给网格更多空间 */
+/** 宽容器：使用场景、价值主张 —— 给网格更多空间（Normal: py-24 sm:py-28） */
 export function SectionWide({
   id,
   children,
@@ -219,14 +219,14 @@ export function SectionWide({
   return (
     <section
       id={id}
-      className={`scroll-mt-24 px-12 py-28 sm:px-16 sm:py-40 lg:px-24 ${className ?? ""}`}
+      className={`scroll-mt-24 px-12 py-24 sm:px-16 sm:py-28 lg:px-24 ${className ?? ""}`}
     >
       <div className="mx-auto max-w-6xl">{children}</div>
     </section>
   );
 }
 
-/** 全宽容器：报告预览 —— 整页高潮锚点 */
+/** 全宽容器：报告预览 —— 整页高潮锚点（Spacious: py-32 sm:py-40） */
 export function SectionFullBleed({
   id,
   children,
@@ -239,7 +239,7 @@ export function SectionFullBleed({
   return (
     <section
       id={id}
-      className={`scroll-mt-24 px-12 py-32 sm:px-16 sm:py-48 lg:px-24 ${className ?? ""}`}
+      className={`scroll-mt-24 px-12 py-32 sm:px-16 sm:py-40 lg:px-24 ${className ?? ""}`}
     >
       <div className="mx-auto max-w-6xl">{children}</div>
     </section>

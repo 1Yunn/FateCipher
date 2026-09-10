@@ -28,13 +28,13 @@ export function Problems() {
 
   return (
     <SectionNarrow>
-      <SectionHeadingLeft
-        eyebrow="Inner Questions"
-        title="这些念头，你是否也有过"
-        subtitle="真正的问题从来不是「准不准」，而是你愿不愿意认真看自己一次。"
-      />
-
       <div className="mx-auto max-w-4xl">
+        <SectionHeadingLeft
+          eyebrow="Inner Questions"
+          title="这些念头，你是否也有过"
+          subtitle="真正的问题从来不是「准不准」，而是你愿不愿意认真看自己一次。"
+        />
+
         <motion.ul
           variants={containerFast}
           initial={reduceMotion ? "show" : "hidden"}
@@ -42,27 +42,27 @@ export function Problems() {
           viewport={{ once: false, margin: "-80px" }}
           className="mt-14 grid gap-x-12 sm:grid-cols-2"
         >
-        {QUESTIONS.map((question, index) => (
-          <motion.li key={question} variants={itemRevealUp}>
-            <Link
-              href="#divinations"
-              className="group flex items-center justify-between gap-4 border-b border-border/60 py-5 transition-colors outline-none hover:border-gold-500/40 focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            >
-              <span className="flex items-baseline gap-4">
-                <span className="font-mono text-xs text-muted-foreground/50 tabular-nums">
-                  Q{index + 1}
+          {QUESTIONS.map((question, index) => (
+            <motion.li key={question} variants={itemRevealUp}>
+              <Link
+                href="#divinations"
+                className="group flex items-center justify-between gap-4 border-b border-border/60 py-5 transition-colors outline-none hover:border-gold-500/40 focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              >
+                <span className="flex items-baseline gap-4">
+                  <span className="font-mono text-xs text-muted-foreground/50 tabular-nums">
+                    Q{index + 1}
+                  </span>
+                  <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground sm:text-[15px]">
+                    {question}
+                  </span>
                 </span>
-                <span className="text-sm text-muted-foreground transition-colors group-hover:text-foreground sm:text-[15px]">
-                  {question}
-                </span>
-              </span>
-              <ArrowUpRight
-                className="size-4 shrink-0 text-muted-foreground/30 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gold-400"
-                aria-hidden
-              />
-            </Link>
-          </motion.li>
-        ))}
+                <ArrowUpRight
+                  className="size-4 shrink-0 text-muted-foreground/30 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-gold-400"
+                  aria-hidden
+                />
+              </Link>
+            </motion.li>
+          ))}
         </motion.ul>
       </div>
     </SectionNarrow>

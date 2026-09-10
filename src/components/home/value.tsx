@@ -34,7 +34,7 @@ export function Value() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <SectionWide className="py-28 sm:py-40">
+    <SectionWide>
       <SectionHeadingRight
         eyebrow="Why XuanJi"
         title="它不做预测，它做翻译"
