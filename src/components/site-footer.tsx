@@ -21,7 +21,7 @@ export function SiteFooter() {
       id="disclaimer"
       className="scroll-mt-24 border-t border-border/60 bg-background/40"
     >
-      <div className="mx-auto max-w-6xl px-12 py-20 sm:px-16 lg:px-24">
+      <div className="mx-auto max-w-5xl px-12 py-20 sm:px-16 lg:px-24">
         <div className="flex flex-col justify-between gap-10 md:flex-row">
           <div className="max-w-sm">
             <div className="flex items-center gap-2.5">
