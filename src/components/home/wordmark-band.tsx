@@ -171,7 +171,7 @@ export function WordmarkBand({
           initial={reduceMotion ? "show" : "hidden"}
           whileInView="show"
           viewport={{ once: false, margin: "-60px" }}
-          className="font-serif text-[15vw] leading-[0.95] font-medium tracking-tight whitespace-nowrap text-foreground/[0.06] sm:text-[13vw]"
+          className="font-serif text-[min(15vw,110px)] leading-[0.95] font-medium tracking-tight whitespace-nowrap text-foreground/[0.06] sm:text-[min(13vw,160px)]"
         >
           FateCipher
         </motion.span>
