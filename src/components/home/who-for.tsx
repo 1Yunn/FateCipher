@@ -69,7 +69,7 @@ export function WhoFor() {
         subtitle="不需要懂命理，只需要对自己与未来保持好奇。"
       />
 
-      <div className="max-w-4xl">
+      <div className="mx-auto max-w-4xl">
         <motion.div
           variants={containerFast}
           initial={reduceMotion ? "show" : "hidden"}

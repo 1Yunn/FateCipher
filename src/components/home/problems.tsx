@@ -34,7 +34,7 @@ export function Problems() {
         subtitle="真正的问题从来不是「准不准」，而是你愿不愿意认真看自己一次。"
       />
 
-      <div className="max-w-4xl">
+      <div className="mx-auto max-w-4xl">
         <motion.ul
           variants={containerFast}
           initial={reduceMotion ? "show" : "hidden"}
