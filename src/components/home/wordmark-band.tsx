@@ -1,14 +1,7 @@
 "use client";
 
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type Variants,
-} from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Coins, Layers, MessagesSquare, Orbit, type LucideIcon } from "lucide-react";
-import { useRef } from "react";
 
 import { EASE_OUT } from "@/components/home/shared";
 import { cn } from "@/lib/utils";
@@ -42,39 +35,28 @@ const wordmark: Variants = {
 };
 
 /**
- * WordmarkBand：巨型品牌字滚动带（vocalyze 式章节分隔）
+ * WordmarkBand：巨型品牌字带（vocalyze 式章节分隔）
  * - 上方：eyebrow + 衬线标题 + 4 项条目网格
- * - 下方：超大 FateCipher 字标，随滚动横向漂移 + 入场揭示
- * - drift 控制漂移方向（1 右入左出，-1 反向），相邻带交替
+ * - 下方：超大 FateCipher 字标，滚动入视口时渐显（无横向漂移）
  */
 export function WordmarkBand({
   kicker,
   title,
   items,
-  drift = 1,
   align = "left",
   layout = "grid",
 }: {
   kicker: string;
   title: string;
   items: { label: string; desc: string; icon?: string }[];
-  drift?: 1 | -1;
   align?: "left" | "right";
   layout?: "grid" | "bars";
 }) {
   const isRight = align === "right";
   const reduceMotion = useReducedMotion();
-  const ref = useRef<HTMLElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], [drift * 70, drift * -70]);
 
   return (
     <section
-      ref={ref}
       aria-labelledby={`wordmark-${kicker}`}
       className="relative scroll-mt-24 overflow-hidden px-12 py-24 sm:px-16 sm:py-32 lg:px-24"
     >
@@ -160,10 +142,9 @@ export function WordmarkBand({
         </motion.div>
       </div>
 
-      {/* 巨型字标：滚动漂移 + 入场揭示 */}
-      <motion.div
+      {/* 巨型字标：滚动入视口渐显 */}
+      <div
         aria-hidden="true"
-        style={{ x: reduceMotion ? undefined : x }}
         className="pointer-events-none mt-12 flex justify-center sm:mt-16"
       >
         <motion.span
@@ -171,11 +152,11 @@ export function WordmarkBand({
           initial={reduceMotion ? "show" : "hidden"}
           whileInView="show"
           viewport={{ once: false, margin: "-60px" }}
-          className="font-serif text-[min(15vw,110px)] leading-[0.95] font-medium tracking-tight whitespace-nowrap text-foreground/[0.06] sm:text-[min(13vw,160px)]"
+          className="font-serif text-[min(15vw,90px)] leading-[0.95] font-medium tracking-tight whitespace-nowrap text-foreground/[0.06] sm:text-[min(13vw,140px)]"
         >
           FateCipher
         </motion.span>
-      </motion.div>
+      </div>
     </section>
   );
 }

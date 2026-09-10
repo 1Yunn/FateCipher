@@ -34,7 +34,6 @@ export default function HomePage() {
         <WordmarkBand
           kicker="定位"
           title="不是算命，是洞察"
-          drift={1}
           items={[
             { label: "理解自己", desc: "看清性格与行为模式" },
             { label: "辅助决策", desc: "在岔路口有依据" },
