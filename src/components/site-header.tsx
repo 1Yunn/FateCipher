@@ -39,7 +39,7 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl backdrop-saturate-150">
-      <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-12 sm:px-16 lg:px-24">
+      <div className="mx-auto flex h-16 max-w-4xl items-center justify-between gap-4 px-12 sm:px-16 lg:px-24">
         <Link
           href="/"
           aria-label="FateCipher，返回首页"
@@ -205,7 +205,7 @@ export function SiteHeader() {
               transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               className="border-b border-border/60 bg-background/95 backdrop-blur-xl md:hidden"
             >
-              <div className="mx-auto flex max-w-5xl flex-col gap-1 px-12 py-4 sm:px-16 lg:px-24">
+              <div className="mx-auto flex max-w-4xl flex-col gap-1 px-12 py-4 sm:px-16 lg:px-24">
                 {NAV_LINKS.map((link) => (
                   <Link
                     key={link.href}

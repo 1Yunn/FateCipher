@@ -78,7 +78,7 @@ export function WordmarkBand({
       aria-labelledby={`wordmark-${kicker}`}
       className="relative scroll-mt-24 overflow-hidden px-12 py-24 sm:px-16 sm:py-32 lg:px-24"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-4xl">
         <motion.div
           variants={container}
           initial="hidden"

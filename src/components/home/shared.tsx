@@ -179,7 +179,7 @@ export function Section({
       id={id}
       className={`scroll-mt-24 px-12 py-24 sm:px-16 sm:py-28 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-6xl">{children}</div>
+      <div className="mx-auto max-w-4xl">{children}</div>
     </section>
   );
 }
@@ -201,7 +201,7 @@ export function SectionNarrow({
       id={id}
       className={`scroll-mt-24 px-12 py-16 sm:px-16 sm:py-20 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-6xl">{children}</div>
+      <div className="mx-auto max-w-4xl">{children}</div>
     </section>
   );
 }
@@ -221,7 +221,7 @@ export function SectionWide({
       id={id}
       className={`scroll-mt-24 px-12 py-24 sm:px-16 sm:py-28 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-6xl">{children}</div>
+      <div className="mx-auto max-w-4xl">{children}</div>
     </section>
   );
 }
@@ -241,7 +241,7 @@ export function SectionFullBleed({
       id={id}
       className={`scroll-mt-24 px-12 py-32 sm:px-16 sm:py-40 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-6xl">{children}</div>
+      <div className="mx-auto max-w-4xl">{children}</div>
     </section>
   );
 }
@@ -359,7 +359,7 @@ export function Divider() {
   return (
     <div
       aria-hidden
-      className="mx-auto flex max-w-6xl items-center gap-3 px-4 sm:px-6"
+      className="mx-auto flex max-w-4xl items-center gap-3 px-4 sm:px-6"
     >
       <span className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
       <span className="size-1 rounded-full bg-gold-500/40" />

@@ -208,7 +208,7 @@ export function FeatureCards() {
       id="divinations"
       className="scroll-mt-24 px-12 pt-4 pb-32 sm:px-16 sm:pb-48 lg:px-24"
     >
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-4xl">
         <SectionHeading
           eyebrow="Divination"
           title="选一种问法，与天对答"
