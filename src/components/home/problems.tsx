@@ -34,13 +34,14 @@ export function Problems() {
         subtitle="真正的问题从来不是「准不准」，而是你愿不愿意认真看自己一次。"
       />
 
-      <motion.ul
-        variants={containerFast}
-        initial={reduceMotion ? "show" : "hidden"}
-        whileInView="show"
-        viewport={{ once: false, margin: "-80px" }}
-        className="mt-14 grid gap-x-12 sm:grid-cols-2"
-      >
+      <div className="mx-auto max-w-4xl">
+        <motion.ul
+          variants={containerFast}
+          initial={reduceMotion ? "show" : "hidden"}
+          whileInView="show"
+          viewport={{ once: false, margin: "-80px" }}
+          className="mt-14 grid gap-x-12 sm:grid-cols-2"
+        >
         {QUESTIONS.map((question, index) => (
           <motion.li key={question} variants={itemRevealUp}>
             <Link
@@ -62,7 +63,8 @@ export function Problems() {
             </Link>
           </motion.li>
         ))}
-      </motion.ul>
+        </motion.ul>
+      </div>
     </SectionNarrow>
   );
 }

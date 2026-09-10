@@ -69,13 +69,14 @@ export function WhoFor() {
         subtitle="不需要懂命理，只需要对自己与未来保持好奇。"
       />
 
-      <motion.div
-        variants={containerFast}
-        initial={reduceMotion ? "show" : "hidden"}
-        whileInView="show"
-        viewport={{ once: false, margin: "-80px" }}
-        className="mt-14 grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3"
-      >
+      <div className="mx-auto max-w-4xl">
+        <motion.div
+          variants={containerFast}
+          initial={reduceMotion ? "show" : "hidden"}
+          whileInView="show"
+          viewport={{ once: false, margin: "-80px" }}
+          className="mt-14 grid gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3"
+        >
         {AUDIENCES.map((audience) => {
           const Icon = audience.icon;
           return (
@@ -96,7 +97,8 @@ export function WhoFor() {
             </motion.div>
           );
         })}
-      </motion.div>
+        </motion.div>
+      </div>
     </SectionNarrow>
   );
 }

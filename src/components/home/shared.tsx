@@ -201,7 +201,7 @@ export function SectionNarrow({
       id={id}
       className={`scroll-mt-24 px-12 py-24 sm:px-16 sm:py-32 lg:px-24 ${className ?? ""}`}
     >
-      <div className="mx-auto max-w-4xl">{children}</div>
+      <div className="mx-auto max-w-6xl">{children}</div>
     </section>
   );
 }
