@@ -29,7 +29,7 @@ const VALUES = [
   },
 ] as const;
 
-/** ④ 价值主张：宽容器 + 左对齐 + 大序号 + 横线 draw */
+/** 价值主张：宽容器 + 右对齐 + 大序号 + 横线 draw */
 export function Value() {
   const reduceMotion = useReducedMotion();
 
